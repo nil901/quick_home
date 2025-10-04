@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quick_home/screen/dashboard/main_home_screem.dart';
+import 'package:quick_home/screen/auth/login_screen.dart';
+import 'package:quick_home/screen/dashboard/main_home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -23,11 +24,10 @@ class _SplashScreenState extends State<SplashScreen>
     // On complete go to home
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-         Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainHomeScreen()),
-      );
-    
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
       }
     });
   }
@@ -51,10 +51,7 @@ class _SplashScreenState extends State<SplashScreen>
                 parent: _controller,
                 curve: Interval(0.0, 0.5, curve: Curves.easeOutBack),
               ),
-              child: Image.asset(
-                "assets/images/logo.png",
-                height: 50,
-              ),
+              child: Image.asset("assets/images/logo.png", height: 50),
             ),
             SizedBox(height: 40),
             Padding(
