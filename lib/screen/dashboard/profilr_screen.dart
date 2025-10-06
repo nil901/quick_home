@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
+import 'package:quick_home/util/custom_app_bar.dart';
+import 'package:quick_home/util/size.dart';
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({super.key});
@@ -13,16 +16,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("My Profile"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
+     appBar: CustomAppBar(title: "My Profile"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -47,10 +41,17 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    const Text(
-                      "Samiksha Raka",
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        const Text(
+                          "Samiksha Raka",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        w100,
+                        Icon(Icons.edit)
+                      ],
                     ),
                   ],
                 ),
@@ -76,7 +77,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   _buildOptionTile(
                     imagePath: "assets/images/address.png",
                     label: "My Address",
-                    onTap: () {},
+                    onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SelectedMyAddress(),
+                          ),
+                        );
+
+                    },
                   ),
                   _buildOptionTile(
                     imagePath: "assets/images/wallet.png",
@@ -93,16 +102,23 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     label: "My Subscriptions",
                     onTap: () {},
                   ),
-                  _buildOptionTile(
-                    imagePath: "assets/images/notification.png",
-                    label: "Notifications",
-                    onTap: () {},
-                  ),
+                 
                   _buildOptionTile(
                     imagePath: "assets/images/setting.png",
                     label: "Settings",
                     onTap: () {},
                   ),
+                   _buildOptionTile(
+                    imagePath: "assets/images/logout.png",
+                    label: "Logout",
+                    onTap: () {},
+                  ),
+                   _buildOptionTile(
+                    imagePath: "assets/images/delete.png",
+                    label: "Delete Account",
+                    onTap: () {},
+                  ),
+                  
                 ],
               ),
             )

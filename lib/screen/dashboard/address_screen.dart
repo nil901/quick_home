@@ -3,8 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/screen/dashboard/payment_screen.dart';
-
-
+import 'package:quick_home/util/custom_app_bar.dart';
 
 class AddressScreen extends StatefulWidget {
   const AddressScreen({super.key});
@@ -15,168 +14,152 @@ class AddressScreen extends StatefulWidget {
 
 class _AddressScreenState extends State<AddressScreen> {
   bool isHomeSelected = true;
-  GoogleMapController? mapController;
+  // GoogleMapController? mapController;
 
-  final LatLng _center = const LatLng(20.011, 73.790);
+  // final LatLng _center = const LatLng(20.011, 73.790);
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
+  // void _onMapCreated(GoogleMapController controller) {
+  //   mapController = controller;
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kwhite,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top bar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              color:kwhite,
-              child: Row(
+      appBar: CustomAppBar(title: "Address"),
+      body: Column(
+        children: [
+
+      
+      
+          // // Map section (untouched)
+          // SizedBox(
+          //   height: 250,
+          //   child: GoogleMap(
+          //     onMapCreated: _onMapCreated,
+          //     initialCameraPosition: CameraPosition(
+          //       target: _center,
+          //       zoom: 17.0,
+          //     ),
+          //     myLocationEnabled: true,
+          //     myLocationButtonEnabled: false,
+          //     zoomControlsEnabled: false,
+          //     liteModeEnabled: false,
+          //     mapToolbarEnabled: false,
+          //   ),
+          // ),
+          SizedBox(
+            height: 250,
+           
+          ),
+      
+          // Address + Form (scrollable)
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
+                  // Address + Change button in same row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children:  [
+                            Text(
+                              "Mumbai Naka",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: kprimary
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              "Mumbai Naka, Madhav Nagar, Tidke Colony, Nashik, Maharashtra 422002, India",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text("Change"),
+                      ),
+                    ],
                   ),
-                  const Text(
-                    "Your cart",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
+      
+                  const Divider(),
+      
+                  // Form fields
+                  _buildTextField("House/Flat Number*"),
+                  const SizedBox(height: 12),
+                  _buildTextField("Landmark (Optional)"),
+                  const SizedBox(height: 12),
+                  _buildTextField("Name"),
+                  const SizedBox(height: 16),
+      
+                  // Save As buttons
+                  Row(
+                    children: [
+                      ChoiceChip(
+                        label: const Text("Home"),
+                        selected: isHomeSelected,
+                        onSelected: (val) {
+                          setState(() => isHomeSelected = val);
+                        },
+                      ),
+                      const SizedBox(width: 12),
+                      ChoiceChip(
+                        label: const Text("Other"),
+                        selected: !isHomeSelected,
+                        onSelected: (val) {
+                          setState(() => isHomeSelected = !val);
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-
-            // Map section (untouched)
-            SizedBox(
-              height: 250,
-              child: GoogleMap(
-                onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: _center,
-                  zoom: 17.0,
-                ),
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                zoomControlsEnabled: false,
-                liteModeEnabled: false,
-                mapToolbarEnabled: false,
-              ),
-            ),
-
-            // Address + Form (scrollable)
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Address + Change button in same row
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                "Mumbai Naka",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Mumbai Naka, Madhav Nagar, Tidke Colony, Nashik, Maharashtra 422002, India",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text("Change"),
-                        ),
-                      ],
+          ),
+      
+          // Bottom Button
+          SafeArea(
+            child: Center(
+              child: Container(
+                width: 350, // fixed width
+                height: 44, // fixed height
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _showSlotSelector(context);
+                  },
+      
+                  style: ElevatedButton.styleFrom(
+                    // backgroundColor: Colors.grey.shade300,
+                    // foregroundColor: Colors.black54,
+                    backgroundColor: HexColor("#3A3A3A"),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // radius 10px
                     ),
-
-                    const Divider(),
-
-                    // Form fields
-                    _buildTextField("House/Flat Number*"),
-                    const SizedBox(height: 12),
-                    _buildTextField("Landmark (Optional)"),
-                    const SizedBox(height: 12),
-                    _buildTextField("Name"),
-                    const SizedBox(height: 16),
-
-                    // Save As buttons
-                    Row(
-                      children: [
-                        ChoiceChip(
-                          label: const Text("Home"),
-                          selected: isHomeSelected,
-                          onSelected: (val) {
-                            setState(() => isHomeSelected = val);
-                          },
-                        ),
-                        const SizedBox(width: 12),
-                        ChoiceChip(
-                          label: const Text("Other"),
-                          selected: !isHomeSelected,
-                          onSelected: (val) {
-                            setState(() => isHomeSelected = !val);
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Bottom Button
-            SafeArea(
-              child: Center(
-                child: Container(
-                  width: 350, // fixed width
-                  height: 44, // fixed height
-                  margin: const EdgeInsets.symmetric(vertical: 12),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _showSlotSelector(context);
-                    },
-
-                    style: ElevatedButton.styleFrom(
-                      // backgroundColor: Colors.grey.shade300,
-                      // foregroundColor: Colors.black54,
-                      backgroundColor: HexColor("#3A3A3A"),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // radius 10px
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      "Save and proceed to slots",
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(fontSize: 14, color: Colors.white),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

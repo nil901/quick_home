@@ -1,17 +1,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.quick_home">
 
-    <!-- Permissions -->
+   
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
 
     <application
         android:name="${applicationName}"
-        android:label="quick_home"
+        android:label="QwickHome"
         android:icon="@mipmap/ic_launcher">
 
-        <!-- Main Activity -->
+       
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBGv9znbx4hAdCp_6YK0-HO2XVKI4ZXALk"/>
+
+     
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -21,29 +28,25 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
-            <!-- Google Maps API Key -->
-            <meta-data
-                android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyDs2pTvKJmwuH5gMoflOhhT1hMBXXnLK_A"/>
-
-            <!-- Flutter Theme -->
+            <!-- Flutter default theme -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
 
+            <!-- Launcher intent -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <!-- Flutter embedding meta-data -->
+        <!-- Flutter embedding metadata -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
     </application>
 
-    <!-- Required to query activities that can process text -->
+    <!-- Optional: For text sharing queries -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

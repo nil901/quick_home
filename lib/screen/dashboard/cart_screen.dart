@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/screen/dashboard/address_screen.dart';
+import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
 import 'package:quick_home/util/custom_app_bar.dart';
 
 class CartScreen extends StatefulWidget {
@@ -54,21 +56,32 @@ class _CartScreenState extends State<CartScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               child: Row(
                 children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 44),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text(
-                        "Add Services",
-                        style: TextStyle(color: HexColor("#505050")),
-                      ),
-                    ),
-                  ),
+                Expanded(
+  child: InkWell(
+    onTap: () {
+      // TODO: your tap logic here
+    },
+    borderRadius: BorderRadius.circular(8), 
+    child: Container(
+      height: 44,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color:kprimary, width: 1), 
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        "Add Services",
+        style: TextStyle(
+          color:kprimary,
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+        ),
+      ),
+    ),
+  ),
+),
+
                   const SizedBox(width: 14),
                   Expanded(
                     child: ElevatedButton(
@@ -76,12 +89,12 @@ class _CartScreenState extends State<CartScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddressScreen(),
+                            builder: (context) => SelectedMyAddress(),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor:kprimary,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -153,9 +166,11 @@ class _CartScreenState extends State<CartScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style:  TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
+                        color: kprimary
+
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -178,9 +193,10 @@ class _CartScreenState extends State<CartScreen> {
                       children: [
                         Text(
                           price,
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
+                            color: kprimary
                           ),
                         ),
                         Row(
@@ -189,19 +205,19 @@ class _CartScreenState extends State<CartScreen> {
                               width: 63, // fixed width
                               height: 25, // fixed height
                               decoration: BoxDecoration(
-                                color: Colors.grey[200],
+                                color: kscoundPrimaryColor,
                                 borderRadius: BorderRadius.circular(
                                   5,
                                 ), // border-radius 5
-                                border: Border.all(
-                                  color: const Color(0xFF353535), // #353535
-                                  width: 0.5,
-                                ),
+                                // border: Border.all(
+                                //   color: const Color(0xFF353535), // #353535
+                                //   width: 0.5,
+                                // ),
                               ),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: const [
+                                children:  [
                                   Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 6.0,
@@ -210,7 +226,7 @@ class _CartScreenState extends State<CartScreen> {
                                       '-',
                                       style: TextStyle(
                                         fontSize: 20,
-                                        color: Colors.black54,
+                                        color: kprimary,
                                       ),
                                     ),
                                   ),
@@ -223,7 +239,7 @@ class _CartScreenState extends State<CartScreen> {
                                       '+',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.black54,
+                                        color: kprimary,
                                       ),
                                     ),
                                   ),
@@ -239,6 +255,7 @@ class _CartScreenState extends State<CartScreen> {
                                 'assets/images/delete.png',
                                 width: 17,
                                 height: 22,
+                                color: kprimary,
                               ),
                             ),
                           ],

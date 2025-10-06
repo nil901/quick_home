@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/screen/auth/login_screen.dart';
-import 'package:quick_home/screen/dashboard/main_home_screen.dart';
+import 'package:quick_home/screen/auth/sign_up_screen.dart';
+
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -15,13 +17,11 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Progress + Logo animation controller
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 4), // full splash screen time
+      duration: Duration(seconds: 4),
     )..forward();
 
-    // On complete go to home
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         Navigator.pushReplacement(
@@ -41,15 +41,17 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: HexColor('#E4F9FF'),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset("assets/images/splash2.png", width: 200, height: 200),
+            SizedBox(height: 20),
             ScaleTransition(
               scale: CurvedAnimation(
                 parent: _controller,
-                curve: Interval(0.0, 0.5, curve: Curves.easeOutBack),
+                curve: Curves.easeOutBack,
               ),
               child: Image.asset("assets/images/logo.png", height: 50),
             ),
@@ -60,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
                 animation: _controller,
                 builder: (context, child) {
                   return LinearProgressIndicator(
-                    value: _controller.value, // smooth progress
+                    value: _controller.value,
                     minHeight: 5,
                     backgroundColor: Colors.grey[300],
                     color: Colors.black,

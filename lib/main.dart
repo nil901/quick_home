@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'My App',
+      title: 'QwickHome',
       theme: ThemeData(textTheme: GoogleFonts.robotoTextTheme()),
-      home: SplashScreen(),
+      home: LocationPickerScreen(),
     );
   }
 }
