@@ -16,7 +16,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-     appBar: CustomAppBar(title: "My Profile"),
+      appBar: CustomAppBar(title: "My Profile"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -47,10 +47,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                         const Text(
                           "Samiksha Raka",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         w100,
-                        Icon(Icons.edit)
+                        Icon(Icons.edit),
                       ],
                     ),
                   ],
@@ -78,13 +80,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     imagePath: "assets/images/address.png",
                     label: "My Address",
                     onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SelectedMyAddress(),
-                          ),
-                        );
-
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SelectedMyAddress(),
+                        ),
+                      );
                     },
                   ),
                   _buildOptionTile(
@@ -102,30 +103,144 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     label: "My Subscriptions",
                     onTap: () {},
                   ),
-                 
+
                   _buildOptionTile(
                     imagePath: "assets/images/setting.png",
                     label: "Settings",
                     onTap: () {},
                   ),
-                   _buildOptionTile(
+                  _buildOptionTile(
                     imagePath: "assets/images/logout.png",
                     label: "Logout",
-                    onTap: () {},
+                    onTap: () {
+                      showLogoutDialog(context, () {
+                        Navigator.pop(context); // Close the profile screen
+                      });
+                    },
                   ),
-                   _buildOptionTile(
+                  _buildOptionTile(
                     imagePath: "assets/images/delete.png",
                     label: "Delete Account",
-                    onTap: () {},
+                    onTap: () {
+                      showDeleteDialog(context, () {
+                        Navigator.pop(context); // Close the profile screen
+                      });
+                    },
                   ),
-                  
                 ],
               ),
-            )
-
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void showLogoutDialog(BuildContext context, VoidCallback onLogout) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            title: Row(children: [Text("Log Out ?")]),
+            content: Text(
+              "Are you sure you want to log out \nof your account?",
+            ),
+            actionsPadding: EdgeInsets.only(bottom: 10, right: 12),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[500],
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Cancel"),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[700],
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onLogout();
+                    },
+                    child: Text("Log out"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+    );
+  }
+
+  void showDeleteDialog(BuildContext context, VoidCallback onLogout) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            title: Row(children: [Text("Delete Account ?")]),
+            content: Text("Are you sure you want to Delete \nof your account?"),
+            actionsPadding: EdgeInsets.only(bottom: 10, right: 12),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[500],
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Cancel"),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[700],
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onLogout();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 4,
+                        bottom: 4,
+                        left: 15,
+                        right: 15,
+                      ),
+                      child: Text("Yes"),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
     );
   }
 
@@ -174,5 +289,4 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       ),
     );
   }
-
 }

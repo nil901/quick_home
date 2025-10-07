@@ -80,7 +80,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       color: Color(0xFF004271), // background
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Color(0x8F004271), width: 0.25), // border
+                      border: Border.all(
+                        color: Color(0x8F004271),
+                        width: 0.25,
+                      ), // border
                       boxShadow: [
                         BoxShadow(
                           color: Color(0x1A000000), // #0000001A
@@ -92,24 +95,28 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         String phone = phoneController.text.trim();
-          
+
                         if (phone.isEmpty) {
                           _showSnackBar('Please enter mobile number');
                         } else if (phone.length != 10) {
                           _showSnackBar('Mobile number must be 10 digits');
                         } else {
                           _showSnackBar('Login Successful!');
-          
+
                           // ✅ Navigate to Home Screen
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => OtpVerify()),
+                            MaterialPageRoute(
+                              builder: (context) => OtpVerify(),
+                            ),
                           );
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent, // keep container color
-                        shadowColor: Colors.transparent, // remove default shadow
+                        backgroundColor:
+                            Colors.transparent, // keep container color
+                        shadowColor:
+                            Colors.transparent, // remove default shadow
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -118,7 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         "Send OTP",
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
-          
                     ),
                   ),
                 ),
@@ -132,21 +138,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextSpan(
                           text: "Sign up here",
                           style: TextStyle(
-                              color: Color(0xff004c8c), fontWeight: FontWeight.bold),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // Navigate to LoginScreen
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => SignupScreen()),
-                              );
-                            },
+                            color: Color(0xff004c8c),
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer:
+                              TapGestureRecognizer()
+                                ..onTap = () {
+                                  // Navigate to LoginScreen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SignupScreen(),
+                                    ),
+                                  );
+                                },
                         ),
                       ],
                     ),
                   ),
                 ),
-          
               ],
             ),
           ),
@@ -154,8 +164,13 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  Widget _buildTextField(TextEditingController controller, String hint, IconData icon,
-      {TextInputType keyboardType = TextInputType.text}) {
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint,
+    IconData icon, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(left: 52, right: 52, top: 0, bottom: 0),
       child: Container(
@@ -187,6 +202,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
-
 }

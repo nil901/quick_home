@@ -50,13 +50,19 @@ class SelectedMyAddress extends StatelessWidget {
               SizedBox(height: 16),
               Text(
                 "DEFAULT ADDRESS",
-                style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
               ),
               _addressCard(addresses[0], isSelected: true),
               SizedBox(height: 20),
               Text(
                 "OTHER ADDRESS",
-                style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
               ),
               SizedBox(height: 8),
               _addressCard(addresses[1]),
@@ -81,20 +87,17 @@ class SelectedMyAddress extends StatelessWidget {
               SafeArea(
                 child: Center(
                   child: Container(
-                    width: 350, // fixed width
-                    height: 44, // fixed height
+                    width: 350,
+                    height: 44,
                     margin: const EdgeInsets.symmetric(vertical: 12),
                     child: ElevatedButton(
                       onPressed: () {
                         _showSlotSelector(context);
                       },
-        
                       style: ElevatedButton.styleFrom(
-                        // backgroundColor: Colors.grey.shade300,
-                        // foregroundColor: Colors.black54,
-                        backgroundColor:kprimary,
+                        backgroundColor: kprimary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10), // radius 10px
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         elevation: 0,
                       ),
@@ -197,8 +200,9 @@ class SelectedMyAddress extends StatelessWidget {
       ),
       isScrollControlled: true,
       builder: (context) {
-        int selectedTime = 1; // index for selected time button
-        int selectedDate = 0; // index for selected date button
+        int selectedTime = 1;
+        int selectedDate = 0;
+        int selectedExpert = -1;
 
         List<String> times = [
           "03:30 PM",
@@ -209,7 +213,20 @@ class SelectedMyAddress extends StatelessWidget {
           "07:00 PM",
         ];
 
-        List<String> dates = ["Fri, 26", "Sat, 27", "Sun, 28"];
+        List<String> dates = [
+          "Mon, 22",
+          "Tue, 23",
+          "Wed, 24",
+          "Thu, 25",
+          "Fri, 26",
+          "Sat, 27",
+          "Sun, 28",
+        ];
+
+        List<Map<String, String?>> experts = [
+          {"name": "Best Match for\nYour Service", "image": null},
+          {"name": "Megha", "image": "assets/images/Megha.png"},
+        ];
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -217,75 +234,153 @@ class SelectedMyAddress extends StatelessWidget {
               padding: EdgeInsets.only(
                 left: 16,
                 right: 16,
-                top: 16,
+                top: 3,
                 bottom: MediaQuery.of(context).viewInsets.bottom + 16,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Icon(Icons.close),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Your Qwik Slot - Choose Date & Time",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Color(0xFF353535),
-                        //decoration: TextDecoration.underline,
-                      ),
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Row(
+                      children: [
+                        SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Your Qwik Slot - Choose Date & Time",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: Color(0xFF353535),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(width: 90),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 5.0),
+                                child: Icon(Icons.close),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: 20),
 
-                  // Date selection with custom layout
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(dates.length, (i) {
-                      bool isSelected = selectedDate == i;
-                      return GestureDetector(
-                        onTap: () => setState(() => selectedDate = i),
-                        child: Container(
-                          width: 108, // fixed width
-                          height: 46, // fixed height
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color:
-                                isSelected ?kprimary : kscoundPrimaryColor,
-                                
-                            borderRadius: BorderRadius.circular(
-                              5,
-                            ), // border-radius 5
-                            border: Border.all(
-                              color: kprimary, // #353535
-                              width: 1,
+                  // Dates
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      color: Colors.white,
+                      child: Row(
+                        children: [
+                          // --- Static "Oct" box first ---
+                          Container(
+                            width: 60,
+                            height: 70,
+                            margin: EdgeInsets.only(right: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 17.0),
+                                    child: Text(
+                                      "Oct",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                // Empty space for alignment (since 'Oct' has no date number)
+                                Text(
+                                  "",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey.shade800,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Text(
-                            dates[i],
-                            style: TextStyle(
-                              color: isSelected ?kwhite: kblack,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
+                          // --- Rest of the dates as before ---
+                          ...List.generate(dates.length, (i) {
+                            List<String> parts = dates[i].split(',');
+                            String label1 = parts[0].trim();
+                            String label2 =
+                                parts.length > 1 ? parts[1].trim() : "";
+                            bool isSelected = (selectedDate == i);
+                            return GestureDetector(
+                              onTap: () => setState(() => selectedDate = i),
+                              child: Container(
+                                width: 60,
+                                height: 70,
+                                margin: EdgeInsets.only(right: 8),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isSelected
+                                          ? Color(0xFF004271)
+                                          : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      label1,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color:
+                                            isSelected
+                                                ? Colors.white
+                                                : Colors.grey.shade600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      label2,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            isSelected
+                                                ? Colors.white
+                                                : Colors.grey.shade800,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
                   ),
 
                   SizedBox(height: 24),
-  Padding(
+
+                  Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       "Selected Time",
@@ -293,11 +388,11 @@ class SelectedMyAddress extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                         color: Color(0xFF353535),
-                       // decoration: TextDecoration.underline,
                       ),
                     ),
                   ),
-                  // Time selection (can also customize similar to dates)
+
+                  // Times
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
@@ -306,12 +401,12 @@ class SelectedMyAddress extends StatelessWidget {
                       return ChoiceChip(
                         label: Text(times[i]),
                         selected: isSelected,
-                        onSelected: (val) {
-                          setState(() => selectedTime = i);
-                        },
-                        selectedColor:kprimary,
-                        backgroundColor:kscoundPrimaryColor,
-                        labelStyle: TextStyle(color: isSelected ? Colors.white:kblack),
+                        onSelected: (val) => setState(() => selectedTime = i),
+                        selectedColor: kprimary,
+                        backgroundColor: kscoundPrimaryColor,
+                        labelStyle: TextStyle(
+                          color: isSelected ? Colors.white : kblack,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
                           side: BorderSide(color: kprimary, width: 1),
@@ -322,6 +417,42 @@ class SelectedMyAddress extends StatelessWidget {
 
                   SizedBox(height: 32),
 
+                  Padding(
+                    padding: const EdgeInsets.only(left: 9.0, bottom: 13.0),
+                    child: Text(
+                      'Choose your Expert',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Color(0xFF353535),
+                      ),
+                    ),
+                  ),
+
+                  // 🔹 CHANGED: Added horizontal scroll + reduced spacing
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: List.generate(experts.length, (index) {
+                        final expert = experts[index];
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            right: 10,
+                          ), // 🔹 CHANGED: small gap
+                          child: ExpertCard(
+                            name: expert['name']!,
+                            imagePath: expert['image'],
+                            isSelected: selectedExpert == index,
+                            onTap: () => setState(() => selectedExpert = index),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -330,7 +461,7 @@ class SelectedMyAddress extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PaymentSummaryScreen(),
+                            builder: (context) => const PaymentSummaryScreen(),
                           ),
                         );
                       },
@@ -340,19 +471,83 @@ class SelectedMyAddress extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Proceed to Payment",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                 ],
               ),
             );
           },
         );
       },
+    );
+  }
+}
+
+//
+// ✅ Reusable Expert Card Widget
+//
+class ExpertCard extends StatelessWidget {
+  final String name;
+  final String? imagePath;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const ExpertCard({
+    super.key,
+    required this.name,
+    this.imagePath,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: 70,
+            width: 70,
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: isSelected ? Colors.blue.shade900 : Colors.white,
+                width: 2,
+              ),
+              boxShadow: isSelected ? [] : [],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child:
+                  imagePath != null && imagePath!.isNotEmpty
+                      ? Image.asset(imagePath!, fit: BoxFit.cover)
+                      : Icon(
+                        Icons.person,
+                        size: 45,
+                        color: Colors.grey.shade500,
+                      ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            name,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF353535),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
