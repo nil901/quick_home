@@ -202,7 +202,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                                         child: Text(
                                           "Book Now",
                                           style: TextStyle(
-                                            color: kprimary,
+                                            color: Color(0xff004271),
                                             fontSize: 15,
                                           ),
                                         ),
