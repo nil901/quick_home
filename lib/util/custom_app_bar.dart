@@ -20,13 +20,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         borderRadius: const BorderRadius.vertical(
           bottom: Radius.circular(20), // Rounded bottom edges
         ),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black12,
-        //     blurRadius: 4,
-        //     offset: Offset(0, 2), // Shadow slightly below AppBar
-        //   ),
-        // ],
       ),
       child: SafeArea(
         child: Row(
@@ -55,7 +48,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
   @override
   Size get preferredSize => const Size.fromHeight(100); // Layout ke according
 }

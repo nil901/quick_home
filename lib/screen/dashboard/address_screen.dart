@@ -307,7 +307,7 @@ void _showSlotSelector(BuildContext context) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PaymentSummaryScreen(),
+                          builder: (context) => PaymentScreen(),
                         ),
                       );
                     },

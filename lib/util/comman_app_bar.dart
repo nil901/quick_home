@@ -15,7 +15,6 @@ class CommanAppBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // ✅ Wrap left part in Expanded
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

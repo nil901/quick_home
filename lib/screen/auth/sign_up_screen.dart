@@ -12,9 +12,13 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController mobileController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  // TextEditingController nameController = TextEditingController();
+  // TextEditingController mobileController = TextEditingController();
+  // TextEditingController emailController = TextEditingController();
+
+  TextEditingController nameController = TextEditingController(text: "Prathamesh");
+  TextEditingController mobileController = TextEditingController(text: "9876543210");
+  TextEditingController emailController = TextEditingController(text: "rathodprathamesh23@gmail.com");
 
   void createAccount() {
     String name = nameController.text.trim();

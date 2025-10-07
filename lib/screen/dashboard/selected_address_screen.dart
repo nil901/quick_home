@@ -461,7 +461,7 @@ class SelectedMyAddress extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PaymentSummaryScreen(),
+                            builder: (context) =>  PaymentScreen(),
                           ),
                         );
                       },
@@ -488,9 +488,7 @@ class SelectedMyAddress extends StatelessWidget {
   }
 }
 
-//
-// ✅ Reusable Expert Card Widget
-//
+
 class ExpertCard extends StatelessWidget {
   final String name;
   final String? imagePath;

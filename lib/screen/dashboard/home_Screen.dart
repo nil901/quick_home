@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:quick_home/color/colors.dart';
-import 'package:quick_home/screen/dashboard/mid_screens/sub_categories_screen.dart';
 import 'package:quick_home/screen/dashboard/search_screen.dart';
-import 'package:quick_home/screen/dashboard/services_details_screen.dart';
-import 'package:quick_home/screen/wigets/bannar_slider.dart';
-import 'package:quick_home/util/comman_app_bar.dart';
-import 'package:quick_home/util/size.dart';
+
+import '../../color/colors.dart';
+import '../../util/comman_app_bar.dart';
+import '../../util/size.dart';
+import '../wigets/bannar_slider.dart';
+import 'mid_screens/sub_categories_screen.dart';
 
 final List<Map<String, String>> categories = [
   {'label': 'Core Home Services', 'icon': 'assets/images/cleaning.png'},
@@ -14,6 +14,7 @@ final List<Map<String, String>> categories = [
   {'label': 'Personal Care', 'icon': 'assets/images/beuty.png'},
   {'label': 'Home Maintenance', 'icon': 'assets/images/homecleaning.png'},
 ];
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -26,7 +27,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: HexColor('#E4F9FF'),
+      color:  HexColor('#E4F9FF'),
       child: SafeArea(
         child: Scaffold(
           backgroundColor: kwhite,
@@ -38,6 +39,7 @@ class _HomeState extends State<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
                 /// 🔹 TOP SECTION with background color
                 Container(
                   width: double.infinity,
@@ -65,9 +67,7 @@ class _HomeState extends State<Home> {
                               border: Border.all(color: kgrey, width: 0.5),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Row(
                                 children: [
                                   Image.asset(
@@ -89,7 +89,8 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       ),
-
+                      /// 📸 Banner (slider placeholder)
+                      /// 📸 Banner Slider
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: BannerSlider(),
@@ -101,7 +102,6 @@ class _HomeState extends State<Home> {
                 ),
                 h10,
 
-                /// 🏷 Categories (Updated Style)
                 /// 🏷 Categories (Updated UI like ServiceListScreen)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
@@ -109,10 +109,7 @@ class _HomeState extends State<Home> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'All Categories',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                     ),
                   ),
                 ),
@@ -129,15 +126,14 @@ class _HomeState extends State<Home> {
                       final category = categories[index];
                       return InkWell(
                         onTap: () {
+                          // Navigate to SubCategoriesScreen on tap
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder:
-                                  (context) => SubCategoriesscreenDetails(),
+                              builder: (context) => SubCategoriesscreenDetails(),
                             ),
                           );
                         },
-
                         child: Container(
                           margin: EdgeInsets.only(right: 19),
                           width: 100, // Adjust as per design
@@ -147,9 +143,7 @@ class _HomeState extends State<Home> {
                               color: Color(0xFF004271),
                               width: 2,
                             ),
-                            borderRadius: BorderRadius.circular(
-                              18,
-                            ), // Same curvature sab corners pe
+                            borderRadius: BorderRadius.circular(18), // Same curvature sab corners pe
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -189,30 +183,48 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       );
+
                     },
                   ),
                 ),
-
                 /// Sections
                 SizedBox(height: 22),
-                _buildSection("Everything We Offer", [
-                  'assets/images/offerCat.png',
-                  'assets/images/beuty1.png',
-                  'assets/images/offercat2.png',
-                  'assets/images/cartIm1.png',
-                  'assets/images/beuty1.png',
-                ]),
+                _buildSection(
+                  "Everything We Offer",
+                  [
+                    'assets/images/offerCat.png',
+                    'assets/images/beuty1.png',
+                    'assets/images/offercat2.png',
+                    'assets/images/cartIm1.png',
+                    'assets/images/beuty1.png',
+                  ],
+                  labels: [
+                    "Maids",
+                    "Laundry at Home",
+                    "Cleaning",
+                    "Repair",
+                    "Laundry at Home",
+                  ],
+                ),
 
-                SizedBox(height: 22),
+                SizedBox(height: 2),
                 _buildSection("Qwik Picks", [
                   'assets/images/cartIm1.png',
                   'assets/images/cartIm2.png',
                   'assets/images/cartIm3.png',
                   'assets/images/cartIm2.png',
                   'assets/images/cartIm1.png',
-                ]),
+                ],
+                    labels: [
+                      "Repair",
+                      "Spa",
+                      "Cleaning",
+                      "Beauty",
+                      "Repair",
+                    ]
+                ),
 
-                SizedBox(height: 22),
+                SizedBox(height: 2),
                 _buildSection("Special Offers & Campaigns", [
                   'assets/images/specialOffer.png',
                   'assets/images/specialOffers2.png',
@@ -221,14 +233,23 @@ class _HomeState extends State<Home> {
                   'assets/images/specialOffers2.png',
                 ], single: true),
 
-                SizedBox(height: 22),
+                SizedBox(height: 2),
                 _buildSection("Beauty, Qwik & Easy", [
-                  'assets/images/beuty1.png',
                   'assets/images/beuty2.png',
                   'assets/images/beuty2.png',
+                  'assets/images/beuty.png',
                   'assets/images/beuty3.png',
-                  'assets/images/beauty5.png',
-                ]),
+                  'assets/images/beuty2.png',
+                ]
+                  , labels: [
+                    "Salon at Home",
+                    "Mani-pedi",
+                    "waxing",
+                    "Facial",
+                    "Hair Treatment",
+                  ],
+                ),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -237,18 +258,15 @@ class _HomeState extends State<Home> {
     );
   }
 
+
   /// 📦 Section Builder
-  Widget _buildSection(
-    String title,
-    List<String> images, {
-    bool single = false,
-  }) {
+
+  Widget _buildSection(String title, List<String> images, {bool single = false, List<String>? labels}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Heading + See All
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -263,23 +281,42 @@ class _HomeState extends State<Home> {
             ],
           ),
         ),
-
-        // Horizontal List
         SizedBox(
-          height: single ? 150 : 120,
+          height: single ? 158 : 160, // height thodi badhayi for text
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: images.length,
             itemBuilder: (context, index) {
+              double width = single ? 301 : 120;
+              double height = single ? 150 : 120;
+
               return Container(
                 margin: const EdgeInsets.only(left: 12),
-                width: single ? 250 : 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: AssetImage(images[index]),
-                    fit: BoxFit.cover,
-                  ),
+                width: width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.asset(
+                        images[index],
+                        width: width,
+                        height: height,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // Text below image
+                    if (labels != null && labels.length > index)
+                      Text(
+                        labels[index],
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                  ],
                 ),
               );
             },
@@ -289,3 +326,4 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
