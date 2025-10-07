@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'QwickHome',
       theme: ThemeData(textTheme: GoogleFonts.robotoTextTheme()),
-      home: LocationPickerScreen(),
+      home: SplashScreen(),
     );
   }
 }
