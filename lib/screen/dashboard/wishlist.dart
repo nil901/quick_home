@@ -52,7 +52,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE6F6FF),
+        backgroundColor: const Color(0xFFE4F9FF),
         elevation: 0,
         title: const Text(
           'My Wishlist',
@@ -90,234 +90,238 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.grey.withOpacity(0.5),
                           blurRadius: 8,
                           spreadRadius: 2,
                         ),
                       ],
                     ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Left: Image + Book Now / Counter + Options
-                        Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                "assets/images/ironing1.png",
-                                height: 80,
-                                width: 80,
-                                fit: BoxFit.cover,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Left: Image + Book Now / Counter + Options
+                          Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.asset(
+                                  item["image"],
+                                  height: 80,
+                                  width: 80,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            bookedStatus[index]
-                                ? Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    color: kscoundPrimaryColor,
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            if (countStatus[index] > 0) {
-                                              countStatus[index]--;
-                                            }
-                                            if (countStatus[index] == 0) {
-                                              bookedStatus[index] = false;
-                                            }
-                                          });
-                                        },
-                                        child: const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 1,
-                                          ),
-                                          child: Text(
-                                            "–",
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: kprimary,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        "${countStatus[index]}",
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: kprimary,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            countStatus[index]++;
-                                          });
-                                        },
-                                        child: const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 1,
-                                          ),
-                                          child: Text(
-                                            "+",
-                                            style: TextStyle(
-                                              fontSize: 19,
-                                              color: kprimary,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                : InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      bookedStatus[index] = true;
-                                      countStatus[index] = 1;
-                                    });
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
+                              const SizedBox(height: 8),
+                              bookedStatus[index]
+                                  ? Container(
+                                    height: 30,
                                     decoration: BoxDecoration(
                                       color: kscoundPrimaryColor,
-                                      borderRadius: BorderRadius.circular(15),
+                                      borderRadius: BorderRadius.circular(30),
                                     ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 5,
-                                        horizontal: 13,
+                                    child: Row(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              if (countStatus[index] > 0) {
+                                                countStatus[index]--;
+                                              }
+                                              if (countStatus[index] == 0) {
+                                                bookedStatus[index] = false;
+                                              }
+                                            });
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 1,
+                                            ),
+                                            child: Text(
+                                              "–",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: kprimary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          "${countStatus[index]}",
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: kprimary,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              countStatus[index]++;
+                                            });
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 1,
+                                            ),
+                                            child: Text(
+                                              "+",
+                                              style: TextStyle(
+                                                fontSize: 19,
+                                                color: kprimary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                  : InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        bookedStatus[index] = true;
+                                        countStatus[index] = 1;
+                                      });
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: kscoundPrimaryColor,
+                                        borderRadius: BorderRadius.circular(15),
                                       ),
-                                      child: Text(
-                                        "Book Now",
-                                        style: TextStyle(
-                                          color: kprimary,
-                                          fontSize: 15,
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 5,
+                                          horizontal: 13,
+                                        ),
+                                        child: Text(
+                                          "Book Now",
+                                          style: TextStyle(
+                                            color: kprimary,
+                                            fontSize: 15,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                            const SizedBox(height: 8),
-                            Text(
-                              item["options"],
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 12),
-
-                        // Right: Details
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                              const SizedBox(height: 8),
                               Text(
-                                item["title"],
+                                item["options"],
                                 style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                item["description"],
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                "Starts at AED ${item["price"]}",
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: kblack,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.star,
-                                    size: 16,
-                                    color: Colors.orangeAccent,
-                                  ),
-                                  const Icon(
-                                    Icons.star,
-                                    size: 16,
-                                    color: Colors.orangeAccent,
-                                  ),
-                                  const Icon(
-                                    Icons.star,
-                                    size: 16,
-                                    color: Colors.orangeAccent,
-                                  ),
-                                  const Icon(
-                                    Icons.star,
-                                    size: 16,
-                                    color: Colors.orangeAccent,
-                                  ),
-                                  const Icon(
-                                    Icons.star_half,
-                                    size: 16,
-                                    color: Colors.orangeAccent,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    "(${item["reviews"]})",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 15),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) =>
-                                              const ServicesDetailsScreen(),
-                                    ),
-                                  );
-                                },
-                                child: const Text(
-                                  "View Details",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: kprimary,
-                                  ),
+                                  color: Color(0xff004271),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+
+                          // Right: Details
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item["title"],
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  item["description"],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  "Starts at AED ${item["price"]}",
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: kblack,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.star,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    const Icon(
+                                      Icons.star,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    const Icon(
+                                      Icons.star,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    const Icon(
+                                      Icons.star,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    const Icon(
+                                      Icons.star_half,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      "(${item["reviews"]})",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 15),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                const ServicesDetailsScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    "View Details",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: kprimary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
                   // 🗑️ Delete Icon (Top Right)
                   Positioned(
-                    top: 8,
-                    right: 8,
+                    top: 15,
+                    right: 15,
                     child: InkWell(
                       onTap: () {
                         setState(() {
@@ -325,7 +329,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                         });
                       },
                       child: Image.asset(
-                        'assets/icons/delete.png', // correct image path
+                        'assets/images/delete.png',
                         width: 22,
                         height: 22,
                         color:

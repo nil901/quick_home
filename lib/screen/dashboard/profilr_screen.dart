@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/screen/auth/login_screen.dart';
 import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
 import 'package:quick_home/util/custom_app_bar.dart';
 import 'package:quick_home/util/size.dart';
@@ -175,8 +176,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.pop(context);
-                      onLogout();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                      print('Logout Successfully');
                     },
                     child: Text("Log out"),
                   ),
@@ -225,7 +229,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     ),
                     onPressed: () {
                       Navigator.pop(context);
-                      onLogout();
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(

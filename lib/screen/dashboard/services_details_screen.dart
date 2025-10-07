@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:quick_home/screen/wigets/faq_comman.dart';
 
-
 class ServicesDetailsScreen extends StatefulWidget {
   const ServicesDetailsScreen({super.key});
   @override
@@ -63,8 +62,10 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
             // Top Image
             Center(
               child: Container(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                margin: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 16,
+                ),
                 height: 200,
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
@@ -85,7 +86,9 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
                   Text(
                     isEnglish ? 'Ironing' : 'كي الملابس',
                     style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold),
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -93,23 +96,29 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
                         ? 'Wrinkle-free clothes, crisp and neat – ready \nto wear anytime.'
                         : 'ملابس خالية من التجاعيد، نظيفة وجاهزة للارتداء في أي وقت.',
                     style: const TextStyle(
-                        fontSize: 13, color: Colors.grey, height: 1.4),
+                      fontSize: 13,
+                      color: Colors.grey,
+                      height: 1.4,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
                       RatingBarIndicator(
                         rating: 4,
-                        itemBuilder: (context, index) =>
-                            const Icon(Icons.star, color: Colors.grey),
+                        itemBuilder:
+                            (context, index) =>
+                                const Icon(Icons.star, color: Colors.grey),
                         itemCount: 5,
                         itemSize: 18.0,
                         unratedColor: Colors.grey.shade300,
                       ),
                       const SizedBox(width: 5),
                       const SizedBox(width: 4),
-                      const Text('(30k reviews)',
-                          style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      const Text(
+                        '(30k reviews)',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 15),
@@ -118,7 +127,9 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
                       const Text(
                         'AED 4.99',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       const Spacer(),
@@ -128,15 +139,18 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
                           foregroundColor: const Color(0xff004271),
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 22, vertical: 10),
+                            horizontal: 22,
+                            vertical: 10,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
                         onPressed: () {},
-                        child: Text(isEnglish ? 'Book Now' : 'احجز الآن',
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w600)),
+                        child: Text(
+                          isEnglish ? 'Book Now' : 'احجز الآن',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ],
                   ),
@@ -150,8 +164,10 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Text(
                 isEnglish ? 'About the service' : 'عن الخدمة',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
               ),
             ),
             Padding(
@@ -170,8 +186,10 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Text(
                 isEnglish ? 'Our Process' : 'عملية الخدمة',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
               ),
             ),
             // Our Process Timeline
@@ -180,36 +198,40 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
               isImageLeft: false,
               imagePath: 'assets/images/Mobile.png',
               title: isEnglish ? 'Book Service' : 'حجز الخدمة',
-              description: isEnglish
-                  ? 'Schedule ironing at your \npreferred time through the \napp.'
-                  : 'حدد موعد كي الملابس المفضل من خلال التطبيق.',
+              description:
+                  isEnglish
+                      ? 'Schedule ironing at your \npreferred time through the \napp.'
+                      : 'حدد موعد كي الملابس المفضل من خلال التطبيق.',
             ),
             _timelineStep(
               stepNum: 2,
               isImageLeft: true,
               imagePath: 'assets/images/Clean.png',
               title: isEnglish ? 'We Arrive' : 'نصل إلى بابك',
-              description: isEnglish
-                  ? 'Our professional staff \ncomes to your doorstep \nwith all essentials.'
-                  : 'يصل موظفونا المحترفون إلى بابك بكل المستلزمات.',
+              description:
+                  isEnglish
+                      ? 'Our professional staff \ncomes to your doorstep \nwith all essentials.'
+                      : 'يصل موظفونا المحترفون إلى بابك بكل المستلزمات.',
             ),
             _timelineStep(
               stepNum: 3,
               isImageLeft: false,
               imagePath: 'assets/images/Iron.png',
               title: isEnglish ? 'At-Home Ironing' : 'كي الملابس في المنزل',
-              description: isEnglish
-                  ? 'Clothes are ironed neatly at \nyour place, hassle-free.'
-                  : 'يتم كي الملابس بشكل مرتب في منزلك بسهولة.',
+              description:
+                  isEnglish
+                      ? 'Clothes are ironed neatly at \nyour place, hassle-free.'
+                      : 'يتم كي الملابس بشكل مرتب في منزلك بسهولة.',
             ),
             _timelineStep(
               stepNum: 4,
               isImageLeft: true,
               imagePath: 'assets/images/Cloths.png',
               title: isEnglish ? 'Ready to Wear' : 'جاهز للارتداء',
-              description: isEnglish
-                  ? 'Crisp, wrinkle-free outfits \nhanded over instantly.'
-                  : 'ملابس مرتبة وجاهزة للارتداء فوراً.',
+              description:
+                  isEnglish
+                      ? 'Crisp, wrinkle-free outfits \nhanded over instantly.'
+                      : 'ملابس مرتبة وجاهزة للارتداء فوراً.',
               isLast: true,
             ),
             const SizedBox(height: 18),
@@ -219,8 +241,10 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Text(
                 isEnglish ? "What's Included?" : 'ما الذي يتضمنه ذلك؟',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
               ),
             ),
             Padding(
@@ -228,21 +252,31 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _includedText(isEnglish
-                      ? 'Professional at-home ironing'
-                      : 'كي احترافي في المنزل'),
-                  _includedText(isEnglish
-                      ? 'Use of safe, quality equipment'
-                      : 'استخدام معدات آمنة وعالية الجودة'),
-                  _includedText(isEnglish
-                      ? 'Neat folding/hanging after ironing'
-                      : 'طي/تعليق الملابس بشكل مرتب بعد الكي'),
-                  _includedText(isEnglish
-                      ? 'Quick service with care handle'
-                      : 'خدمة سريعة مع عناية خاصة'),
-                  _includedText(isEnglish
-                      ? 'Clothes ready to wear instantly'
-                      : 'ملابس جاهزة للارتداء فوراً'),
+                  _includedText(
+                    isEnglish
+                        ? 'Professional at-home ironing'
+                        : 'كي احترافي في المنزل',
+                  ),
+                  _includedText(
+                    isEnglish
+                        ? 'Use of safe, quality equipment'
+                        : 'استخدام معدات آمنة وعالية الجودة',
+                  ),
+                  _includedText(
+                    isEnglish
+                        ? 'Neat folding/hanging after ironing'
+                        : 'طي/تعليق الملابس بشكل مرتب بعد الكي',
+                  ),
+                  _includedText(
+                    isEnglish
+                        ? 'Quick service with care handle'
+                        : 'خدمة سريعة مع عناية خاصة',
+                  ),
+                  _includedText(
+                    isEnglish
+                        ? 'Clothes ready to wear instantly'
+                        : 'ملابس جاهزة للارتداء فوراً',
+                  ),
                 ],
               ),
             ),
@@ -253,8 +287,10 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Text(
                 isEnglish ? 'What We Need From You' : 'ما الذي نحتاجه منك',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
               ),
             ),
             Padding(
@@ -265,30 +301,34 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
                   children: [
                     neededCard(
                       icon: Image.asset('assets/images/Clean.png', height: 50),
-                      text: isEnglish
-                          ? 'Clean clothes,\nready to iron'
-                          : 'ملابس نظيفة وجاهزة للكي',
+                      text:
+                          isEnglish
+                              ? 'Clean clothes,\nready to iron'
+                              : 'ملابس نظيفة وجاهزة للكي',
                     ),
                     const SizedBox(width: 12),
                     neededCard(
                       icon: Image.asset('assets/images/Clean.png', height: 50),
-                      text: isEnglish
-                          ? 'Ironing board\nor flat surface'
-                          : 'طاولة الكي أو سطح مستوي',
+                      text:
+                          isEnglish
+                              ? 'Ironing board\nor flat surface'
+                              : 'طاولة الكي أو سطح مستوي',
                     ),
                     const SizedBox(width: 12),
                     neededCard(
                       icon: Image.asset('assets/images/Clean.png', height: 50),
-                      text: isEnglish
-                          ? 'Access to\nelectricity'
-                          : 'الوصول إلى الكهرباء',
+                      text:
+                          isEnglish
+                              ? 'Access to\nelectricity'
+                              : 'الوصول إلى الكهرباء',
                     ),
                     const SizedBox(width: 12),
                     neededCard(
                       icon: Image.asset('assets/images/Clean.png', height: 50),
-                      text: isEnglish
-                          ? 'Access to\nelectricity'
-                          : 'الوصول إلى الكهرباء',
+                      text:
+                          isEnglish
+                              ? 'Access to\nelectricity'
+                              : 'الوصول إلى الكهرباء',
                     ),
                   ],
                 ),
@@ -299,9 +339,10 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
               padding: const EdgeInsets.only(left: 16),
               child: Row(
                 children: [
-                  Text('Frequently asked questions',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                  Text(
+                    'Frequently asked questions',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  ),
                 ],
               ),
             ),
@@ -314,18 +355,21 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
 
             Center(
               child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Done'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff004271),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 190, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  )),
+                onPressed: () {},
+                child: const Text('Done'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff004271),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 190,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -362,8 +406,12 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
     final img = ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding:
-            const EdgeInsets.only(right: 35.5, left: 35.5, top: 4, bottom: 4),
+        padding: const EdgeInsets.only(
+          right: 35.5,
+          left: 35.5,
+          top: 4,
+          bottom: 4,
+        ),
         child: Image.asset(
           imagePath,
           height: 120,
@@ -379,19 +427,20 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
           width: 30,
           height: 30,
           decoration: const BoxDecoration(
-              color: Color(0xff004271), shape: BoxShape.circle),
+            color: Color(0xff004271),
+            shape: BoxShape.circle,
+          ),
           alignment: Alignment.center,
           child: Text(
             '$stepNum',
             style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
           ),
         ),
-        Container(
-          width: 3,
-          height: 90,
-          color: Colors.grey[300],
-        ),
+        Container(width: 3, height: 90, color: Colors.grey[300]),
       ],
     );
 
@@ -401,9 +450,10 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
             const SizedBox(height: 8),
             Text(description, style: const TextStyle(fontSize: 14)),
           ],
@@ -441,10 +491,7 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 14),
-            child: icon,
-          ),
+          Padding(padding: const EdgeInsets.only(top: 14), child: icon),
           const SizedBox(height: 14),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -460,7 +507,7 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
   }
 
   static Widget _includedText(String text) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Text('• $text', style: const TextStyle(fontSize: 15.5)),
-      );
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Text('• $text', style: const TextStyle(fontSize: 15.5)),
+  );
 }

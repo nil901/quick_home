@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quick_home/screen/dashboard/main_home_screen.dart';
+import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
+import 'package:quick_home/screen/location_screen.dart';
 
 class OtpVerify extends StatefulWidget {
   @override
@@ -7,7 +9,6 @@ class OtpVerify extends StatefulWidget {
 }
 
 class _OtpVerifyState extends State<OtpVerify> {
-  
   List<TextEditingController> otpControllers = List.generate(
     4,
     (_) => TextEditingController(),
@@ -22,18 +23,13 @@ class _OtpVerifyState extends State<OtpVerify> {
   }
 
   void _checkOtpCompleted() {
-   
     if (otpControllers.every((controller) => controller.text.isNotEmpty)) {
-     
       String otp = otpControllers.map((c) => c.text).join();
       print("Entered OTP: $otp");
 
-     
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => MainHomeScreen(),
-        ), 
+        MaterialPageRoute(builder: (context) => DeliveryLocationPage()),
       );
     }
   }
