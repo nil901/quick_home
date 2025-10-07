@@ -8,10 +8,6 @@ import 'package:quick_home/screen/dashboard/profilr_screen.dart';
 import 'package:quick_home/screen/dashboard/subscription_screen.dart';
 import 'package:quick_home/util/enum.dart';
 
-
-
-
-
 class MainHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,7 +42,7 @@ class MainHomeScreen extends ConsumerWidget {
                         BottomTab.values[index];
                   },
                   type: BottomNavigationBarType.fixed,
-                  backgroundColor:kscoundPrimaryColor,
+                  backgroundColor: kscoundPrimaryColor,
                   selectedItemColor: kprimary,
                   unselectedItemColor: Colors.black87,
                   showUnselectedLabels: true,
@@ -57,14 +53,26 @@ class MainHomeScreen extends ConsumerWidget {
                   unselectedLabelStyle: TextStyle(fontSize: 12),
                   iconSize: 0,
                   items: [
-                    _navItem("assets/images/home.png", "Home",
-                        selectedTab == BottomTab.home),
-                    _navItem("assets/images/booking.png", "Bookings",
-                        selectedTab == BottomTab.bookings),
-                    _navItem("assets/images/subscription.png", "Subscription",
-                        selectedTab == BottomTab.subscription),
-                    _navItem("assets/images/profile.png", "Profile",
-                        selectedTab == BottomTab.profile),
+                    _navItem(
+                      "assets/images/home.png",
+                      "Home",
+                      selectedTab == BottomTab.home,
+                    ),
+                    _navItem(
+                      "assets/images/booking.png",
+                      "Bookings",
+                      selectedTab == BottomTab.bookings,
+                    ),
+                    _navItem(
+                      "assets/images/subscription.png",
+                      "Subscription",
+                      selectedTab == BottomTab.subscription,
+                    ),
+                    _navItem(
+                      "assets/images/profile.png",
+                      "Profile",
+                      selectedTab == BottomTab.profile,
+                    ),
                   ],
                 ),
               ),
@@ -76,11 +84,14 @@ class MainHomeScreen extends ConsumerWidget {
   }
 
   BottomNavigationBarItem _navItem(
-      String asset, String label, bool isSelected) {
+    String asset,
+    String label,
+    bool isSelected,
+  ) {
     return BottomNavigationBarItem(
       icon: CircleAvatar(
         radius: 18,
-        backgroundColor: isSelected ?kprimary : Colors.transparent,
+        backgroundColor: isSelected ? kprimary : Colors.transparent,
         child: Image.asset(
           asset,
           color: isSelected ? Colors.white : Colors.black,
