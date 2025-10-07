@@ -6,6 +6,7 @@ import 'package:quick_home/screen/dashboard/booking_screen.dart';
 import 'package:quick_home/screen/dashboard/home_Screen.dart';
 import 'package:quick_home/screen/dashboard/profilr_screen.dart';
 import 'package:quick_home/screen/dashboard/subscription_screen.dart';
+import 'package:quick_home/screen/dashboard/wishlist.dart';
 import 'package:quick_home/util/enum.dart';
 
 class MainHomeScreen extends ConsumerWidget {
@@ -16,7 +17,7 @@ class MainHomeScreen extends ConsumerWidget {
     final Map<BottomTab, Widget> pages = {
       BottomTab.home: Home(),
       BottomTab.bookings: MyBookingsScreen(),
-      BottomTab.subscription: SubscriptionScreen(),
+      BottomTab.wishlist: WishlistScreen(),
       BottomTab.profile: MyProfileScreen(),
     };
 
@@ -65,8 +66,8 @@ class MainHomeScreen extends ConsumerWidget {
                     ),
                     _navItem(
                       "assets/images/subscription.png",
-                      "Subscription",
-                      selectedTab == BottomTab.subscription,
+                      "Wishlist",
+                      selectedTab == BottomTab.wishlist,
                     ),
                     _navItem(
                       "assets/images/profile.png",
