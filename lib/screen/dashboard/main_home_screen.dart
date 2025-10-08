@@ -10,8 +10,6 @@ import 'package:quick_home/util/enum.dart';
 
 
 
-
-
 class MainHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/screen/dashboard/search_screen.dart';
-
 import '../../color/colors.dart';
 import '../../util/comman_app_bar.dart';
 import '../../util/size.dart';
