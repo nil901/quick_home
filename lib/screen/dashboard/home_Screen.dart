@@ -3,6 +3,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/screen/dashboard/mid_screens/sub_categories_screen.dart';
 import 'package:quick_home/screen/dashboard/search_screen.dart';
+import 'package:quick_home/screen/dashboard/see_all_screen.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
 import 'package:quick_home/screen/wigets/bannar_slider.dart';
 import 'package:quick_home/util/comman_app_bar.dart';
@@ -247,20 +248,42 @@ class _HomeState extends State<Home> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Heading + See All
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                Colors.white, // Button ka color, chahe to change kar sakte ho
+            foregroundColor: Colors.black, // Text color default
+            padding:
+                EdgeInsets
+                    .zero, // Kyunki humne apne padding already child me diya hai
+            elevation: 2, // Shadow ka effect
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => QwikPicksScreen()),
+            );
+
+            print("Button pressed");
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const Text("See all", style: TextStyle(color: Colors.blue)),
-            ],
+                const Text("See all", style: TextStyle(color: Colors.blue)),
+              ],
+            ),
           ),
         ),
 
