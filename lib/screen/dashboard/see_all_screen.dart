@@ -12,7 +12,7 @@ class QwikPicksScreen extends StatelessWidget {
       'Disinfection Services',
       'assets/SeeMore/Disinfection_Services.png',
     ),
-    _QwikPickItem('Pest Control', 'assets/SeeMore/PestControl.png'),
+    _QwikPickItem('Pest Control', 'assets/SeeMore/pest_Control.png'),
     _QwikPickItem('mani-pedi', 'assets/SeeMore/mani-pedi.png'),
     _QwikPickItem('facial', 'assets/SeeMore/facial.png'),
     _QwikPickItem('waxing', 'assets/SeeMore/waxing.png'),
