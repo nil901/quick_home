@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quick_home/screen/dashboard/services_details_screen.dart';
 
 class QwikPicksScreen extends StatelessWidget {
   final List<_QwikPickItem> items = [
@@ -24,7 +25,7 @@ class QwikPicksScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFF6FBFF),
       appBar: AppBar(
-        backgroundColor: Color(0xFFF6FBFF),
+        backgroundColor: Color(0xFFE4F9FF),
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -81,7 +82,12 @@ class _QwikPickCard extends StatelessWidget {
       elevation: 0,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ServicesDetailsScreen()),
+          );
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
