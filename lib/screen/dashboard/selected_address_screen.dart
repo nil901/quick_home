@@ -1,122 +1,131 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/color/colors.dart';
+import 'package:quick_home/model/address_model.dart';
+import 'package:quick_home/provide/cart_prov.dart';
 import 'package:quick_home/screen/dashboard/address_screen.dart';
 import 'package:quick_home/screen/dashboard/payment_screen.dart';
 import 'package:quick_home/util/custom_app_bar.dart';
+class SelectedMyAddress extends ConsumerStatefulWidget {
+  const SelectedMyAddress({super.key});
 
-class SelectedMyAddress extends StatelessWidget {
-  final List<Map<String, String>> addresses = [
-    {
-      'name': 'Samiksha Raka',
-      'address':
-          '12, 6th floor, Asha building, Tidake colony,\nnear Durvankar lawns, Nashik, Maharashtra - 422009',
-      'mobile': '8356744554',
-      'isDefault': 'true',
-    },
-    {
-      'name': 'Samiksha Raka',
-      'address':
-          'Flat 5C, Green Park Residency, College Road,\nNashik, Maharashtra - 422006',
-      'mobile': '8356744554',
-      'isDefault': 'false',
-    },
-    {
-      'name': 'Samiksha Raka',
-      'address':
-          'House No. 21, Shanti Nagar, Indiranagar,\nNashik, Maharashtra - 422009',
-      'mobile': '8356744554',
-      'isDefault': 'false',
-    },
-  ];
+  @override
+  ConsumerState<SelectedMyAddress> createState() => _SelectedMyAddressState();
+}
+
+class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
+  int? selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => cartServices().addressApi(ref)); // Fetch address list
+  }
 
   @override
   Widget build(BuildContext context) {
+    final addressList = ref.watch(addressProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: 'My Address'),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 12),
-              Text(
-                "Select Delivery Address",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              Text(
-                "DEFAULT ADDRESS",
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey,
-                ),
-              ),
-              _addressCard(addresses[0], isSelected: true),
-              SizedBox(height: 20),
-              Text(
-                "OTHER ADDRESS",
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(height: 8),
-              _addressCard(addresses[1]),
-              _addressCard(addresses[2]),
-              SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddressScreen()),
-                  );
-                },
-                icon: Icon(Icons.add, color: Color(0xFF004271)),
-                label: Text(
-                  'Add New Address',
-                  style: TextStyle(color: Color(0xFF004271)),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Color(0xFF004271)),
-                ),
-              ),
-              SafeArea(
-                child: Center(
-                  child: Container(
-                    width: 350,
-                    height: 44,
-                    margin: const EdgeInsets.symmetric(vertical: 12),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _showSlotSelector(context);
+      appBar: const CustomAppBar(title: 'My Address'),
+      body: addressList.isEmpty
+          ? const Center(child: Text("No address found. Please add a new one."))
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 12),
+                  const Text(
+                    "Select Delivery Address",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "YOUR ADDRESSES",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // 🔹 Use ListView.builder for all addresses
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: addressList.length,
+                      itemBuilder: (context, index) {
+                        final addr = addressList[index];
+                        final isSelected = selectedIndex == index ||
+                            addr.isDefault == true; // Default selected
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          child: _addressCard(addr, isSelected: isSelected),
+                        );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: kprimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddressScreen(),
                         ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        "Save and proceed to slots",
-                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      );
+                    },
+                    icon: const Icon(Icons.add, color: Color(0xFF004271)),
+                    label: const Text(
+                      'Add New Address',
+                      style: TextStyle(color: Color(0xFF004271)),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF004271)),
+                    ),
+                  ),
+
+                  SafeArea(
+                    child: Center(
+                      child: Container(
+                        width: 350,
+                        height: 44,
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        child: ElevatedButton(
+                          onPressed: () => _showSlotSelector(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: kprimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            "Save and proceed to slots",
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
-  Widget _addressCard(Map<String, String> addr, {bool isSelected = false}) {
+
+  Widget _addressCard(Address addr, {bool isSelected = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8),
       padding: EdgeInsets.all(13),
@@ -140,17 +149,17 @@ class SelectedMyAddress extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  addr['name']!,
+                  addr.user!.name.toString(),
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 SizedBox(height: 4),
                 Text(
-                  addr['address']!,
+                  addr.contactDetails!,
                   style: TextStyle(color: Colors.black87, fontSize: 13),
                 ),
                 SizedBox(height: 6),
                 Text(
-                  'Mobile: ${addr['mobile']}',
+                  'Mobile: ${addr.user?.phone}',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                 ),
                 if (isSelected)
