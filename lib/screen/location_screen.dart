@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
+import 'package:quick_home/color/colors.dart';
+import 'package:quick_home/screen/dashboard/main_home_screen.dart';
 
 class LocationPickerScreen extends StatefulWidget {
   const LocationPickerScreen({super.key});
@@ -18,9 +20,11 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   Marker? _marker;
   String _address = "Fetching location...";
   final TextEditingController _searchController = TextEditingController();
-  final TextEditingController _addressDetailsController = TextEditingController();
-  final TextEditingController _receiverController =
-      TextEditingController(text: "Nilesh Pathak, 9130348515");
+  final TextEditingController _addressDetailsController =
+      TextEditingController();
+  final TextEditingController _receiverController = TextEditingController(
+    text: "Nilesh Pathak, 9130348515",
+  );
 
   @override
   void initState() {
@@ -62,13 +66,17 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
     if (_mapController != null) {
       _mapController!.animateCamera(
-        CameraUpdate.newCameraPosition(CameraPosition(target: latLng, zoom: 17)),
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: latLng, zoom: 17),
+        ),
       );
     }
 
     try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        latLng.latitude,
+        latLng.longitude,
+      );
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
         setState(() {
@@ -91,14 +99,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             _currentLatLng == null
                 ? const Center(child: CircularProgressIndicator())
                 : GoogleMap(
-                    initialCameraPosition:
-                        CameraPosition(target: _currentLatLng!, zoom: 17),
-                    onMapCreated: (controller) => _mapController = controller,
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: false,
-                    markers: _marker != null ? {_marker!} : {},
-                    onTap: (pos) => _updatePosition(pos),
+                  initialCameraPosition: CameraPosition(
+                    target: _currentLatLng!,
+                    zoom: 17,
                   ),
+                  onMapCreated: (controller) => _mapController = controller,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  markers: _marker != null ? {_marker!} : {},
+                  onTap: (pos) => _updatePosition(pos),
+                ),
 
             /// 🔍 Search Bar
             Positioned(
@@ -110,7 +120,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 borderRadius: BorderRadius.circular(12),
                 child: GooglePlaceAutoCompleteTextField(
                   textEditingController: _searchController,
-                  googleAPIKey: "YOUR_API_KEY", // replace with your own
+                  googleAPIKey: "AIzaSyBGv9znbx4hAdCp_6YK0-HO2XVKI4ZXALk",
                   inputDecoration: const InputDecoration(
                     hintText: "Search for area, street name...",
                     border: InputBorder.none,
@@ -121,8 +131,12 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   isLatLngRequired: true,
                   getPlaceDetailWithLatLng: (Prediction prediction) {
                     if (prediction.lat != null && prediction.lng != null) {
-                      _updatePosition(LatLng(double.parse(prediction.lat!),
-                          double.parse(prediction.lng!)));
+                      _updatePosition(
+                        LatLng(
+                          double.parse(prediction.lat!),
+                          double.parse(prediction.lng!),
+                        ),
+                      );
                     }
                   },
                   itemClick: (Prediction prediction) {
@@ -141,8 +155,10 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 top: MediaQuery.of(context).size.height / 2.4,
                 left: MediaQuery.of(context).size.width / 2 - 120,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black87,
                     borderRadius: BorderRadius.circular(8),
@@ -154,7 +170,6 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 ),
               ),
 
-            /// 📍 Pin icon center
             if (_currentLatLng != null)
               Center(
                 child: Padding(
@@ -163,7 +178,6 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 ),
               ),
 
-            /// 🧭 Use current location button
             Positioned(
               bottom: 300,
               left: 0,
@@ -194,8 +208,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: SingleChildScrollView(
                   child: Column(
@@ -204,19 +217,23 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     children: [
                       const Text(
                         "Delivery details",
-                        style:
-                            TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(Icons.location_on, color: Colors.red),
+                          Icon(Icons.location_on, color: kprimary),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _address,
                               style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],
@@ -233,8 +250,10 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       const SizedBox(height: 10),
                       const Text(
                         "Receiver details for this address",
-                        style:
-                            TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       TextField(
@@ -250,23 +269,31 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
+                            backgroundColor: kprimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MainHomeScreen(),
+                              ),
+                            );
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content: Text("Address saved successfully!")),
+                                content: Text("Address saved successfully!"),
+                              ),
                             );
                           },
                           child: const Text(
                             "Save address",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

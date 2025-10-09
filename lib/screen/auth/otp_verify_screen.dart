@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quick_home/screen/dashboard/main_home_screen.dart';
+import 'package:quick_home/screen/location_screen.dart';
 
 class OtpVerify extends StatefulWidget {
   @override
@@ -27,12 +28,12 @@ class _OtpVerifyState extends State<OtpVerify> {
      
       String otp = otpControllers.map((c) => c.text).join();
       print("Entered OTP: $otp");
-
+  
      
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => MainHomeScreen(),
+          builder: (context) => LocationPickerScreen(),
         ), 
       );
     }

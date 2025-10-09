@@ -20,7 +20,7 @@ class MainHomeScreen extends ConsumerWidget {
     final Map<BottomTab, Widget> pages = {
       BottomTab.home: Home(),
       BottomTab.bookings: MyBookingsScreen(),
-      BottomTab.subscription: SubscriptionScreen(),
+      BottomTab.wishlist: SubscriptionScreen(),
       BottomTab.profile: MyProfileScreen(),
     };
 
@@ -61,8 +61,8 @@ class MainHomeScreen extends ConsumerWidget {
                         selectedTab == BottomTab.home),
                     _navItem("assets/images/booking.png", "Bookings",
                         selectedTab == BottomTab.bookings),
-                    _navItem("assets/images/subscription.png", "Subscription",
-                        selectedTab == BottomTab.subscription),
+                    _navItem("assets/images/like.png", "Wishlist",
+                        selectedTab == BottomTab.wishlist),
                     _navItem("assets/images/profile.png", "Profile",
                         selectedTab == BottomTab.profile),
                   ],
