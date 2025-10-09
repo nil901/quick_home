@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/color/colors.dart';
+import 'package:quick_home/provide/home_prov.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
 import 'package:quick_home/util/size.dart';
 
-class SubCategoriesscreenDetails extends StatefulWidget {
+class SubCategoriesscreenDetails extends ConsumerStatefulWidget {
   const SubCategoriesscreenDetails({super.key});
 
   @override
-  State<SubCategoriesscreenDetails> createState() =>
+  ConsumerState<SubCategoriesscreenDetails> createState() =>
       _SubCategoriesscreenDetailsState();
 }
 
 class _SubCategoriesscreenDetailsState
-    extends State<SubCategoriesscreenDetails> {
+    extends ConsumerState<SubCategoriesscreenDetails> {
   List<int> counters = [1, 0, 0];
+  @override
+  void initState() {
+    HomeServices().subCategoriesApi(ref);
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,36 +179,15 @@ class _SubCategoriesscreenDetailsState
   }
 }
 
-class CleaningCardList extends StatefulWidget {
+class CleaningCardList extends ConsumerStatefulWidget {
   const CleaningCardList({super.key});
 
   @override
-  State<CleaningCardList> createState() => _CleaningCardListState();
+  ConsumerState<CleaningCardList> createState() => _CleaningCardListState();
 }
 
-class _CleaningCardListState extends State<CleaningCardList> {
-  // Sample data
-  List<Map<String, dynamic>> cleaningItems = [
-    {
-      "title": "Sparkling Home Cleaning",
-      "description":
-          "Deep clean for a spotless home dustfree, fresh, and shining.",
-      "price": 399,
-      "image":
-          "https://img.freepik.com/free-photo/cleaning-service-person-home_23-2149001785.jpg",
-      "reviews": "50k reviews",
-    },
-    {
-      "title": "Bathroom Cleaning",
-      "description": "Complete bathroom scrub and sanitization.",
-      "price": 199,
-      "image":
-          "https://img.freepik.com/free-photo/cleaning-service-person-home_23-2149001785.jpg",
-      "reviews": "10k reviews",
-    },
-    // Add more items here
-  ];
-
+class _CleaningCardListState extends ConsumerState<CleaningCardList> {
+ 
   // Track booked status and count for each item
   List<bool> bookedStatus = [];
   List<int> countStatus = [];
@@ -207,19 +195,19 @@ class _CleaningCardListState extends State<CleaningCardList> {
   @override
   void initState() {
     super.initState();
-    bookedStatus = List.generate(cleaningItems.length, (index) => false);
-    countStatus = List.generate(cleaningItems.length, (index) => 0);
+   
   }
 
   @override
   Widget build(BuildContext context) {
+    final subCategory = ref.watch(serviceModelProvider);
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: cleaningItems.length,
+      itemCount: subCategory.length,
       // padding: const EdgeInsets.all(12),
       itemBuilder: (context, index) {
-        var item = cleaningItems[index];
+        var item = subCategory[index];
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
@@ -238,10 +226,23 @@ class _CleaningCardListState extends State<CleaningCardList> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.network(
-                        item["image"],
-                        height: 80,
-                        width: 80,
-                        fit: BoxFit.cover,
+                        "${item.imageUrl}", 
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          // Show a placeholder if image fails to load
+                          return Image.asset(
+                            "assets/images/logo.png",
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.contain,
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -355,7 +356,7 @@ class _CleaningCardListState extends State<CleaningCardList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        item["title"],
+                        item.name,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -363,12 +364,12 @@ class _CleaningCardListState extends State<CleaningCardList> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        item["description"],
+                        item.description,
                         style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        "Starts at ₹${item["price"]}",
+                        "Starts at ₹${item.priceOnetime}",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -405,7 +406,7 @@ class _CleaningCardListState extends State<CleaningCardList> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            "(${item["reviews"]})",
+                            "4654646",
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.grey[600],
@@ -667,25 +668,19 @@ class ComboSection extends StatelessWidget {
   }
 }
 
-class ServiceListScreen extends StatelessWidget {
+class ServiceListScreen extends ConsumerWidget {
   const ServiceListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final services = [
-      {"title": "Laundry at Home", "icon": Icons.iron},
-      {"title": "Laundry Collection", "icon": Icons.local_laundry_service},
-      {"title": "Deep Cleaning", "icon": Icons.cleaning_services},
-      {"title": "Car Wash", "icon": Icons.local_car_wash},
-    ];
-
+  Widget build(BuildContext context, ref) {
+    final subCategory = ref.watch(serviceModelProvider);
     return SizedBox(
       height: 160, // card उंची
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: services.length,
+        itemCount: subCategory.length,
         itemBuilder: (context, index) {
-          final service = services[index];
+          final service = subCategory[index];
           return Container(
             width: 130,
             margin: const EdgeInsets.only(right: 12),
@@ -699,12 +694,26 @@ class ServiceListScreen extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image.asset(
-                      "assets/images/loandrey.png",
+                    child: Image.network(
+                      "${service.imageUrl}", // Use network URL here
                       fit: BoxFit.contain,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        // Show a placeholder if image fails to load
+                        return Image.asset(
+                          "assets/images/logo.png",
+                          fit: BoxFit.contain,
+                        );
+                      },
                     ),
                   ),
                 ),
+
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -716,7 +725,7 @@ class ServiceListScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    "Laundry at Home",
+                    "${service.name}",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,

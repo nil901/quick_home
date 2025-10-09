@@ -58,8 +58,6 @@ class CommanAppBar extends StatelessWidget {
               ],
             ),
           ),
-
-          // Notification + Cart
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -82,9 +80,7 @@ class CommanAppBar extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => CartScreen(),
-                    ),
+                    MaterialPageRoute(builder: (context) => CartScreen()),
                   );
                 },
                 icon: const Icon(

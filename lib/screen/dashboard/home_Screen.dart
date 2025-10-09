@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/api_services/Providers.dart';
+import 'package:quick_home/provide/home_prov.dart';
 import 'package:quick_home/screen/dashboard/qwik_picks.dart';
 import 'package:quick_home/screen/dashboard/search_screen.dart';
 import '../../color/colors.dart';
@@ -8,26 +11,33 @@ import '../../util/size.dart';
 import '../wigets/bannar_slider.dart';
 import 'mid_screens/sub_categories_screen.dart';
 
-final List<Map<String, String>> categories = [
-  {'label': 'Core Home Services', 'icon': 'assets/images/cleaning.png'},
-  {'label': 'Family Support', 'icon': 'assets/images/repair.png'},
-  {'label': 'Personal Care', 'icon': 'assets/images/beuty.png'},
-  {'label': 'Home Maintenance', 'icon': 'assets/images/homecleaning.png'},
-];
+// final List<Map<String, String>> categories = [
+//   {'label': 'Core Home Services', 'icon': 'assets/images/cleaning.png'},
+//   {'label': 'Family Support', 'icon': 'assets/images/repair.png'},
+//   {'label': 'Personal Care', 'icon': 'assets/images/beuty.png'},
+//   {'label': 'Home Maintenance', 'icon': 'assets/images/homecleaning.png'},
+// ];
 
-
-class Home extends StatefulWidget {
+class Home extends ConsumerStatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  ConsumerState<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends ConsumerState<Home> {
+  @override
+  void initState() {
+    super.initState();
+    HomeServices().bannarApi(ref);
+    HomeServices().categoryApi(ref);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final category = ref.watch(categoryProvider);
     return Material(
-      color:  HexColor('#E4F9FF'),
+      color: HexColor('#E4F9FF'),
       child: SafeArea(
         child: Scaffold(
           backgroundColor: kwhite,
@@ -39,7 +49,6 @@ class _HomeState extends State<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 /// 🔹 TOP SECTION with background color
                 Container(
                   width: double.infinity,
@@ -67,7 +76,9 @@ class _HomeState extends State<Home> {
                               border: Border.all(color: kgrey, width: 0.5),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
                               child: Row(
                                 children: [
                                   Image.asset(
@@ -89,6 +100,7 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       ),
+
                       /// 📸 Banner (slider placeholder)
                       /// 📸 Banner Slider
                       Padding(
@@ -109,7 +121,10 @@ class _HomeState extends State<Home> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'All Categories',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
                     ),
                   ),
                 ),
@@ -121,16 +136,17 @@ class _HomeState extends State<Home> {
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                    itemCount: categories.length,
+                    itemCount: category.length,
                     itemBuilder: (context, index) {
-                      final category = categories[index];
+                      final categorys = category[index];
                       return InkWell(
                         onTap: () {
                           // Navigate to SubCategoriesScreen on tap
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SubCategoriesscreenDetails(),
+                              builder:
+                                  (context) => SubCategoriesscreenDetails(),
                             ),
                           );
                         },
@@ -143,7 +159,9 @@ class _HomeState extends State<Home> {
                               color: Color(0xFF004271),
                               width: 2,
                             ),
-                            borderRadius: BorderRadius.circular(18), // Same curvature sab corners pe
+                            borderRadius: BorderRadius.circular(
+                              18,
+                            ), // Same curvature sab corners pe
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -151,12 +169,44 @@ class _HomeState extends State<Home> {
                               Container(
                                 width: 86,
                                 height: 82,
-                                margin: EdgeInsets.only(top: 2, left: 1),
-                                child: Image.asset(
-                                  category['icon']!,
-                                  fit: BoxFit.contain,
-                                ),
+                                margin: const EdgeInsets.only(top: 2, left: 1),
+                                child:
+                                    categorys.imageUrl != null &&
+                                            categorys.imageUrl!.isNotEmpty
+                                        ? Image.network(
+                                          categorys.imageUrl!,
+                                          fit: BoxFit.contain,
+                                          errorBuilder: (
+                                            context,
+                                            error,
+                                            stackTrace,
+                                          ) {
+                                            // Show placeholder if image fails to load
+                                            return Image.asset(
+                                              "assets/images/logo.png",
+                                              fit: BoxFit.contain,
+                                            );
+                                          },
+                                          loadingBuilder: (
+                                            context,
+                                            child,
+                                            loadingProgress,
+                                          ) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return const Center(
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            );
+                                          },
+                                        )
+                                        : Image.asset(
+                                          "assets/images/logo.png",
+                                          fit: BoxFit.contain,
+                                        ),
                               ),
+
                               Container(
                                 width: double.infinity,
                                 height: 48,
@@ -169,7 +219,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    category['label']!,
+                                    categorys.name.toString(),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Colors.white,
@@ -183,10 +233,10 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       );
-
                     },
                   ),
                 ),
+
                 /// Sections
                 SizedBox(height: 22),
                 _buildSection(
@@ -208,20 +258,16 @@ class _HomeState extends State<Home> {
                 ),
 
                 SizedBox(height: 2),
-                _buildSection("Qwik Picks", [
-                  'assets/images/cartIm1.png',
-                  'assets/images/cartIm2.png',
-                  'assets/images/cartIm3.png',
-                  'assets/images/cartIm2.png',
-                  'assets/images/cartIm1.png',
-                ],
-                    labels: [
-                      "Repair",
-                      "Spa",
-                      "Cleaning",
-                      "Beauty",
-                      "Repair",
-                    ]
+                _buildSection(
+                  "Qwik Picks",
+                  [
+                    'assets/images/cartIm1.png',
+                    'assets/images/cartIm2.png',
+                    'assets/images/cartIm3.png',
+                    'assets/images/cartIm2.png',
+                    'assets/images/cartIm1.png',
+                  ],
+                  labels: ["Repair", "Spa", "Cleaning", "Beauty", "Repair"],
                 ),
 
                 SizedBox(height: 2),
@@ -234,14 +280,16 @@ class _HomeState extends State<Home> {
                 ], single: true),
 
                 SizedBox(height: 2),
-                _buildSection("Beauty, Qwik & Easy", [
-                  'assets/images/beuty2.png',
-                  'assets/images/beuty2.png',
-                  'assets/images/beuty.png',
-                  'assets/images/beuty3.png',
-                  'assets/images/beuty2.png',
-                ]
-                  , labels: [
+                _buildSection(
+                  "Beauty, Qwik & Easy",
+                  [
+                    'assets/images/beuty2.png',
+                    'assets/images/beuty2.png',
+                    'assets/images/beuty.png',
+                    'assets/images/beuty3.png',
+                    'assets/images/beuty2.png',
+                  ],
+                  labels: [
                     "Salon at Home",
                     "Mani-pedi",
                     "waxing",
@@ -258,21 +306,25 @@ class _HomeState extends State<Home> {
     );
   }
 
-
   /// 📦 Section Builder
 
-  Widget _buildSection(String title, List<String> images, {bool single = false, List<String>? labels}) {
+  Widget _buildSection(
+    String title,
+    List<String> images, {
+    bool single = false,
+    List<String>? labels,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor:
-            Colors.white, // Button ka color, chahe to change kar sakte ho
+                Colors.white, // Button ka color, chahe to change kar sakte ho
             foregroundColor: Colors.black, // Text color default
             padding:
-            EdgeInsets
-                .zero, // Kyunki humne apne padding already child me diya hai
+                EdgeInsets
+                    .zero, // Kyunki humne apne padding already child me diya hai
             elevation: 2, // Shadow ka effect
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -348,4 +400,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-

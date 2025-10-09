@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class AppPreference {
   static final AppPreference _appPreference = AppPreference._internal();
 
@@ -53,8 +52,5 @@ class AppPreference {
     print("✅ SharedPreferences cleared");
   }
 
-
-
   String get uName => getString(PreferencesKey.userId);
-
 }
