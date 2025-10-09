@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/api_services/api_services.dart';
 import 'package:quick_home/screen/auth/otp_verify_screen.dart';
 import 'package:quick_home/screen/auth/sign_up_screen.dart';
-
-import '../dashboard/main_home_screen.dart';
+import '../../util/toast_msg.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -13,14 +13,58 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  // TextEditingController phoneController = TextEditingController();
-  TextEditingController phoneController = TextEditingController(text: "9876543210");
+  TextEditingController phoneController = TextEditingController();
+  bool isLoading = false;
+
+  final utils = Utils(); // Utils instance
+
+  void _showToast(String msg) {
+    utils.showTost(msg);
+  }
+
+  Future<void> loginUser() async {
+    String phone = phoneController.text.trim();
+
+    if (phone.isEmpty) {
+      _showToast('Please enter mobile number');
+      return;
+    } else if (phone.length != 10) {
+      _showToast('Mobile number must be 10 digits');
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      final response = await ApiService.postRequest(
+        '/login',
+        {"phone": phone},
+      );
+
+      if (response.data['success'] == true) {
+        final otp = response.data['data']['otp'].toString();
+        final user = response.data['data']['user'];
+        _showToast('OTP sent: $otp');
+
+        print('user data: $user'); // For testing purposes)
 
 
-  void _showSnackBar(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), duration: Duration(seconds: 2)),
-    );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OtpVerify(
+
+            ),
+          ),
+        );
+      } else {
+        _showToast(response.data['message'] ?? 'Login failed');
+      }
+    } catch (e) {
+      _showToast(e.toString());
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -58,56 +102,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 30),
                 Center(
-                  child: Container(
+                  child: isLoading
+                      ? CircularProgressIndicator()
+                      : SizedBox(
                     width: 270,
                     height: 46,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF004271), // background
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: Color(0x8F004271),
-                        width: 0.25,
-                      ), // border
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x1A000000), // #0000001A
-                          offset: Offset(0, 4),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
                     child: ElevatedButton(
-                      onPressed: () {
-                        String phone = phoneController.text.trim();
-
-                        if (phone.isEmpty) {
-                          _showSnackBar('Please enter mobile number');
-                        } else if (phone.length != 10) {
-                          _showSnackBar('Mobile number must be 10 digits');
-                        } else {
-                          _showSnackBar('Login Successful!');
-
-                          // ✅ Navigate to Home Screen
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OtpVerify(),
-                            ),
-                          );
-                        }
-                      },
+                      onPressed: loginUser,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.transparent, // keep container color
-                        shadowColor:
-                            Colors.transparent, // remove default shadow
+                        backgroundColor: Color(0xFF004271),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                       child: Text(
                         "Send OTP",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style:
+                        TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                   ),
@@ -116,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(
                   child: RichText(
                     text: TextSpan(
-                      text: "Don’t have an account?",
+                      text: "Don’t have an account? ",
                       style: TextStyle(color: Colors.black54),
                       children: [
                         TextSpan(
@@ -125,17 +136,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color(0xff004c8c),
                             fontWeight: FontWeight.bold,
                           ),
-                          recognizer:
-                              TapGestureRecognizer()
-                                ..onTap = () {
-                                  // Navigate to LoginScreen
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SignupScreen(),
-                                    ),
-                                  );
-                                },
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignupScreen(),
+                                ),
+                              );
+                            },
                         ),
                       ],
                     ),
@@ -150,24 +159,22 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String hint,
-    IconData icon, {
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+      TextEditingController controller,
+      String hint,
+      IconData icon, {
+        TextInputType keyboardType = TextInputType.text,
+      }) {
     return Padding(
-      padding: const EdgeInsets.only(left: 52, right: 52, top: 0, bottom: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 52),
       child: Container(
-        // width: 270, // width match
-        height: 46, // height match
-        margin: EdgeInsets.only(top: 0),
+        height: 46,
         decoration: BoxDecoration(
-          color: Color(0xFFE8FAFF), // background
-          borderRadius: BorderRadius.circular(15), // border-radius
-          border: Border.all(color: Color(0x8F004271), width: 0.25), // border
+          color: Color(0xFFE8FAFF),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Color(0x8F004271), width: 0.25),
           boxShadow: [
             BoxShadow(
-              color: Color(0x1A000000), // shadow
+              color: Color(0x1A000000),
               offset: Offset(0, 4),
               blurRadius: 4,
             ),

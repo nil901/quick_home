@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,8 +50,6 @@ class AppPreference {
     await prefs.clear(); // हेच पुरेसं आहे
     print("✅ SharedPreferences cleared");
   }
-
-
 
   String get uName => getString(PreferencesKey.userId);
 
