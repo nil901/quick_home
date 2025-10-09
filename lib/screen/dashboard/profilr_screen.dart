@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
 import '../../util/custom_app_bar.dart';
+import '../auth/login_screen.dart';
 import '../user_info.dart';
 
 class MyProfileScreen extends StatefulWidget {
@@ -50,11 +51,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 ),
               ],
             ),
-            Divider(
-              color: const Color(0xFFD1D1D1), // #D1D1D1
-              thickness: 2,
-              height: 40,
-            ),
+            // Divider(
+            //   color: const Color(0xFFD1D1D1), // #D1D1D1
+            //   thickness: 2,
+            //   height: 40,
+            // ),
 
             const SizedBox(height: 16),
 
@@ -178,8 +179,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       // Log Out button
                                       ElevatedButton(
                                         onPressed: () {
-                                          Navigator.pop(context); // close dialog
-                                          Navigator.pushReplacementNamed(context, '/login');
+                                            Navigator.pop(context); // close dialog
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => LoginScreen()),
+                                              );;
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Color(0xFF003A64),
@@ -268,10 +272,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       ElevatedButton(
                                         onPressed: () {
                                           Navigator.pop(context); // close dialog
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("Account deleted successfully")),
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => LoginScreen()),
                                           );
-                                          Navigator.pushReplacementNamed(context, '/login');
                                           // TODO: add API call to delete account
                                         },
                                         style: ElevatedButton.styleFrom(

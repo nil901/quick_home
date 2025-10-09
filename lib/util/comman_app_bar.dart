@@ -21,7 +21,7 @@ class CommanAppBar extends StatelessWidget {
               children: [
                 const Icon(Icons.location_on, color: Colors.black, size: 30),
                 const SizedBox(width: 6),
-                Expanded( // ✅ Prevent overflow from long text
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

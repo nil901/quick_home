@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/screen/auth/login_screen.dart';
-import 'package:quick_home/screen/auth/sign_up_screen.dart';
 
 
 class SplashScreen extends StatefulWidget {

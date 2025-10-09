@@ -13,25 +13,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController phoneController = TextEditingController();
+  // TextEditingController phoneController = TextEditingController();
+  TextEditingController phoneController = TextEditingController(text: "9876543210");
 
-  // void login() {
-  //   String phone = phoneController.text.trim();
-  //
-  //   if (phone.isEmpty) {
-  //     _showSnackBar('Please enter mobile number');
-  //   } else if (phone.length != 10) {
-  //     _showSnackBar('Mobile number must be 10 digits');
-  //   } else {
-  //     _showSnackBar('Login Successful!');
-  //
-  //     // ✅ Navigate to Home Screen
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => ()),
-  //     );
-  //   }
-  // }
 
   void _showSnackBar(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(

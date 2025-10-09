@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/screen/dashboard/qwik_picks.dart';
 import 'package:quick_home/screen/dashboard/search_screen.dart';
 import '../../color/colors.dart';
 import '../../util/comman_app_bar.dart';
@@ -264,20 +265,42 @@ class _HomeState extends State<Home> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+            Colors.white, // Button ka color, chahe to change kar sakte ho
+            foregroundColor: Colors.black, // Text color default
+            padding:
+            EdgeInsets
+                .zero, // Kyunki humne apne padding already child me diya hai
+            elevation: 2, // Shadow ka effect
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => QwikPicksScreen()),
+            );
+
+            print("Button pressed");
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const Text("See all", style: TextStyle(color: Colors.blue)),
-            ],
+                const Text("See all", style: TextStyle(color: Colors.blue)),
+              ],
+            ),
           ),
         ),
         SizedBox(
