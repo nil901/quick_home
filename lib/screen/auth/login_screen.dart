@@ -1,46 +1,25 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/Logic/API/api_provider.dart';
 import 'package:quick_home/screen/auth/otp_verify_screen.dart';
 import 'package:quick_home/screen/auth/sign_up_screen.dart';
 
-import '../dashboard/main_home_screen.dart';
-
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  TextEditingController phoneController = TextEditingController();
-
-  // void login() {
-  //   String phone = phoneController.text.trim();
-  //
-  //   if (phone.isEmpty) {
-  //     _showSnackBar('Please enter mobile number');
-  //   } else if (phone.length != 10) {
-  //     _showSnackBar('Mobile number must be 10 digits');
-  //   } else {
-  //     _showSnackBar('Login Successful!');
-  //
-  //     // ✅ Navigate to Home Screen
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => ()),
-  //     );
-  //   }
-  // }
-
-  void _showSnackBar(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), duration: Duration(seconds: 2)),
-    );
-  }
+class LoginScreen extends ConsumerWidget {
+  const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final phoneController = TextEditingController();
+    final authState = ref.watch(authProvider);
+
+    void _showSnackBar(String msg) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: HexColor('#E4F9FF'),
       body: SafeArea(
@@ -50,108 +29,90 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 220),
-                Text(
+                const SizedBox(height: 220),
+                const Text(
                   "Log In",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   "Book, track, and manage trusted home services with ease",
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.black54, fontSize: 13),
                 ),
-                SizedBox(height: 40),
-                Form(
-                  key: _formKey,
-                  child: _buildTextField(
-                    phoneController,
-                    'Phone Number*',
-                    Icons.phone,
-                    keyboardType: TextInputType.number,
-                  ),
+                const SizedBox(height: 40),
+                _buildTextField(
+                  phoneController,
+                  'Phone Number*',
+                  Icons.phone,
+                  keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Center(
                   child: Container(
                     width: 270,
                     height: 46,
                     decoration: BoxDecoration(
-                      color: Color(0xFF004271), // background
+                      color: const Color(0xFF004271),
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: Color(0x8F004271),
-                        width: 0.25,
-                      ), // border
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x1A000000), // #0000001A
-                          offset: Offset(0, 4),
-                          blurRadius: 4,
-                        ),
+                      border: Border.all(color: const Color(0x8F004271), width: 0.25),
+                      boxShadow: const [
+                        BoxShadow(color: Color(0x1A000000), offset: Offset(0, 4), blurRadius: 4),
                       ],
                     ),
                     child: ElevatedButton(
-                      onPressed: () {
-                        String phone = phoneController.text.trim();
+                      onPressed: authState.isLoading
+                          ? null
+                          : () async {
+                              String phone = phoneController.text.trim();
+                              if (phone.isEmpty || phone.length != 10) {
+                                _showSnackBar('Enter valid 10-digit number');
+                                return;
+                              }
+                              await ref.read(authProvider.notifier).sendOtp(phone);
 
-                        if (phone.isEmpty) {
-                          _showSnackBar('Please enter mobile number');
-                        } else if (phone.length != 10) {
-                          _showSnackBar('Mobile number must be 10 digits');
-                        } else {
-                          _showSnackBar('Login Successful!');
-
-                          // ✅ Navigate to Home Screen
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OtpVerify(),
-                            ),
-                          );
-                        }
-                      },
+                              final updatedState = ref.read(authProvider);
+                              if (updatedState.otpSent) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => OtpVerifyScreen(phone: phone),
+                                  ),
+                                );
+                              } else if (updatedState.errorMessage != null) {
+                                _showSnackBar(updatedState.errorMessage!);
+                              }
+                            },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.transparent, // keep container color
-                        shadowColor:
-                            Colors.transparent, // remove default shadow
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
-                      child: Text(
-                        "Send OTP",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
+                      child: authState.isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text("Send OTP", style: TextStyle(fontSize: 16, color: Colors.white)),
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Center(
                   child: RichText(
                     text: TextSpan(
-                      text: "Don’t have an account?",
-                      style: TextStyle(color: Colors.black54),
+                      text: "Don’t have an account? ",
+                      style: const TextStyle(color: Colors.black54),
                       children: [
                         TextSpan(
                           text: "Sign up here",
-                          style: TextStyle(
-                            color: Color(0xff004c8c),
-                            fontWeight: FontWeight.bold,
-                          ),
-                          recognizer:
-                              TapGestureRecognizer()
-                                ..onTap = () {
-                                  // Navigate to LoginScreen
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SignupScreen(),
-                                    ),
-                                  );
-                                },
+                          style: const TextStyle(
+                              color: Color(0xff004c8c), fontWeight: FontWeight.bold),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SignupScreen()),
+                              );
+                            },
                         ),
                       ],
                     ),
@@ -172,21 +133,15 @@ class _LoginScreenState extends State<LoginScreen> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(left: 52, right: 52, top: 0, bottom: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 52),
       child: Container(
-        // width: 270, // width match
-        height: 46, // height match
-        margin: EdgeInsets.only(top: 0),
+        height: 46,
         decoration: BoxDecoration(
-          color: Color(0xFFE8FAFF), // background
-          borderRadius: BorderRadius.circular(15), // border-radius
-          border: Border.all(color: Color(0x8F004271), width: 0.25), // border
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x1A000000), // shadow
-              offset: Offset(0, 4),
-              blurRadius: 4,
-            ),
+          color: const Color(0xFFE8FAFF),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: const Color(0x8F004271), width: 0.25),
+          boxShadow: const [
+            BoxShadow(color: Color(0x1A000000), offset: Offset(0, 4), blurRadius: 4),
           ],
         ),
         child: TextFormField(
@@ -196,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
             prefixIcon: Icon(icon, color: Colors.black54),
             hintText: hint,
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           ),
         ),
       ),
