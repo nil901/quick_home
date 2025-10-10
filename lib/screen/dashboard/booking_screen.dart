@@ -6,7 +6,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/util/enum.dart';
 
-/// Dummy API Simulation Provider (तुझ्या API ने replace करायचं)
+/// Dummy API Simulation Provider (Replace this with your API)
 final bookingsProvider =
     FutureProvider.family<List<Map<String, String>>, BookingTab>((
       ref,
