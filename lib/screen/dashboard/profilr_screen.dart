@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/api_services/Providers.dart';
+import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
 import '../../util/custom_app_bar.dart';
 import '../auth/login_screen.dart';
@@ -222,19 +223,40 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                                           SizedBox(width: 15),
                                           // Log Out button
                                           ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(
-                                                context,
-                                              ); // close dialog
-                                              Navigator.pushReplacement(
+                                            onPressed: () async {
+                                              await AppPreference()
+                                                  .clearSharedPreferences();
+
+                                              // Reload preferences if needed
+                                              await AppPreference()
+                                                  .initialAppPreference();
+
+                                              if (!context.mounted) return;
+
+                                              // final container =
+                                              //     ProviderScope.containerOf(
+                                              //       context,
+                                              //       listen: false,
+                                              //     );
+                                              // container.invalidate(getHistoryPerson);
+                                              // container.invalidate(branchProvider);
+                                              // container.invalidate(locationProvider);
+                                              // container.invalidate(leadHistoryProvider);
+                                              // container.invalidate(myHistoryProvider);
+                                              // container.invalidate(getAllLedsProvider);
+                                              // container.invalidate(myHistoryProvider);
+
+                                              // container.invalidate(
+                                              //   dashboardCountProvider,
+                                              // );
+
+                                              Navigator.pushAndRemoveUntil(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder:
-                                                      (context) =>
-                                                          LoginScreen(),
+                                                  builder: (_) => LoginScreen(),
                                                 ),
+                                                (route) => false,
                                               );
-                                              ;
                                             },
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Color(

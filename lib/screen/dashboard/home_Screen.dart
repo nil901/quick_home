@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -17,13 +16,6 @@ import '../../util/size.dart';
 import '../wigets/bannar_slider.dart';
 import 'mid_screens/sub_categories_screen.dart';
 
-// final List<Map<String, String>> categories = [
-//   {'label': 'Core Home Services', 'icon': 'assets/images/cleaning.png'},
-//   {'label': 'Family Support', 'icon': 'assets/images/repair.png'},
-//   {'label': 'Personal Care', 'icon': 'assets/images/beuty.png'},
-//   {'label': 'Home Maintenance', 'icon': 'assets/images/homecleaning.png'},
-// ];
-
 class Home extends ConsumerStatefulWidget {
   const Home({super.key});
 
@@ -32,6 +24,8 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
+  List<bool> isSelectedList = [];
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +38,12 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     final category = ref.watch(categoryProvider);
+
+    // Initialize selection list once categories are loaded
+    if (isSelectedList.length != category.length) {
+      isSelectedList = List.generate(category.length, (index) => false);
+    }
+
     return Material(
       color: HexColor('#E4F9FF'),
       child: SafeArea(
@@ -108,7 +108,6 @@ class _HomeState extends ConsumerState<Home> {
                         ),
                       ),
 
-                      /// 📸 Banner (slider placeholder)
                       /// 📸 Banner Slider
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -121,7 +120,7 @@ class _HomeState extends ConsumerState<Home> {
                 ),
                 h10,
 
-                /// 🏷 Categories (Updated UI like ServiceListScreen)
+                /// 🏷 Categories
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
                   child: Align(
@@ -142,13 +141,15 @@ class _HomeState extends ConsumerState<Home> {
                   child: ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 0,
+                    ),
                     itemCount: category.length,
                     itemBuilder: (context, index) {
                       final categorys = category[index];
                       return InkWell(
                         onTap: () {
-                          print(categorys.id);
                           // Navigate to SubCategoriesScreen on tap
                           Navigator.push(
                             context,
@@ -161,17 +162,18 @@ class _HomeState extends ConsumerState<Home> {
                           );
                         },
                         child: Container(
-                          margin: EdgeInsets.only(right: 19),
-                          width: 100, // Adjust as per design
+                          margin: const EdgeInsets.only(right: 19),
+                          width: 100,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             border: Border.all(
-                              color: Color(0xFF004271),
+                              color:
+                                  isSelectedList[index]
+                                      ? const Color(0xFF004271)
+                                      : Colors.grey.shade300,
                               width: 2,
                             ),
-                            borderRadius: BorderRadius.circular(
-                              18,
-                            ), // Same curvature sab corners pe
+                            borderRadius: BorderRadius.circular(18),
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -191,7 +193,6 @@ class _HomeState extends ConsumerState<Home> {
                                             error,
                                             stackTrace,
                                           ) {
-                                            // Show placeholder if image fails to load
                                             return Image.asset(
                                               "assets/images/logo.png",
                                               fit: BoxFit.contain,
@@ -217,24 +218,45 @@ class _HomeState extends ConsumerState<Home> {
                                         ),
                               ),
 
-                              Container(
-                                width: double.infinity,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF004271),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(15),
-                                    bottomRight: Radius.circular(15),
+                              /// Bottom container (color change on tap)
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    // Sirf clicked category blue, baaki grey
+                                    for (
+                                      int i = 0;
+                                      i < isSelectedList.length;
+                                      i++
+                                    ) {
+                                      isSelectedList[i] = (i == index);
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        isSelectedList[index]
+                                            ? const Color(0xFF004271)
+                                            : Colors.grey[300],
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(15),
+                                      bottomRight: Radius.circular(15),
+                                    ),
                                   ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    categorys.name.toString(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                                  child: Center(
+                                    child: Text(
+                                      categorys.name.toString(),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color:
+                                            isSelectedList[index]
+                                                ? Colors.white
+                                                : Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -256,16 +278,15 @@ class _HomeState extends ConsumerState<Home> {
       ),
     );
   }
-
-  /// 📦 Section Builder
 }
 
+/// 📦 Section Widget
 class SectionWidget extends ConsumerWidget {
   final bool single;
   SectionWidget(this.single);
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final offers = ref.watch(offerProvider);
 
     if (offers.isEmpty) {
@@ -287,7 +308,6 @@ class SectionWidget extends ConsumerWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Section title + See all
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -322,8 +342,6 @@ class SectionWidget extends ConsumerWidget {
                       ],
                     ),
                   ),
-
-                  // Horizontal ListView
                   SizedBox(
                     height: single ? 200 : 200,
                     child: ListView.builder(
