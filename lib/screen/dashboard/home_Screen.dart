@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -5,19 +8,14 @@ import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/provide/home_prov.dart';
 import 'package:quick_home/screen/dashboard/qwik_picks.dart';
 import 'package:quick_home/screen/dashboard/search_screen.dart';
-<<<<<<< HEAD
-import 'package:quick_home/screen/dashboard/see_all_screen.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
-import 'package:quick_home/screen/wigets/bannar_slider.dart';
-import 'package:quick_home/util/comman_app_bar.dart';
-import 'package:quick_home/util/size.dart';
-=======
+import 'package:quick_home/screen/wigets/quick_pick.dart';
+import 'package:quick_home/screen/wigets/spacial_offers.dart';
 import '../../color/colors.dart';
 import '../../util/comman_app_bar.dart';
 import '../../util/size.dart';
 import '../wigets/bannar_slider.dart';
 import 'mid_screens/sub_categories_screen.dart';
->>>>>>> nilesh_branch
 
 // final List<Map<String, String>> categories = [
 //   {'label': 'Core Home Services', 'icon': 'assets/images/cleaning.png'},
@@ -39,6 +37,8 @@ class _HomeState extends ConsumerState<Home> {
     super.initState();
     HomeServices().bannarApi(ref);
     HomeServices().categoryApi(ref);
+    HomeServices().offerApi(ref);
+    HomeServices().profileApi(ref);
   }
 
   @override
@@ -57,7 +57,6 @@ class _HomeState extends ConsumerState<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 🔹 TOP SECTION with background color
                 Container(
                   width: double.infinity,
                   color: HexColor('#E4F9FF'),
@@ -149,12 +148,15 @@ class _HomeState extends ConsumerState<Home> {
                       final categorys = category[index];
                       return InkWell(
                         onTap: () {
+                          print(categorys.id);
                           // Navigate to SubCategoriesScreen on tap
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => SubCategoriesscreenDetails(),
+                                  (context) => SubCategoriesscreenDetails(
+                                    catId: categorys.id,
+                                  ),
                             ),
                           );
                         },
@@ -246,66 +248,7 @@ class _HomeState extends ConsumerState<Home> {
                 ),
 
                 /// Sections
-                SizedBox(height: 22),
-                _buildSection(
-                  "Everything We Offer",
-                  [
-                    'assets/images/offerCat.png',
-                    'assets/images/beuty1.png',
-                    'assets/images/offercat2.png',
-                    'assets/images/cartIm1.png',
-                    'assets/images/beuty1.png',
-                  ],
-                  labels: [
-                    "Maids",
-                    "Laundry at Home",
-                    "Cleaning",
-                    "Repair",
-                    "Laundry at Home",
-                  ],
-                ),
-
-                SizedBox(height: 2),
-                _buildSection(
-                  "Qwik Picks",
-                  [
-                    'assets/images/cartIm1.png',
-                    'assets/images/cartIm2.png',
-                    'assets/images/cartIm3.png',
-                    'assets/images/cartIm2.png',
-                    'assets/images/cartIm1.png',
-                  ],
-                  labels: ["Repair", "Spa", "Cleaning", "Beauty", "Repair"],
-                ),
-
-                SizedBox(height: 2),
-                _buildSection("Special Offers & Campaigns", [
-                  'assets/images/specialOffer.png',
-                  'assets/images/specialOffers2.png',
-                  'assets/images/specialOffers3.png',
-                  'assets/images/specialOffer.png',
-                  'assets/images/specialOffers2.png',
-                ], single: true),
-
-                SizedBox(height: 2),
-                _buildSection(
-                  "Beauty, Qwik & Easy",
-                  [
-                    'assets/images/beuty2.png',
-                    'assets/images/beuty2.png',
-                    'assets/images/beuty.png',
-                    'assets/images/beuty3.png',
-                    'assets/images/beuty2.png',
-                  ],
-                  labels: [
-                    "Salon at Home",
-                    "Mani-pedi",
-                    "waxing",
-                    "Facial",
-                    "Hair Treatment",
-                  ],
-                ),
-                SizedBox(height: 100),
+                SectionWidget(false),
               ],
             ),
           ),
@@ -315,100 +258,140 @@ class _HomeState extends ConsumerState<Home> {
   }
 
   /// 📦 Section Builder
+}
 
-  Widget _buildSection(
-    String title,
-    List<String> images, {
-    bool single = false,
-    List<String>? labels,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-<<<<<<< HEAD
-        // Heading + See All
-=======
->>>>>>> nilesh_branch
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                Colors.white, // Button ka color, chahe to change kar sakte ho
-            foregroundColor: Colors.black, // Text color default
-            padding:
-                EdgeInsets
-                    .zero, // Kyunki humne apne padding already child me diya hai
-            elevation: 2, // Shadow ka effect
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => QwikPicksScreen()),
-            );
+class SectionWidget extends ConsumerWidget {
+  final bool single;
+  SectionWidget(this.single);
 
-            print("Button pressed");
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Text("See all", style: TextStyle(color: Colors.blue)),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          height: single ? 158 : 160, // height thodi badhayi for text
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: images.length,
-            itemBuilder: (context, index) {
-              double width = single ? 301 : 120;
-              double height = single ? 150 : 120;
+  @override
+  Widget build(BuildContext context, ref) {
+    final offers = ref.watch(offerProvider);
 
-              return Container(
-                margin: const EdgeInsets.only(left: 12),
-                width: width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(
-                        images[index],
-                        width: width,
-                        height: height,
-                        fit: BoxFit.cover,
-                      ),
+    if (offers.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final homeModel = offers[0];
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children:
+            homeModel.sections.map((section) {
+              final items = section.items.items;
+
+              log("${section.title} has ${items.length} items");
+              log(jsonEncode(items.map((e) => e.toJson()).toList()));
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Section title + See all
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
                     ),
-                    const SizedBox(height: 6),
-                    // Text below image
-                    if (labels != null && labels.length > index)
-                      Text(
-                        labels[index],
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          section.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                  ],
-                ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        QwikPicksScreen(item: homeModel),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "See all",
+                            style: TextStyle(color: Colors.blue),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Horizontal ListView
+                  SizedBox(
+                    height: single ? 200 : 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        double width = single ? 301 : 120;
+                        double height = single ? 150 : 120;
+
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ServicesDetailsScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 12),
+                            width: width,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image.network(
+                                    item.imageUrl,
+                                    width: width,
+                                    height: height,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              width: width,
+                                              height: height,
+                                              color: Colors.grey[200],
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.broken_image,
+                                                  color: Colors.grey,
+                                                  size: 40,
+                                                ),
+                                              ),
+                                            ),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               );
-            },
-          ),
-        ),
-      ],
+            }).toList(),
+      ),
     );
   }
 }

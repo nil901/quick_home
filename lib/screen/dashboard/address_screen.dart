@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/color/colors.dart';
+import 'package:quick_home/screen/dashboard/payment_screen.dart';
+import 'package:quick_home/util/custom_app_bar.dart';
 
 class AddressScreen extends StatefulWidget {
   const AddressScreen({super.key});
@@ -9,280 +13,171 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  int saveAs = 0; // 0=Home, 1=Office, 2=Other
+  bool isHomeSelected = true;
+  // GoogleMapController? mapController;
 
-  Widget _buildTextField({
-    required String label,
-    bool isBig = false,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return TextField(
-      keyboardType: keyboardType,
-      maxLines: isBig ? 3 : 1,
-      decoration: InputDecoration(
-        labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.never,
-        labelStyle: TextStyle(
-          color: Colors.grey.shade700,
-          fontWeight: FontWeight.w400,
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: isBig ? 18 : 10,
-        ),
-      ),
-    );
-  }
+  // final LatLng _center = const LatLng(20.011, 73.790);
+
+  // void _onMapCreated(GoogleMapController controller) {
+  //   mapController = controller;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    // Colors
-    final kPrimary = HexColor("#004271");
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text("Your Cart"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Expanded(
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.88,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Tabs Row
-                Padding(
-                  padding: EdgeInsets.only(top: 12, left: 10, right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _tabTitle("CART", false),
-                      SizedBox(width: 15),
-                      Text('--------------'),
-                      SizedBox(width: 15),
-                      _tabTitle("ADDRESS", true, color: Color(0xff004271)),
-                      SizedBox(width: 15),
-                      Text('--------------'),
-                      SizedBox(width: 15),
-                      _tabTitle("PAYMENT", false),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 14),
-                // Live Location Row
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Icon(Icons.location_on_sharp, color: Colors.black),
-                      SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          "Live Location",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 36,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            "Change",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 4),
-                  child: Text(
-                    "Tidke colony, Durwankur Lawns, Nashik  ⌄",
-                    style: TextStyle(color: Colors.black54, fontSize: 13),
-                  ),
-                ),
-                SizedBox(height: 10),
-                // Add Detailed Address Title
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "Add Detailed Address",
-                    style: TextStyle(
-                      fontSize: 14.2,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Form grid of fields
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      // Top 2 fields in a row
-                      Row(
-                        children: [
-                          Expanded(child: _buildTextField(label: "Name*")),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: _buildTextField(
-                              label: "Phone No*",
-                              keyboardType: TextInputType.phone,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(child: _buildTextField(label: "Email ID*")),
-                          SizedBox(width: 12),
-                          Expanded(child: _buildTextField(label: "City*")),
-                        ],
-                      ),
-                      SizedBox(height: 12),
-                      // Big address textbox
-                      _buildTextField(
-                        label: "Address* (House No, Building, Street, area)",
-                        isBig: true,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 12),
+      backgroundColor: kwhite,
+      appBar: CustomAppBar(title: "Address"),
+      body: Column(
+        children: [
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 18),
-                  child: Row(
-                    children: [Text('Save as', style: TextStyle(fontSize: 19))],
-                  ),
-                ),
-                SizedBox(height: 12),
-                // Save as options
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
+      
+      
+          // // Map section (untouched)
+          // SizedBox(
+          //   height: 250,
+          //   child: GoogleMap(
+          //     onMapCreated: _onMapCreated,
+          //     initialCameraPosition: CameraPosition(
+          //       target: _center,
+          //       zoom: 17.0,
+          //     ),
+          //     myLocationEnabled: true,
+          //     myLocationButtonEnabled: false,
+          //     zoomControlsEnabled: false,
+          //     liteModeEnabled: false,
+          //     mapToolbarEnabled: false,
+          //   ),
+          // ),
+          SizedBox(
+            height: 250,
+           
+          ),
+      
+          // Address + Form (scrollable)
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Address + Change button in same row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _saveAsChip(
-                        "Home",
-                        saveAs == 0,
-                        () => setState(() => saveAs = 0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children:  [
+                            Text(
+                              "Mumbai Naka",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: kprimary
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              "Mumbai Naka, Madhav Nagar, Tidke Colony, Nashik, Maharashtra 422002, India",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      _saveAsChip(
-                        "Office",
-                        saveAs == 1,
-                        () => setState(() => saveAs = 1),
-                      ),
-                      _saveAsChip(
-                        "Other",
-                        saveAs == 2,
-                        () => setState(() => saveAs = 2),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text("Change"),
                       ),
                     ],
                   ),
-                ),
-                Spacer(),
-                // Add slot button
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8.0,
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // slot add kare
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xff004271),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
+      
+                  const Divider(),
+      
+                  // Form fields
+                  _buildTextField("House/Flat Number*"),
+                  const SizedBox(height: 12),
+                  _buildTextField("Landmark (Optional)"),
+                  const SizedBox(height: 12),
+                  _buildTextField("Name"),
+                  const SizedBox(height: 16),
+      
+                  // Save As buttons
+                  Row(
+                    children: [
+                      ChoiceChip(
+                        label: const Text("Home"),
+                        selected: isHomeSelected,
+                        onSelected: (val) {
+                          setState(() => isHomeSelected = val);
+                        },
                       ),
-                      child: Text(
-                        "Add slot",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.white,
-                          letterSpacing: 0.3,
-                        ),
+                      const SizedBox(width: 12),
+                      ChoiceChip(
+                        label: const Text("Other"),
+                        selected: !isHomeSelected,
+                        onSelected: (val) {
+                          setState(() => isHomeSelected = !val);
+                        },
                       ),
-                    ),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+      
+          // Bottom Button
+          SafeArea(
+            child: Center(
+              child: Container(
+                width: 350, // fixed width
+                height: 44, // fixed height
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _showSlotSelector(context);
+                  },
+      
+                  style: ElevatedButton.styleFrom(
+                    // backgroundColor: Colors.grey.shade300,
+                    // foregroundColor: Colors.black54,
+                    backgroundColor: HexColor("#3A3A3A"),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // radius 10px
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(fontSize: 14, color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _tabTitle(String text, bool isActive, {Color color = Colors.grey}) {
-    return Column(
-      children: [
-        Text(
-          text,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.3,
-            fontSize: 13.8,
-            color: color,
-            decoration: isActive ? TextDecoration.none : TextDecoration.none,
-            decorationThickness: 2,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _saveAsChip(String label, bool selected, VoidCallback onTap) {
-    final Color blueBorder = HexColor("#3993EF");
-    final Color greyBorder = Colors.grey.shade300;
-    final Color textColor = selected ? Color(0xff004271) : Colors.grey;
-    final Color bgColor = selected ? HexColor("#E6F0FA") : Colors.white;
-    final Color borderColor = selected ? Color(0xff004271) : greyBorder;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 9),
-        margin: const EdgeInsets.only(right: 10),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: borderColor, width: 1.7),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.w600,
-            fontSize: 15,
-          ),
+  // Reusable text field
+  Widget _buildTextField(String label) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
         ),
       ),
     );
   }
 }
-<<<<<<< HEAD
-=======
 
 void _showSlotSelector(BuildContext context) {
   showModalBottomSheet(
@@ -437,4 +332,3 @@ void _showSlotSelector(BuildContext context) {
     },
   );
 }
->>>>>>> nilesh_branch

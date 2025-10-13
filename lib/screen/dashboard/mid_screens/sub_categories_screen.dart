@@ -8,7 +8,8 @@ import 'package:quick_home/screen/dashboard/services_details_screen.dart';
 import 'package:quick_home/util/size.dart';
 
 class SubCategoriesscreenDetails extends ConsumerStatefulWidget {
-  const SubCategoriesscreenDetails({super.key});
+  const SubCategoriesscreenDetails( {super.key,this.catId,});
+  final catId;
 
   @override
   ConsumerState<SubCategoriesscreenDetails> createState() =>
@@ -20,7 +21,7 @@ class _SubCategoriesscreenDetailsState
   List<int> counters = [1, 0, 0];
   @override
   void initState() {
-    HomeServices().subCategoriesApi(ref);
+    HomeServices().subCategoriesApi(ref,widget.catId);
     // TODO: implement initState
     super.initState();
   }
@@ -187,27 +188,40 @@ class CleaningCardList extends ConsumerStatefulWidget {
 }
 
 class _CleaningCardListState extends ConsumerState<CleaningCardList> {
- 
-  // Track booked status and count for each item
   List<bool> bookedStatus = [];
   List<int> countStatus = [];
 
   @override
   void initState() {
     super.initState();
-   
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final subCategory = ref.read(productProvider);
+      if (subCategory.isNotEmpty) {
+        setState(() {
+          bookedStatus = List.filled(subCategory.length, false);
+          countStatus = List.filled(subCategory.length, 0);
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final subCategory = ref.watch(serviceModelProvider);
+    final subCategory = ref.watch(productProvider);
+
+    // Handle case when provider updates later (e.g. after API call)
+    if (bookedStatus.length != subCategory.length) {
+      bookedStatus = List.filled(subCategory.length, false);
+      countStatus = List.filled(subCategory.length, 0);
+    }
+
     return ListView.builder(
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: subCategory.length,
-      // padding: const EdgeInsets.all(12),
       itemBuilder: (context, index) {
-        var item = subCategory[index];
+        final item = subCategory[index];
+
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
@@ -220,22 +234,17 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Image + Book Now / Counter
+                // Left: Image + Book/Counter
                 Column(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.network(
-                        "${item.imageUrl}", 
+                        item.imageUrl ?? '',
+                        width: 70,
+                        height: 70,
                         fit: BoxFit.contain,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          );
-                        },
                         errorBuilder: (context, error, stackTrace) {
-                          // Show a placeholder if image fails to load
                           return Image.asset(
                             "assets/images/logo.png",
                             width: 70,
@@ -248,97 +257,73 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                     const SizedBox(height: 8),
                     bookedStatus[index]
                         ? Container(
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: kscoundPrimaryColor,
-                            // /  border: Border.all(color: Colors.grey, width: 1),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    if (countStatus[index] > 0)
-                                      countStatus[index]--;
-                                    if (countStatus[index] == 0)
-                                      bookedStatus[index] = false;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 1,
-                                  ),
-                                  child: Text(
-                                    "–",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: kprimary,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "${countStatus[index]}",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: kprimary,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    countStatus[index]++;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 1,
-                                  ),
-                                  child: Text(
-                                    "+",
-                                    style: TextStyle(
-                                      fontSize: 19,
-                                      color: kprimary,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                        : InkWell(
-                          onTap: () {
-                            setState(() {
-                              bookedStatus[index] = true;
-                              countStatus[index] = 1;
-                            });
-                          },
-                          child: Container(
-                            // height: 35,
-                            alignment: Alignment.center,
+                            height: 30,
                             decoration: BoxDecoration(
                               color: kscoundPrimaryColor,
-                              // border: Border.all(color: kgrey),
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 5,
-                                horizontal: 13,
+                            child: Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      if (countStatus[index] > 0) {
+                                        countStatus[index]--;
+                                      }
+                                      if (countStatus[index] == 0) {
+                                        bookedStatus[index] = false;
+                                      }
+                                    });
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8),
+                                    child: Text(
+                                      "–",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  "${countStatus[index]}",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      countStatus[index]++;
+                                    });
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8),
+                                    child: Text("+", style: TextStyle(fontSize: 20)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : InkWell(
+                            onTap: () {
+                              setState(() {
+                                bookedStatus[index] = true;
+                                countStatus[index] = 1;
+                              });
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: kscoundPrimaryColor,
+                                borderRadius: BorderRadius.circular(15),
                               ),
-                              child: Text(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 13),
+                              child: const Text(
                                 "Book Now",
-                                style: TextStyle(color: kprimary, fontSize: 15),
+                                style: TextStyle(fontSize: 15),
                               ),
                             ),
                           ),
-                        ),
                     const SizedBox(height: 8),
                     const Text(
                       "4 options",
@@ -351,92 +336,58 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                 ),
                 const SizedBox(width: 12),
 
+                // Right: Service details
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        item.name,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Text(item.name,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Text(
-                        item.description,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                      ),
+                      Text(item.description,
+                          style:
+                              TextStyle(fontSize: 12, color: Colors.grey[700])),
                       const SizedBox(height: 6),
                       Text(
                         "Starts at ₹${item.priceOnetime}",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: kblack,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Row(
+                      const Row(
                         children: [
-                          const Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          const Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          const Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          const Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          const Icon(
-                            Icons.star_half,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            "4654646",
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey[600],
-                            ),
-                          ),
+                          Icon(Icons.star,
+                              size: 16, color: Colors.orangeAccent),
+                          Icon(Icons.star,
+                              size: 16, color: Colors.orangeAccent),
+                          Icon(Icons.star,
+                              size: 16, color: Colors.orangeAccent),
+                          Icon(Icons.star,
+                              size: 16, color: Colors.orangeAccent),
+                          Icon(Icons.star_half,
+                              size: 16, color: Colors.orangeAccent),
                         ],
                       ),
                       const SizedBox(height: 15),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ServicesDetailsScreen(),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              "View Details",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: kprimary,
-                              ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ServicesDetailsScreen(),
                             ),
-                          ),
-                        ],
+                          );
+                        },
+                        child: const Text(
+                          "View Details",
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue),
+                        ),
                       ),
                     ],
                   ),
@@ -449,6 +400,7 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
     );
   }
 }
+
 
 void main() {
   runApp(MyApp());
@@ -681,59 +633,66 @@ class ServiceListScreen extends ConsumerWidget {
         itemCount: subCategory.length,
         itemBuilder: (context, index) {
           final service = subCategory[index];
-          return Container(
-            width: 130,
-            margin: const EdgeInsets.only(right: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.blue.shade900, width: 1.5),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.network(
-                      "${service.imageUrl}", // Use network URL here
-                      fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        // Show a placeholder if image fails to load
-                        return Image.asset(
-                          "assets/images/logo.png",
-                          fit: BoxFit.contain,
-                        );
-                      },
+          return InkWell(
+            onTap: (){
+             
+              print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwww${subCategory[index].subcategoryId}");
+              HomeServices().SubcategoreyProductApi(ref,service.subcategoryId);
+            },
+            child: Container(
+              width: 130,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue.shade900, width: 1.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.network(
+                        "${service.imageUrl}", // Use network URL here
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          // Show a placeholder if image fails to load
+                          return Image.asset(
+                            "assets/images/logo.png",
+                            fit: BoxFit.contain,
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade900,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12),
+            
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade900,
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(12),
+                        bottomRight: Radius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      "${service.name}",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  child: Text(
-                    "${service.name}",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/api_services/splash_service.dart';
 import 'package:quick_home/screen/auth/login_screen.dart';
 
 
@@ -23,10 +24,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
-        );
+      SplashServices().checkAuthentication(context);
       }
     });
   }

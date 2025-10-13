@@ -3,15 +3,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/screen/auth/splash_screen.dart';
 
-
-void main() {
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: HexColor('#E4F9FF'),
-    statusBarIconBrightness: Brightness.dark,
-    statusBarBrightness: Brightness.light,
-  ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppPreference().initialAppPreference();
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: HexColor('#E4F9FF'),
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
   runApp(const ProviderScope(child: MyApp()));
 }
 

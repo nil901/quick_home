@@ -29,6 +29,13 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
   Widget build(BuildContext context) {
     final addressList = ref.watch(addressProvider);
 
+    // Initial default selection
+    if (selectedIndex == null) {
+      final defaultIndex =
+          addressList.indexWhere((addr) => addr.isDefault == true);
+      if (defaultIndex != -1) selectedIndex = defaultIndex;
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(title: 'My Address'),
@@ -54,14 +61,12 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
                   ),
                   const SizedBox(height: 8),
 
-                  // 🔹 Use ListView.builder for all addresses
                   Expanded(
                     child: ListView.builder(
                       itemCount: addressList.length,
                       itemBuilder: (context, index) {
                         final addr = addressList[index];
-                        final isSelected = selectedIndex == index ||
-                            addr.isDefault == true; // Default selected
+                        final isSelected = selectedIndex == index;
 
                         return GestureDetector(
                           onTap: () {
@@ -69,7 +74,11 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
                               selectedIndex = index;
                             });
                           },
-                          child: _addressCard(addr, isSelected: isSelected),
+                          child: _addressCard(
+                            addr,
+                            isSelected: isSelected,
+                            showButtons: addr.isDefault || isSelected,
+                          ),
                         );
                       },
                     ),
@@ -124,11 +133,11 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
     );
   }
 
-
-  Widget _addressCard(Address addr, {bool isSelected = false}) {
+  Widget _addressCard(Address addr,
+      {bool isSelected = false, bool showButtons = false}) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      padding: EdgeInsets.all(13),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: Colors.grey.shade300),
@@ -137,57 +146,71 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Radio(
-            value: true,
-            groupValue: isSelected,
-            onChanged: (_) {},
-            activeColor: Color(0xFF004271),
-          ),
-          SizedBox(width: 5),
+        Radio(
+  value: true,
+  groupValue: isSelected,
+  onChanged: (_) {
+    setState(() {
+      // ref.read(addressProvider) वापरून list मिळवा
+      final addresses = ref.read(addressProvider);
+      selectedIndex = addresses.indexOf(addr);
+    });
+  },
+  activeColor: const Color(0xFF004271),
+),
+
+          const SizedBox(width: 5),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   addr.user!.name.toString(),
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style:
+                      const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  addr.contactDetails!,
-                  style: TextStyle(color: Colors.black87, fontSize: 13),
+                  addr.addressDetails!,
+                  style: const TextStyle(color: Colors.black87, fontSize: 13),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
                   'Mobile: ${addr.user?.phone}',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  style:
+                      const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                 ),
-                if (isSelected)
+                if (showButtons)
                   Row(
                     children: [
                       OutlinedButton(
-                        onPressed: () {},
-                        child: Text('REMOVE', style: TextStyle(fontSize: 12)),
+                        onPressed: () {
+                          // Remove logic
+                        },
+                        child:
+                            const Text('REMOVE', style: TextStyle(fontSize: 12)),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.grey),
-                          padding: EdgeInsets.symmetric(
+                          side: const BorderSide(color: Colors.grey),
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 15,
                             vertical: 0,
                           ),
-                          minimumSize: Size(10, 32),
+                          minimumSize: const Size(10, 32),
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       OutlinedButton(
-                        onPressed: () {},
-                        child: Text('EDIT', style: TextStyle(fontSize: 12)),
+                        onPressed: () {
+                          // Edit logic
+                        },
+                        child: const Text('EDIT', style: TextStyle(fontSize: 12)),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.grey),
-                          padding: EdgeInsets.symmetric(
+                          side: const BorderSide(color: Colors.grey),
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 15,
                             vertical: 0,
                           ),
-                          minimumSize: Size(10, 32),
+                          minimumSize: const Size(10, 32),
                         ),
                       ),
                     ],
@@ -199,7 +222,7 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
       ),
     );
   }
-
+}
   void _showSlotSelector(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: kscoundPrimaryColor,
@@ -438,7 +461,7 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
                     ),
                   ),
 
-                  // 🔹 CHANGED: Added horizontal scroll + reduced spacing
+                
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -495,7 +518,7 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
       },
     );
   }
-}
+
 
 
 class ExpertCard extends StatelessWidget {

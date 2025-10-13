@@ -1,19 +1,20 @@
+
 class ProfileModel {
-  int id;
-  String name;
-  String email;
-  String phone;
-  String? image;
-  String? emailVerifiedAt;
-  String createdAt;
-  String updatedAt;
-  String role;
-  int active;
-  int isDeleted;
-  String? deletedAt;
-  String averageRating;
-  String? address;
-  String? imageUrl;
+  final int id;
+  final String name;
+  final String email;
+  final String phone;
+  final String? image;
+  final String? emailVerifiedAt;
+  final String createdAt;
+  final String updatedAt;
+  final String role;
+  final int active;
+  final int isDeleted;
+  final String? deletedAt;
+  final String averageRating;
+  final String address;
+  final String? imageUrl;
 
   ProfileModel({
     required this.id,
@@ -29,7 +30,7 @@ class ProfileModel {
     required this.isDeleted,
     this.deletedAt,
     required this.averageRating,
-    this.address,
+    required this.address,
     this.imageUrl,
   });
 
@@ -48,28 +49,26 @@ class ProfileModel {
       isDeleted: json['is_deleted'] ?? 0,
       deletedAt: json['deleted_at'],
       averageRating: json['average_rating'] ?? '0.0',
-      address: json['address'],
+      address: json['address'] ?? '',
       imageUrl: json['image_url'],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'image': image,
-      'email_verified_at': emailVerifiedAt,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-      'role': role,
-      'active': active,
-      'is_deleted': isDeleted,
-      'deleted_at': deletedAt,
-      'average_rating': averageRating,
-      'address': address,
-      'image_url': imageUrl,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'image': image,
+        'email_verified_at': emailVerifiedAt,
+        'created_at': createdAt,
+        'updated_at': updatedAt,
+        'role': role,
+        'active': active,
+        'is_deleted': isDeleted,
+        'deleted_at': deletedAt,
+        'average_rating': averageRating,
+        'address': address,
+        'image_url': imageUrl,
+      };
 }

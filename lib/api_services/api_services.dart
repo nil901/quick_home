@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quick_home/api_services/urls.dart';
 
-
 class ApiException implements Exception {
   final int? statusCode;
   final String message;
@@ -17,15 +16,15 @@ class ApiException implements Exception {
 
 class ApiService {
   static final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-      validateStatus: (_) => true,
-      receiveDataWhenStatusError: true,
-    ),
-  )
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+        validateStatus: (_) => true,
+        receiveDataWhenStatusError: true,
+      ),
+    )
     ..interceptors.addAll([
       if (kDebugMode)
         LogInterceptor(
@@ -55,9 +54,7 @@ class ApiService {
         body['error'],
         body['detail'],
       ]) {
-        if (c is String && c
-            .trim()
-            .isNotEmpty) {
+        if (c is String && c.trim().isNotEmpty) {
           serverMsg = c.trim();
           break;
         }
@@ -68,9 +65,9 @@ class ApiService {
     }
 
     final int? bodyStatus =
-    (body is Map && body['status_code'] is num)
-        ? (body['status_code'] as num).toInt()
-        : null;
+        (body is Map && body['status_code'] is num)
+            ? (body['status_code'] as num).toInt()
+            : null;
 
     final isHttpOk = httpCode >= 200 && httpCode < 300;
     final isBodyOk = (body is Map && body['success'] == true);
@@ -84,7 +81,7 @@ class ApiService {
 
     final codeToReport = bodyStatus ?? httpCode;
     final friendly =
-    serverMsg.isNotEmpty ? serverMsg : _friendlyMessage(codeToReport);
+        serverMsg.isNotEmpty ? serverMsg : _friendlyMessage(codeToReport);
 
     throw ApiException(
       friendly.isNotEmpty ? friendly : 'Unexpected error ($codeToReport)',
@@ -159,7 +156,8 @@ class ApiService {
     return _mapDioError(e);
   }
 
-  static Future<Response> getRequest(String endpoint, {
+  static Future<Response> getRequest(
+    String endpoint, {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
@@ -175,10 +173,11 @@ class ApiService {
     }
   }
 
-  static Future<Response> postRequest(String endpoint,
-      Map<String, dynamic> data, {
-        Options? options,
-      }) async {
+  static Future<Response> postRequest(
+    String endpoint,
+    Map<String, dynamic> data, {
+    Options? options,
+  }) async {
     try {
       final res = await _dio.post(endpoint, data: data, options: options);
       return _handleResponse(res);
@@ -187,10 +186,11 @@ class ApiService {
     }
   }
 
-  static Future<Response> putRequest(String endpoint,
-      Map<String, dynamic> data, {
-        Options? options,
-      }) async {
+  static Future<Response> putRequest(
+    String endpoint,
+    Map<String, dynamic> data, {
+    Options? options,
+  }) async {
     try {
       final res = await _dio.put(endpoint, data: data, options: options);
       return _handleResponse(res);
@@ -199,7 +199,8 @@ class ApiService {
     }
   }
 
-  static Future<Response> deleteRequest(String endpoint, {
+  static Future<Response> deleteRequest(
+    String endpoint, {
     Map<String, dynamic>? data,
     Options? options,
   }) async {
