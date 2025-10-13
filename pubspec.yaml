@@ -27,9 +27,11 @@ dependencies:
   smooth_page_indicator: ^1.2.1
   carousel_slider: ^5.1.1
   google_places_flutter: ^2.1.1
-  http: ^1.2.04
-  riverpod: 
-
+  image_picker: ^1.0.0
+  permission_handler: ^11.0.0
+  dio: ^5.9.0
+  shared_preferences: ^2.5.3
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:

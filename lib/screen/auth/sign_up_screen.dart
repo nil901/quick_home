@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/screen/auth/login_screen.dart';
-
 import '../dashboard/main_home_screen.dart';
 
 class SignupScreen extends StatefulWidget {

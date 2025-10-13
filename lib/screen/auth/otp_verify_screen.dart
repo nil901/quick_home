@@ -1,65 +1,175 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quick_home/Logic/API/api_provider.dart';
-import '../dashboard/main_home_screen.dart';
+import 'package:quick_home/screen/auth/login_screen.dart';
+import 'package:quick_home/screen/dashboard/main_home_screen.dart';
 
-class OtpVerifyScreen extends ConsumerWidget {
-  final String phone;
-  const OtpVerifyScreen({super.key, required this.phone});
+class OtpVerify extends StatefulWidget {
+  final String phoneNumber;
+  final String apiOtp;
+
+  const OtpVerify({super.key, required this.phoneNumber, required this.apiOtp});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final otpController = TextEditingController();
-    final authState = ref.watch(authProvider);
+  State<OtpVerify> createState() => _OtpVerifyState();
+}
 
-    void _showSnackBar(String msg) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(msg)),
-      );
+class _OtpVerifyState extends State<OtpVerify> {
+  List<TextEditingController> otpControllers = List.generate(
+    4,
+    (_) => TextEditingController(),
+  );
+
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    for (var controller in otpControllers) {
+      controller.dispose();
     }
+    super.dispose();
+  }
 
-    return Scaffold(
-      appBar: AppBar(title: const Text("Verify OTP")),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const SizedBox(height: 50),
-            Text("OTP sent to $phone", style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 30),
-            TextField(
-              controller: otpController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Enter OTP"),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: authState.isLoading
-                  ? null
-                  : () async {
-                      String otp = otpController.text.trim();
-                      if (otp.isEmpty) {
-                        _showSnackBar("Please enter OTP");
-                        return;
-                      }
+  // Verify OTP
+  void _checkOtpCompleted() {
+    if (otpControllers.every((controller) => controller.text.isNotEmpty)) {
+      String enteredOtp = otpControllers.map((c) => c.text).join();
+      print("🔹 Entered OTP: $enteredOtp");
+      print("🔹 API OTP: ${widget.apiOtp}");
+      if (enteredOtp == widget.apiOtp) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('OTP Verified Successfully 🎉'),
+            backgroundColor: Colors.green,
+          ),
+        );
 
-                      await ref.read(authProvider.notifier).verifyOtp(phone, otp);
-                      final updatedState = ref.read(authProvider);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainHomeScreen()),
+        );
+      } else {
+        print(
+          "Entered OTP is wrong: ${otpControllers.map((c) => c.text).join()}",
+        );
+        print("Expected OTP: ${widget.apiOtp}");
 
-                      if (updatedState.isVerified) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => MainHomeScreen()),
-                        );
-                      } else if (updatedState.errorMessage != null) {
-                        _showSnackBar(updatedState.errorMessage!);
-                      }
-                    },
-              child: authState.isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text("Verify OTP"),
-            ),
-          ],
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Invalid OTP ❌'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFE6F6FA),
+        body: SafeArea(
+          child: Center(
+            child:
+                isLoading
+                    ? const CircularProgressIndicator(color: Colors.blue)
+                    : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Verify your phone number',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Enter your OTP code here',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(4, (index) {
+                            return Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              width: 55,
+                              height: 55,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE8FAFF),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0x8F004271),
+                                  width: 0.25,
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x1A000000),
+                                    offset: Offset(0, 4),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: TextField(
+                                  controller: otpControllers[index],
+                                  textAlign: TextAlign.center,
+                                  maxLength: 1,
+                                  style: const TextStyle(fontSize: 24),
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    counterText: '',
+                                    border: InputBorder.none,
+                                  ),
+                                  onChanged: (value) {
+                                    if (value.length == 1 && index < 3) {
+                                      FocusScope.of(context).nextFocus();
+                                    } else if (value.isEmpty && index > 0) {
+                                      FocusScope.of(context).previousFocus();
+                                    }
+                                    _checkOtpCompleted();
+                                  },
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 35),
+                        Text(
+                          "Didn't receive any code?",
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: () {
+                            // 🔹 Resend OTP
+                            // Here you can call API again if needed
+                          },
+                          child: Text(
+                            "RESEND NEW CODE",
+                            style: TextStyle(
+                              color: Colors.blue[700],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+          ),
         ),
       ),
     );

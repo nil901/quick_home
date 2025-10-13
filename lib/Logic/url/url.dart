@@ -1,0 +1,9 @@
+const String baseUrl = "http://admin.qwikhom.ae/api/";
+const String signupUrl = "signup";
+const String addresses = "addresses";
+const String services = "services";
+const String banners = "banners";
+const String categories = "categories";
+const String offers = "home";
+const String servicesOfSubcategory = "servicesOfSubcategory";
+const String getProfile = "get-profile";
