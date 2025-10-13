@@ -15,14 +15,13 @@ class CommanAppBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // ✅ Wrap left part in Expanded
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Icon(Icons.location_on, color: Colors.black, size: 30),
                 const SizedBox(width: 6),
-                Expanded( // ✅ Prevent overflow from long text
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -59,8 +58,6 @@ class CommanAppBar extends StatelessWidget {
               ],
             ),
           ),
-
-          // Notification + Cart
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -83,9 +80,7 @@ class CommanAppBar extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => CartScreen(),
-                    ),
+                    MaterialPageRoute(builder: (context) => CartScreen()),
                   );
                 },
                 icon: const Icon(

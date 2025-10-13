@@ -15,8 +15,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController phoneController = TextEditingController();
+  // TextEditingController phoneController = TextEditingController();
+  TextEditingController phoneController = TextEditingController(text: "9876543210");
 
+<<<<<<< HEAD
   /// 🔹 Login API Call
   Future<void> login() async {
     String phone = phoneController.text.trim();
@@ -72,6 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
       _showSnackBar('Error: $e');
     }
   }
+=======
+>>>>>>> nilesh_branch
 
   void _showSnackBar(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(

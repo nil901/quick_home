@@ -13,6 +13,10 @@ class OtpVerify extends StatefulWidget {
 }
 
 class _OtpVerifyState extends State<OtpVerify> {
+<<<<<<< HEAD
+=======
+
+>>>>>>> nilesh_branch
   List<TextEditingController> otpControllers = List.generate(
     4,
     (_) => TextEditingController(),
@@ -30,6 +34,7 @@ class _OtpVerifyState extends State<OtpVerify> {
 
   // Verify OTP
   void _checkOtpCompleted() {
+<<<<<<< HEAD
     if (otpControllers.every((controller) => controller.text.isNotEmpty)) {
       String enteredOtp = otpControllers.map((c) => c.text).join();
       print("🔹 Entered OTP: $enteredOtp");
@@ -59,6 +64,21 @@ class _OtpVerifyState extends State<OtpVerify> {
           ),
         );
       }
+=======
+
+    if (otpControllers.every((controller) => controller.text.isNotEmpty)) {
+
+      String otp = otpControllers.map((c) => c.text).join();
+      print("Entered OTP: $otp");
+
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainHomeScreen(),
+        ),
+      );
+>>>>>>> nilesh_branch
     }
   }
 

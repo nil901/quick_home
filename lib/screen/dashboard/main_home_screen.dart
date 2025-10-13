@@ -9,6 +9,11 @@ import 'package:quick_home/screen/dashboard/subscription_screen.dart';
 import 'package:quick_home/screen/dashboard/wishlist.dart';
 import 'package:quick_home/util/enum.dart';
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> nilesh_branch
 class MainHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

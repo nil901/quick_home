@@ -31,7 +31,10 @@ dependencies:
   permission_handler: ^11.0.0
   dio: ^5.9.0
   shared_preferences: ^2.5.3
+<<<<<<< HEAD
   fluttertoast: ^8.2.12
+=======
+>>>>>>> nilesh_branch
 
 dev_dependencies:
   flutter_test:

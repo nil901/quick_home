@@ -281,3 +281,160 @@ class _AddressScreenState extends State<AddressScreen> {
     );
   }
 }
+<<<<<<< HEAD
+=======
+
+void _showSlotSelector(BuildContext context) {
+  showModalBottomSheet(
+    backgroundColor: Colors.white,
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    isScrollControlled: true,
+    builder: (context) {
+      int selectedTime = 1; // index for selected time button
+      int selectedDate = 0; // index for selected date button
+
+      List<String> times = [
+        "03:30 PM",
+        "04:30 PM",
+        "05:00 PM",
+        "05:30 PM",
+        "06:30 PM",
+        "07:00 PM",
+      ];
+
+      List<String> dates = ["Fri, 26", "Sat, 27", "Sun, 28"];
+
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Your Qwik Slot - Choose Date & Time",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: Color(0xFF353535),
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+
+                // Date selection with custom layout
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(dates.length, (i) {
+                    bool isSelected = selectedDate == i;
+                    return GestureDetector(
+                      onTap: () => setState(() => selectedDate = i),
+                      child: Container(
+                        width: 108, // fixed width
+                        height: 46, // fixed height
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: isSelected ? Color(0xFFD9D9D9) : Colors.white,
+                          borderRadius: BorderRadius.circular(
+                            5,
+                          ), // border-radius 5
+                          border: Border.all(
+                            color: HexColor("#B4B4B4"), // #353535
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          dates[i],
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+
+                SizedBox(height: 24),
+
+                // Time selection (can also customize similar to dates)
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: List.generate(times.length, (i) {
+                    bool isSelected = selectedTime == i;
+                    return ChoiceChip(
+                      label: Text(times[i]),
+                      selected: isSelected,
+                      onSelected: (val) {
+                        setState(() => selectedTime = i);
+                      },
+                      selectedColor: Color(0xFFD9D9D9),
+                      backgroundColor: Colors.white,
+                      labelStyle: TextStyle(color: Colors.black),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        side: BorderSide(color: Color(0xFF353535), width: 1),
+                      ),
+                    );
+                  }),
+                ),
+
+                SizedBox(height: 32),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PaymentScreen(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      "Proceed to Payment",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+>>>>>>> nilesh_branch
