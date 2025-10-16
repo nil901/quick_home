@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:quick_home/screen/wigets/faq1.dart';
 import 'package:quick_home/screen/wigets/faq_comman.dart';
 
 class ServicesDetailsScreen extends StatefulWidget {
@@ -182,150 +183,26 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
             const SizedBox(height: 18),
             Divider(thickness: 0.9, color: Colors.grey[300]),
 
-            Column(
-              children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15),
-                      child: Text(
-                        'Select Requireements',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 19,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text('How many cleaners do you need ?'),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 50,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.blue[200],
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(child: Text('1')),
-                        ),
-                        SizedBox(width: 10),
-                        Container(
-                          height: 50,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.blue[200],
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(child: Text('2')),
-                        ),
-                        SizedBox(width: 10),
-                        Container(
-                          height: 50,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.blue[200],
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(child: Text('3')),
-                        ),
-                        SizedBox(width: 10),
-                        Container(
-                          height: 50,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.blue[200],
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(child: Text('4')),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-
-            Divider(thickness: 0.9, color: Colors.grey[300]),
-
             Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Text('How many hours should they stay ?'),
-            ),
-            SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 50,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.blue[200],
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Center(child: Text('1.5hrs \nAED 80/service')),
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      height: 50,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.blue[200],
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Center(child: Text('2hrs \nAED 100/service')),
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      height: 50,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.blue[200],
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Center(child: Text('2.5hrs \nAED 160/service')),
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      height: 50,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.blue[200],
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Center(child: Text('3hrs \nAED 200/service')),
-                    ),
-                  ],
-                ),
+              padding: const EdgeInsets.only(left: 16),
+              child: Row(
+                children: [
+                  Text(
+                    'Select Requirements',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  ),
+                ],
               ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: CleaningRequirementPage(),
             ),
 
             SizedBox(height: 15),
+
+            Divider(),
 
             // Our Process Title
             Padding(
@@ -494,9 +371,9 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
             ),
             const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: const FaqComman(),
-            ), // tumhare FAQ ki class ka naam yahan daalo
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: FaqComman(),
+            ),
             const SizedBox(height: 20),
 
             Center(

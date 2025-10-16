@@ -48,14 +48,11 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => isLoading = true);
 
     try {
-      final response = await ApiService.postRequest(
-        signupUrl,
-        {
-          "name": name,
-          "email": email,
-          "phone": mobile,
-        },
-      );
+      final response = await ApiService.postRequest(signupUrl, {
+        "name": name,
+        "email": email,
+        "phone": mobile,
+      });
       if (response.data["success"] == true) {
         final message = response.data["message"] ?? "Signup successful!";
         final otp = response.data["otp"] ?? "";
@@ -67,7 +64,8 @@ class _SignupScreenState extends State<SignupScreen> {
           MaterialPageRoute(builder: (context) => MainHomeScreen()),
         );
       } else {
-        final message = response.data["message"] ?? "the user is already exist!";
+        final message =
+            response.data["message"] ?? "the user is already exist!";
         utils.showTost(message);
       }
     } catch (e) {
@@ -76,8 +74,7 @@ class _SignupScreenState extends State<SignupScreen> {
       } else {
         utils.showTost("Signup failed: $e");
       }
-    }
-    finally {
+    } finally {
       setState(() => isLoading = false);
     }
   }
@@ -146,7 +143,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF004271),
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: const Color(0x8F004271), width: 0.25),
+                      border: Border.all(
+                        color: const Color(0x8F004271),
+                        width: 0.25,
+                      ),
                       boxShadow: const [
                         BoxShadow(
                           color: Color(0x1A000000),
@@ -164,19 +164,23 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      child: isLoading
-                          ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                          : const Text(
-                        "Create Account",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
+                      child:
+                          isLoading
+                              ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : const Text(
+                                "Create Account",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
                     ),
                   ),
                 ),
@@ -190,15 +194,19 @@ class _SignupScreenState extends State<SignupScreen> {
                         TextSpan(
                           text: "Log In",
                           style: const TextStyle(
-                              color: Color(0xff004c8c), fontWeight: FontWeight.bold),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginScreen()),
-                              );
-                            },
+                            color: Color(0xff004c8c),
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer:
+                              TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginScreen(),
+                                    ),
+                                  );
+                                },
                         ),
                       ],
                     ),
@@ -213,13 +221,13 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget _buildTextField(
-      TextEditingController controller,
-      String hint,
-      String imagePath, {
-        TextInputType keyboardType = TextInputType.text,
-        double imageWidth = 24,
-        double imageHeight = 24,
-      }) {
+    TextEditingController controller,
+    String hint,
+    String imagePath, {
+    TextInputType keyboardType = TextInputType.text,
+    double imageWidth = 24,
+    double imageHeight = 24,
+  }) {
     return SizedBox(
       width: 270,
       height: 46,
@@ -238,7 +246,10 @@ class _SignupScreenState extends State<SignupScreen> {
           hintText: hint,
           filled: true,
           fillColor: const Color(0xFFE8FAFF),
-          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 12,
+            horizontal: 16,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: const BorderSide(color: Color(0x8F004271), width: 0.25),

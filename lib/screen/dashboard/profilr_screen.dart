@@ -21,7 +21,8 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     final profile = ref.watch(profileProvider);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: "My Profile"),
+      appBar: CustomAppBar(title: "My Profile", 
+      showBackButton: false),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

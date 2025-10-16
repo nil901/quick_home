@@ -79,6 +79,7 @@ class ApiService {
       return res;
     }
 
+
     final codeToReport = bodyStatus ?? httpCode;
     final friendly =
         serverMsg.isNotEmpty ? serverMsg : _friendlyMessage(codeToReport);
