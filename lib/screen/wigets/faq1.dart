@@ -229,7 +229,7 @@ class _CleaningRequirementPageState extends State<CleaningRequirementPage> {
       subtitle: selectedHours ?? "Select hours",
       children: [
         DropdownButtonFormField<String>(
-          value: selectedHours,
+          initialValue: selectedHours,
           dropdownColor: Colors.white,
           decoration: InputDecoration(
             hint: const Text("Select hours"),

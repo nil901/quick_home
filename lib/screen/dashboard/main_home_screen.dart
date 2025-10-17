@@ -11,6 +11,8 @@ import 'package:quick_home/util/enum.dart';
 
 
 class MainHomeScreen extends ConsumerWidget {
+  const MainHomeScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTab = ref.watch(bottomTabProvider);

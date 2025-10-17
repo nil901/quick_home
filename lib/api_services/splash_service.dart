@@ -17,7 +17,7 @@ class SplashServices {
    
     await Future.delayed(const Duration(seconds: 2));
 
-    if (token == null || token == 0) {
+    if (token == 0) {
      
       Navigator.pushReplacement(
         context,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/screen/wigets/faq_comman.dart';
 import 'package:quick_home/util/size.dart';

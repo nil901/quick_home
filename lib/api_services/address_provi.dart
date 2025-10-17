@@ -34,18 +34,10 @@ class AddressService {
   Future<void> logoutUser(BuildContext context, WidgetRef ref) async {
     try {
       // 👇 Get current logged-in user ID
-      final userId = await AppPreference().getInt(PreferencesKey.userId);
+      final userId = AppPreference().getInt(PreferencesKey.userId);
 
       // 👇 Print user ID to console
       print("🔹 Logging out user with ID: $userId");
-
-
-      if (userId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("User not found!")),
-        );
-        return;
-      }
 
       // 👇 API Call
       final response = await ApiService.postRequest(
@@ -97,16 +89,9 @@ class AddressService {
   Future<void> deleteAccount(BuildContext context, WidgetRef ref) async {
     try {
 
-      final userId = await AppPreference().getInt(PreferencesKey.userId);
+      final userId = AppPreference().getInt(PreferencesKey.userId);
 
       print("🧑‍💻 Deleting account for user ID: $userId");
-
-      if (userId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("User not found!")),
-        );
-        return;
-      }
 
       // 👇 API Call
       final response = await ApiService.postRequest(

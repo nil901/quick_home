@@ -4,7 +4,6 @@ import 'package:quick_home/model/address_model.dart';
 import 'package:quick_home/model/bannar_model.dart';
 import 'package:quick_home/model/category_model.dart';
 import 'package:quick_home/model/home_model.dart';
-import 'package:quick_home/model/offers_model.dart';
 import 'package:quick_home/model/profile_model.dart';
 import 'package:quick_home/model/serviceModel.dart';
 

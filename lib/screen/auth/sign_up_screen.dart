@@ -8,6 +8,8 @@ import '../dashboard/main_home_screen.dart';
 import '../../util/toast_msg.dart';
 
 class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
+
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }

@@ -5,6 +5,8 @@ import 'package:quick_home/screen/auth/login_screen.dart';
 
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }

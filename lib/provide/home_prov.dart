@@ -17,7 +17,7 @@ class HomeServices {
     // print("helowwckxckdnkdfn");
     try {
       final response = await ApiService.getRequest(banners);
-      print(response?.data['data']);
+      print(response.data['data']);
       if (response.data['success'] == true) {
         final data = response.data['data']['banners'] as List;
 
@@ -36,7 +36,7 @@ class HomeServices {
     // print("helowwckxckdnkdfn");
     try {
       final response = await ApiService.getRequest(categories);
-      print(response?.data['data']);
+      print(response.data['data']);
       if (response.data['success'] == true) {
         final data = response.data['data']['categories'] as List;
 
@@ -58,7 +58,7 @@ class HomeServices {
         "category": catId,
         // "subcategory"
       });
-      print(response?.data['data']);
+      print(response.data['data']);
       if (response.data['success'] == true) {
         final data = response.data['data']['services'] as List;
 
@@ -98,7 +98,7 @@ class HomeServices {
         "subcategory": subCategory,
         // "subcategory"
       });
-      print("ssssssssssssssssssssssssssssssssss${subCategory}");
+      print("ssssssssssssssssssssssssssssssssss$subCategory");
       //  print(response?.data['data']);
       if (response.data['success'] == true) {
         final data = response.data['data']['services'] as List;

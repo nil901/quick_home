@@ -6,7 +6,7 @@ import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
 import 'package:quick_home/util/custom_app_bar.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  const CartScreen({super.key});
 
   @override
   State<CartScreen> createState() => _CartScreenState();

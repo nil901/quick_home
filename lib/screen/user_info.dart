@@ -32,9 +32,9 @@ class UserInfoScreen extends ConsumerStatefulWidget {
 
 class _UserInfoScreenState extends ConsumerState<UserInfoScreen> {
   XFile? _imageFile;
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   bool isLoading = false;
 

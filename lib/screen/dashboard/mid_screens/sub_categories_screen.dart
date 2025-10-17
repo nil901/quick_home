@@ -407,6 +407,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -446,7 +448,7 @@ class ComboSection extends StatelessWidget {
   final int rating;
   final String reviews;
 
-  ComboSection({
+  const ComboSection({super.key, 
     required this.title,
     required this.offerCode,
     required this.service,
@@ -683,7 +685,7 @@ class ServiceListScreen extends ConsumerWidget {
                       ),
                     ),
                     child: Text(
-                      "${service.name}",
+                      service.name,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:quick_home/color/colors.dart';
 
 class NotificationScreen extends StatefulWidget {
+  const NotificationScreen({super.key});
+
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
 }

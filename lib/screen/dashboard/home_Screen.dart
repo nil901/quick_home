@@ -209,8 +209,9 @@ class _HomeState extends ConsumerState<Home> {
                                             child,
                                             loadingProgress,
                                           ) {
-                                            if (loadingProgress == null)
+                                            if (loadingProgress == null) {
                                               return child;
+                                            }
                                             return const Center(
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 2,
@@ -277,7 +278,7 @@ class _HomeState extends ConsumerState<Home> {
 /// 📦 Section Widget
 class SectionWidget extends ConsumerWidget {
   final bool single;
-  SectionWidget(this.single);
+  const SectionWidget(this.single, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

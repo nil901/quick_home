@@ -11,11 +11,11 @@ class cartServices {
   Future<void> addressApi(WidgetRef ref) async {
     // print("helowwckxckdnkdfn");
     try {
-      final userId = await AppPreference().getInt(PreferencesKey.userId);
+      final userId = AppPreference().getInt(PreferencesKey.userId);
       final response = await ApiService.postRequest(addresses, {
         "user": userId,
       });
-      print(response?.data['data']);
+      print(response.data['data']);
       if (response.data['success'] == true) {
         final data = response.data['data'] as List;
 

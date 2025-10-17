@@ -479,7 +479,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
       ref
           .read(editAddressProvider.notifier)
           .editAddress(
-            addressId: widget.address!.id!,
+            addressId: widget.address!.id,
             contactDetails: contactDetails,
             addressDetails: addressDetails,
             type: type,

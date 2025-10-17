@@ -17,7 +17,7 @@ class Review {
 }
 
 class ReviewsWidget extends StatefulWidget {
-  const ReviewsWidget({Key? key}) : super(key: key);
+  const ReviewsWidget({super.key});
 
   @override
   State<ReviewsWidget> createState() => _ReviewsWidgetState();
@@ -166,7 +166,7 @@ class _ReviewsWidgetState extends State<ReviewsWidget> {
                 ],
               ),
             );
-          }).toList(),
+          }),
           // "Add a review" Button
           Center(
             child: GestureDetector(

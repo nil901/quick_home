@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 class Utils{
   void showTost(msg){
     Fluttertoast.showToast(
-        msg: "${msg}",
+        msg: "$msg",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.TOP,
         timeInSecForIosWeb: 1,

@@ -215,6 +215,8 @@ class _OtpVerifyState extends State<OtpVerify> {
 
 // ✅ Example next screen
 class SuccessScreen extends StatelessWidget {
+  const SuccessScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

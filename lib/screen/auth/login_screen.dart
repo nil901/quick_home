@@ -9,6 +9,8 @@ import 'package:quick_home/screen/auth/sign_up_screen.dart';
 import '../../util/toast_msg.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
