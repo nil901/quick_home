@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 
 class CleaningRequirementPage extends StatefulWidget {
   const CleaningRequirementPage({super.key});
@@ -10,13 +9,16 @@ class CleaningRequirementPage extends StatefulWidget {
 }
 
 class _CleaningRequirementPageState extends State<CleaningRequirementPage> {
-  int selectedPlan = 0;
-  int selectedCleaner = 2;
-  String selectedHours = "1.5 hr/service";
-  String selectedMaterial = "With material";
+  int? _currentlyExpandedIndex;
+
+  // State for selections
+  int? selectedPlanIndex;
+  int? selectedCleanerCount;
+  String? selectedHours;
+  String? selectedMaterial;
 
   final List<String> hoursOptions = [
-    "1 hr/service ",
+    "1 hr/service",
     "1.5 hr/service",
     "2 hr/service",
     "3 hr/service",
@@ -24,27 +26,31 @@ class _CleaningRequirementPageState extends State<CleaningRequirementPage> {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
-    final h = MediaQuery.of(context).size.height;
-
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(w * 0.04),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildPlanCard(w, h),
-          SizedBox(height: h * 0.02),
-          _buildCleanerSelection(w, h),
-          SizedBox(height: h * 0.02),
-          _buildHoursSelection(w, h),
-          SizedBox(height: h * 0.02),
-          _buildMaterialSelection(w, h),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildPlanExpansionTile(0),
+        const Divider(height: 24, thickness: 1),
+        _buildCleanerExpansionTile(1),
+        const Divider(height: 24, thickness: 1),
+        // _buildHoursExpansionTile(2),
+        // const Divider(height: 24, thickness: 1),
+        _buildMaterialExpansionTile(3),
+      ],
     );
   }
 
-  Widget _buildPlanCard(double w, double h) {
+  void _handleExpansion(int index, bool isExpanded) {
+    setState(() {
+      if (isExpanded) {
+        _currentlyExpandedIndex = index;
+      } else if (_currentlyExpandedIndex == index) {
+        _currentlyExpandedIndex = null;
+      }
+    });
+  }
+
+  Widget _buildPlanExpansionTile(int index) {
     List<Map<String, String>> plans = [
       {
         "description": "For quick, one-time service",
@@ -61,351 +67,309 @@ class _CleaningRequirementPageState extends State<CleaningRequirementPage> {
         "price": "AED 5,999",
         "title": "Monthly Plan",
       },
+      {
+        "description": "For Yearly cleaning service",
+        "price": "AED 9,999",
+        "title": "Annual Plan",
+      },
     ];
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(w * 0.04),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Pick a Plan That Fits You",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: h * 0.015),
-          SizedBox(
-            height: h * 0.21, // Thoda vertical space jyada
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(plans.length, (index) {
-                  bool isSelected = selectedPlan == index;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedPlan = index;
-                      });
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(left: index == 0 ? 0 : w * 0.04),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Top section: description + price
-                          Container(
-                            width: 190,
-                            padding: EdgeInsets.symmetric(
-                              vertical: h * 0.024,
-                              horizontal: w * 0.04,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(14),
-                                topRight: Radius.circular(14),
-                              ),
-                              border: Border.all(
-                                color:
-                                    isSelected
-                                        ? Colors.blue
-                                        : Colors.grey.shade300,
-                                width: 1.3,
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  plans[index]["description"]!,
-                                  style: TextStyle(
-                                    fontSize: 13.5,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                SizedBox(height: h * 0.01),
-                                Text(
-                                  plans[index]["price"]!,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
+    return _buildExpansionTile(
+      index: index,
+      title: "Pick a Plan That Fits You",
+      subtitle:
+          selectedPlanIndex != null ? plans[selectedPlanIndex!]['title'] : null,
+      children: [
+        SizedBox(
+          height: 160,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: plans.length,
+            itemBuilder: (context, planIndex) {
+              bool isSelected = selectedPlanIndex == planIndex;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedPlanIndex = planIndex;
+                    _currentlyExpandedIndex = index + 1; // Open next
+                  });
+                },
+                child: Container(
+                  width: 190,
+                  margin: EdgeInsets.only(right: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: isSelected ? Colors.blue : Colors.grey.shade300,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
                             ),
                           ),
-                          // Bottom title section, highlighted
-                          Container(
-                            width: 190,
-                            padding: EdgeInsets.symmetric(
-                              vertical: h * 0.016,
-                              horizontal: w * 0.02,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  isSelected
-                                      ? Color(0xFFE6F2FF)
-                                      : Colors.grey.shade300,
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(14),
-                                bottomRight: Radius.circular(14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                plans[planIndex]["description"]!,
+                                style: const TextStyle(
+                                  fontSize: 13.5,
+                                  color: Colors.black87,
+                                ),
                               ),
-                              border: Border(
-                                bottom: BorderSide(
-                                  color:
-                                      isSelected
-                                          ? Colors.blue
-                                          : Colors.grey.shade300,
-                                  width: 1.2,
-                                ),
-                                left: BorderSide(
-                                  color:
-                                      isSelected
-                                          ? Colors.blue
-                                          : Colors.grey.shade300,
-                                  width: 1.2,
-                                ),
-                                right: BorderSide(
-                                  color:
-                                      isSelected
-                                          ? Colors.blue
-                                          : Colors.grey.shade300,
-                                  width: 1.2,
-                                ),
-                                top: BorderSide.none,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                plans[index]["title"]!,
-                                style: TextStyle(
-                                  fontSize: 14,
+                              const SizedBox(height: 8),
+                              Text(
+                                plans[planIndex]["price"]!,
+                                style: const TextStyle(
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color:
-                                      isSelected ? Colors.blue : Colors.black,
+                                  color: Colors.black,
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color:
+                              isSelected
+                                  ? const Color(0xFFE6F2FF)
+                                  : Colors.grey.shade300,
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(12),
+                            bottomRight: Radius.circular(12),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            plans[planIndex]["title"]!,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? Colors.blue : Colors.black,
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                }),
-              ),
-            ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildCleanerSelection(double w, double h) {
-    return Container(
-      padding: EdgeInsets.all(w * 0.04),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "How many cleaners do you need?",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: h * 0.015),
-          SizedBox(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(5, (index) {
-                  int cleanerCount = index + 1;
-                  bool isSelected = selectedCleaner == cleanerCount;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() => selectedCleaner = cleanerCount);
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: w * 0.03),
-                      padding: EdgeInsets.symmetric(
-                        vertical: h * 0.012,
-                        horizontal: w * 0.05,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue.shade50 : Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color:
-                              isSelected ? Colors.blue : Colors.grey.shade300,
-                        ),
-                      ),
-                      child: Text(
-                        "$cleanerCount",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.blue : Colors.black87,
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHoursSelection(double w, double h) {
-    bool hasSelected = selectedHours != null && selectedHours.isNotEmpty;
-
-    return Container(
-      padding: EdgeInsets.all(w * 0.04),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "How many hours should they stay?",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: h * 0.015),
-          Container(
-            decoration: BoxDecoration(
-              color: hasSelected ? Color(0xFFE6F2FF) : Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: DropdownButtonFormField<String>(
-              value: selectedHours,
-              dropdownColor: Colors.white,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                filled: true,
-                fillColor: hasSelected ? Color(0xFFE6F2FF) : Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade400,
-                    width: 1.2,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: hasSelected ? Colors.blue : Colors.grey.shade400,
-                    width: 1,
-                  ),
-                ),
-              ),
-              items:
-                  hoursOptions.map((option) {
-                    return DropdownMenuItem<String>(
-                      value: option,
-                      child: Text(
-                        option,
-                        style: TextStyle(
-                          color:
-                              selectedHours == option
-                                  ? Colors.blue
-                                  : Colors.black,
-                          fontWeight:
-                              selectedHours == option
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-              onChanged: (val) {
-                setState(() => selectedHours = val!);
+  Widget _buildCleanerExpansionTile(int index) {
+    return _buildExpansionTile(
+      index: index,
+      title: "How many cleaners do you need?",
+      subtitle:
+          selectedCleanerCount != null
+              ? "$selectedCleanerCount Cleaner(s)"
+              : null,
+      children: [
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: List.generate(5, (i) {
+            int cleanerCount = i + 1;
+            bool isSelected = selectedCleanerCount == cleanerCount;
+            return ChoiceChip(
+              label: Text("$cleanerCount"),
+              selected: isSelected,
+              backgroundColor: Colors.grey.shade200,
+              onSelected: (selected) {
+                if (selected) {
+                  setState(() {
+                    selectedCleanerCount = cleanerCount;
+                    _currentlyExpandedIndex = index + 1; // Open next
+                  });
+                }
               },
-            ),
-          ),
-          SizedBox(height: h * 0.01),
-          Text(
-            "AED 80/service",
-            style: TextStyle(fontSize: 13, color: Colors.black54),
-          ),
-        ],
-      ),
+              selectedColor: Colors.blue.shade50,
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isSelected ? Colors.blue : Colors.black87,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(
+                  color: isSelected ? Colors.blue : Colors.grey.shade300,
+                ),
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 
-  Widget _buildMaterialSelection(double w, double h) {
-    return Container(
-      padding: EdgeInsets.all(w * 0.04),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Do you need cleaning materials?",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+  Widget _buildHoursExpansionTile(int index) {
+    bool hasSelected = selectedHours != null;
+
+    return _buildExpansionTile(
+      index: index,
+      title: "How many hours should they stay?",
+      subtitle: selectedHours ?? "Select hours",
+      children: [
+        DropdownButtonFormField<String>(
+          value: selectedHours,
+          dropdownColor: Colors.white,
+          decoration: InputDecoration(
+            hint: const Text("Select hours"),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
+            filled: true,
+            fillColor: hasSelected ? const Color(0xFFE6F2FF) : Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey.shade400, width: 1.2),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: hasSelected ? Colors.blue : Colors.grey.shade400,
+                width: 1.5,
+              ),
+            ),
           ),
-          SizedBox(height: h * 0.015),
-          Row(
-            children:
-                ["With material", "Without material"].map((opt) {
-                  bool isSelected = selectedMaterial == opt;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() => selectedMaterial = opt);
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: w * 0.03),
-                      padding: EdgeInsets.symmetric(
-                        vertical: h * 0.012,
-                        horizontal: w * 0.05,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue.shade50 : Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color:
-                              isSelected ? Colors.blue : Colors.grey.shade300,
-                        ),
-                      ),
-                      child: Text(
-                        opt,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.blue : Colors.black87,
-                        ),
-                      ),
+          items:
+              hoursOptions.map((option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(
+                    option,
+                    style: TextStyle(
+                      color:
+                          selectedHours == option ? Colors.blue : Colors.black,
+                      fontWeight:
+                          selectedHours == option
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                     ),
-                  );
-                }).toList(),
-          ),
-          SizedBox(height: h * 0.01),
-          Text(
-            "+AED 10/service",
-            style: TextStyle(fontSize: 13, color: Colors.black54),
-          ),
-        ],
+                  ),
+                );
+              }).toList(),
+          onChanged: (val) {
+            if (val != null) {
+              setState(() {
+                selectedHours = val;
+                _currentlyExpandedIndex = index + 1; // Open next
+              });
+            }
+          },
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          "AED 80/service",
+          style: TextStyle(fontSize: 13, color: Colors.black54),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMaterialExpansionTile(int index) {
+    return _buildExpansionTile(
+      index: index,
+      title: "Do you need cleaning materials?",
+      subtitle: selectedMaterial,
+      children: [
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children:
+              ["With material", "Without material"].map((opt) {
+                bool isSelected = selectedMaterial == opt;
+                return ChoiceChip(
+                  label: Text(opt),
+                  selected: isSelected,
+                  backgroundColor: Colors.grey.shade200,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        selectedMaterial = opt;
+                        _currentlyExpandedIndex =
+                            null; // Last one, so collapse all
+                      });
+                    }
+                  },
+                  selectedColor: Colors.blue.shade50,
+                  labelStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? Colors.blue : Colors.black87,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(
+                      color: isSelected ? Colors.blue : Colors.grey.shade300,
+                    ),
+                  ),
+                );
+              }).toList(),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          "+AED 10/service",
+          style: TextStyle(fontSize: 13, color: Colors.black54),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExpansionTile({
+    required int index,
+    required String title,
+    String? subtitle,
+    required List<Widget> children,
+  }) {
+    bool isExpanded = _currentlyExpandedIndex == index;
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+      child: ExpansionTile(
+        key: ValueKey(index),
+        initiallyExpanded: isExpanded,
+        shape: const Border(),
+        collapsedShape: const Border(),
+        onExpansionChanged: (expanded) => _handleExpansion(index, expanded),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+        subtitle:
+            subtitle != null && !isExpanded
+                ? Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+                : null,
+        childrenPadding: const EdgeInsets.all(16).copyWith(top: 0),
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
       ),
     );
   }

@@ -150,7 +150,13 @@ class _HomeState extends ConsumerState<Home> {
                       final categorys = category[index];
                       return InkWell(
                         onTap: () {
-                          // Navigate to SubCategoriesScreen on tap
+                          // Set selection state
+                          setState(() {
+                            for (int i = 0; i < isSelectedList.length; i++) {
+                              isSelectedList[i] = (i == index);
+                            }
+                          });
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -181,7 +187,7 @@ class _HomeState extends ConsumerState<Home> {
                               Container(
                                 width: 86,
                                 height: 82,
-                                margin: const EdgeInsets.only(top: 2, left: 1),
+                                margin: const EdgeInsets.only(top: 4),
                                 child:
                                     categorys.imageUrl != null &&
                                             categorys.imageUrl!.isNotEmpty
@@ -217,45 +223,33 @@ class _HomeState extends ConsumerState<Home> {
                                           fit: BoxFit.contain,
                                         ),
                               ),
-
-                              /// Bottom container (color change on tap)
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    // Sirf clicked category blue, baaki grey
-                                    for (
-                                      int i = 0;
-                                      i < isSelectedList.length;
-                                      i++
-                                    ) {
-                                      isSelectedList[i] = (i == index);
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        isSelectedList[index]
-                                            ? const Color(0xFF004271)
-                                            : Colors.grey[300],
-                                    borderRadius: const BorderRadius.only(
-                                      bottomLeft: Radius.circular(15),
-                                      bottomRight: Radius.circular(15),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isSelectedList[index]
+                                              ? const Color(0xFF004271)
+                                              : Colors.grey[300],
+                                      borderRadius: const BorderRadius.vertical(
+                                        bottom: Radius.circular(15),
+                                      ),
                                     ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      categorys.name.toString(),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color:
-                                            isSelectedList[index]
-                                                ? Colors.white
-                                                : Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
+                                    child: Center(
+                                      child: Text(
+                                        categorys.name.toString(),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color:
+                                              isSelectedList[index]
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ),
                                   ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:quick_home/screen/wigets/faq1.dart';
 import 'package:quick_home/screen/wigets/faq_comman.dart';
+import 'package:quick_home/screen/wigets/reviews.dart';
 
 class ServicesDetailsScreen extends StatefulWidget {
   const ServicesDetailsScreen({super.key});
@@ -376,23 +377,60 @@ class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
             ),
             const SizedBox(height: 20),
 
-            Center(
-              child: ElevatedButton(
-                onPressed: () {},
-                child: const Text('Done'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff004271),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 190,
-                    vertical: 14,
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ReviewsWidget(),
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Service Cost Button
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xff004271), // Dark blue
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Service Cost  ",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        "AED 4,99",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
+                // Done Button
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFE6F2FF), // Light blue
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 55, vertical: 14),
+                  child: Text(
+                    "Done",
+                    style: TextStyle(
+                      color: Color(0xff004271),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
