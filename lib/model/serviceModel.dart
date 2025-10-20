@@ -21,8 +21,9 @@ class ServicesModel {
   bool beautyAndEasy;
   String? image;
   String? imageUrl;
-  String createdAt;
-  String updatedAt;
+  double? averageRating;
+  int? totalReviews;
+  bool? isWishlisted;
 
   ServicesModel({
     required this.id,
@@ -47,8 +48,9 @@ class ServicesModel {
     required this.beautyAndEasy,
     this.image,
     this.imageUrl,
-    required this.createdAt,
-    required this.updatedAt,
+    this.averageRating,
+    this.totalReviews,
+    this.isWishlisted,
   });
 
   factory ServicesModel.fromJson(Map<String, dynamic> json) => ServicesModel(
@@ -74,8 +76,9 @@ class ServicesModel {
     beautyAndEasy: json['beauty_and_easy'] ?? false,
     image: json['image'],
     imageUrl: json['image_url'],
-    createdAt: json['created_at'] ?? '',
-    updatedAt: json['updated_at'] ?? '',
+    averageRating: json['average_rating']?.toDouble(),
+    totalReviews: json['total_reviews'],
+    isWishlisted: json['is_wishlisted'] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
@@ -84,7 +87,6 @@ class ServicesModel {
     'subcategory_id': subcategoryId,
     'name': name,
     'description': description,
-    // 'whats_include': whatsInclude,
     'short_description': shortDescription,
     'price_onetime': priceOnetime,
     'price_onetime_desc': priceOnetimeDesc,
@@ -101,7 +103,8 @@ class ServicesModel {
     'beauty_and_easy': beautyAndEasy,
     'image': image,
     'image_url': imageUrl,
-    'created_at': createdAt,
-    'updated_at': updatedAt,
+    "is_wishlisted": isWishlisted,
+    "average_rating": averageRating,
+    "total_reviews": totalReviews,
   };
 }

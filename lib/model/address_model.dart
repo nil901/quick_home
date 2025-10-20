@@ -1,11 +1,11 @@
+
 class Address {
   final int id;
   final int userId;
   final String? contactDetails;
   final String? addressDetails;
   final String? type;
-  final bool
-  isDefault; // Made non-final to allow modification in some cases, but copyWith is safer.
+  final bool isDefault;
   final String? createdAt;
   final String? updatedAt;
   final User? user;
@@ -37,35 +37,16 @@ class Address {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'user_id': userId,
-    'contact_details': contactDetails,
-    'address_details': addressDetails,
-    'type': type,
-    'is_default': isDefault,
-    'created_at': createdAt,
-    'updated_at': updatedAt,
-    'user': user?.toJson(),
-  };
-
-  Address copyWith({
-    int? id,
-    int? userId,
-    String? contactDetails,
-    String? addressDetails,
-    String? type,
-    bool? isDefault,
-  }) {
-    return Address(
-      id: id ?? this.id,
-      userId: userId ?? this.userId,
-      contactDetails: contactDetails ?? this.contactDetails,
-      addressDetails: addressDetails ?? this.addressDetails,
-      type: type ?? this.type,
-      isDefault: isDefault ?? this.isDefault,
-      user: user, // Assuming user object doesn't change when setting default
-    );
-  }
+        'id': id,
+        'user_id': userId,
+        'contact_details': contactDetails,
+        'address_details': addressDetails,
+        'type': type,
+        'is_default': isDefault,
+        'created_at': createdAt,
+        'updated_at': updatedAt,
+        'user': user?.toJson(),
+      };
 }
 
 class User {
@@ -109,15 +90,15 @@ class User {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'email': email,
-    'phone': phone,
-    'image': image,
-    'role': role,
-    'active': active,
-    'is_deleted': isDeleted,
-    'address': address,
-    'image_url': imageUrl,
-  };
+        'id': id,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'image': image,
+        'role': role,
+        'active': active,
+        'is_deleted': isDeleted,
+        'address': address,
+        'image_url': imageUrl,
+      };
 }

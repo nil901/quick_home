@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/prefs/app_preference.dart';
+import 'package:quick_home/provide/address_provider.dart';
 import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
+import 'package:quick_home/util/size.dart';
 import '../../util/custom_app_bar.dart';
 import '../auth/login_screen.dart';
 import '../user_info.dart';
@@ -21,8 +23,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     final profile = ref.watch(profileProvider);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: "My Profile", 
-      showBackButton: false),
+      appBar: CustomAppBar(title: "My Profile"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -72,12 +73,32 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      "${profile?.name}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          "${profile?.name}",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        w10,
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserInfoScreen(),
+                              ),
+                            );
+                          },
+                          child: Icon(
+                            Icons.edit,
+                            size: 23,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -95,19 +116,19 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
             Expanded(
               child: ListView(
                 children: [
-                  _buildOptionTile(
-                    imagePath: "assets/images/user.png",
-                    label: "User Info",
-                    onTap: () {
-                      // Navigate to User Info Screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserInfoScreen(),
-                        ),
-                      );
-                    },
-                  ),
+                  // _buildOptionTile(
+                  //   imagePath: "assets/images/user.png",
+                  //   label: "User Info",
+                  //   onTap: () {
+                  //     // Navigate to User Info Screen
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => UserInfoScreen(),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                   _buildOptionTile(
                     imagePath: "assets/images/address.png",
                     label: "My Address",
@@ -142,267 +163,188 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                     onTap: () {},
                   ),
 
-                  _buildOptionTile(
-                    imagePath:
-                        "assets/images/logout.png", // add your logout icon in assets
+                _buildOptionTile(
+                    imagePath: "assets/images/logout.png", // add your logout icon in assets
                     label: "Logout",
                     onTap: () {
                       showDialog(
                         context: context,
                         barrierDismissible: false, // user must press a button
-                        builder:
-                            (context) => Center(
-                              child: Container(
-                                width: 290,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 18,
-                                  vertical: 22,
+                        builder: (context) => Center(
+                          child: Container(
+                            width: 290,
+                            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 22),
+                            decoration: BoxDecoration(
+                              color: HexColor('#E4F9FF'),
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.5), // #00000080
+                                  offset: const Offset(0, 4),
+                                  blurRadius: 4,
+                                  spreadRadius: 0,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: HexColor('#E4F9FF'),
-                                  borderRadius: BorderRadius.circular(15),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(
-                                        0.5,
-                                      ), // #00000080
-                                      offset: const Offset(0, 4),
-                                      blurRadius: 4,
-                                      spreadRadius: 0,
+                              ],
+                              border: Border.all(color: HexColor('#004271'), width: 1),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Log Out?",
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
                                     ),
-                                  ],
-                                  border: Border.all(
-                                    color: HexColor('#004271'),
-                                    width: 1,
                                   ),
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  SizedBox(height: 7),
+                                  Text(
+                                    "Are you sure you want to log out of your account?",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  SizedBox(height: 22),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(
-                                        "Log Out?",
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      SizedBox(height: 7),
-                                      Text(
-                                        "Are you sure you want to log out of your account?",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                      SizedBox(height: 22),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          // Cancel button
-                                          ElevatedButton(
-                                            onPressed:
-                                                () => Navigator.pop(context),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.grey.shade300,
-                                              foregroundColor: Colors.black87,
-                                              elevation: 0,
-                                              minimumSize: Size(95, 38),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            child: Text("Cancel"),
+                                      // Cancel button
+                                      ElevatedButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey.shade300,
+                                          foregroundColor: Colors.black87,
+                                          elevation: 0,
+                                          minimumSize: Size(95, 38),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
                                           ),
-                                          SizedBox(width: 15),
-                                          // Log Out button
-                                          ElevatedButton(
-                                            onPressed: () async {
-                                              await AppPreference()
-                                                  .clearSharedPreferences();
-
-                                              // Reload preferences if needed
-                                              await AppPreference()
-                                                  .initialAppPreference();
-
-                                              if (!context.mounted) return;
-
-                                              // final container =
-                                              //     ProviderScope.containerOf(
-                                              //       context,
-                                              //       listen: false,
-                                              //     );
-                                              // container.invalidate(getHistoryPerson);
-                                              // container.invalidate(branchProvider);
-                                              // container.invalidate(locationProvider);
-                                              // container.invalidate(leadHistoryProvider);
-                                              // container.invalidate(myHistoryProvider);
-                                              // container.invalidate(getAllLedsProvider);
-                                              // container.invalidate(myHistoryProvider);
-
-                                              // container.invalidate(
-                                              //   dashboardCountProvider,
-                                              // );
-
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (_) => LoginScreen(),
-                                                ),
-                                                (route) => false,
-                                              );
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Color(
-                                                0xFF003A64,
-                                              ),
-                                              foregroundColor: Colors.white,
-                                              elevation: 0,
-                                              minimumSize: Size(95, 38),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            child: Text("Log Out"),
+                                        ),
+                                        child: Text("Cancel"),
+                                      ),
+                                      SizedBox(width: 15),
+                                      // Log Out button
+                                      ElevatedButton(
+                                        onPressed: () async{
+                                          await AddressService().logoutUser(context, ref );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFF003A64),
+                                          foregroundColor: Colors.white,
+                                          elevation: 0,
+                                          minimumSize: Size(95, 38),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
                                           ),
-                                        ],
+                                        ),
+                                        child: Text("Log Out"),
                                       ),
                                     ],
                                   ),
-                                ),
+                                ],
                               ),
                             ),
+                          ),
+                        ),
                       );
                     },
                   ),
                   _buildOptionTile(
-                    imagePath:
-                        "assets/images/delete.png", // add delete icon in assets
+                    imagePath: "assets/images/delete.png",
                     label: "Delete Account",
                     onTap: () {
                       showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder:
-                            (context) => Center(
-                              child: Container(
-                                width: 290,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 15,
-                                  vertical: 22,
+                        builder: (context) => Center(
+                          child: Container(
+                            width: 290,
+                            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 22),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFE4F9FF),
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(color: HexColor('#C10000'), width: 1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  offset: Offset(0, 5),
+                                  blurRadius: 12,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFE4F9FF),
-                                  borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(
-                                    color: HexColor('#C10000'),
-                                    width: 1,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black26,
-                                      offset: Offset(0, 5),
-                                      blurRadius: 12,
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Delete Account",
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: HexColor('#353535'), // Red color
                                     ),
-                                  ],
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  ),
+                                  SizedBox(height: 7),
+                                  Text(
+                                    "Are you sure you want to delete your account? This action cannot be undone.",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  SizedBox(height: 22),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(
-                                        "Delete Account",
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
-                                          color: HexColor(
-                                            '#353535',
-                                          ), // Red color
-                                        ),
-                                      ),
-                                      SizedBox(height: 7),
-                                      Text(
-                                        "Are you sure you want to delete your account? This action cannot be undone.",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                      SizedBox(height: 22),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          ElevatedButton(
-                                            onPressed:
-                                                () => Navigator.pop(context),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: HexColor(
-                                                '#C7C7C7',
-                                              ),
-                                              foregroundColor: HexColor(
-                                                '#1C1C1C',
-                                              ),
-                                              elevation: 0,
-                                              minimumSize: Size(95, 38),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            child: Text("Cancel"),
+                                      ElevatedButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: HexColor('#C7C7C7'),
+                                          foregroundColor: HexColor('#1C1C1C'),
+                                          elevation: 0,
+                                          minimumSize: Size(95, 38),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
                                           ),
-                                          SizedBox(width: 15),
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(
-                                                context,
-                                              ); // close dialog
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (context) =>
-                                                          LoginScreen(),
-                                                ),
-                                              );
-                                              // TODO: add API call to delete account
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: HexColor(
-                                                '#C10000',
-                                              ), // Red color
-                                              foregroundColor: Colors.white,
-                                              elevation: 0,
-                                              minimumSize: Size(95, 38),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            child: Text("Yes"),
+                                        ),
+                                        child: Text("Cancel"),
+                                      ),
+                                      SizedBox(width: 15),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context); // close dialog
+                                          await AddressService().deleteAccount(context, ref);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: HexColor('#C10000'), // Red color
+                                          foregroundColor: Colors.white,
+                                          elevation: 0,
+                                          minimumSize: Size(95, 38),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
                                           ),
-                                        ],
+                                        ),
+                                        child: Text("Yes"),
                                       ),
                                     ],
                                   ),
-                                ),
+                                ],
                               ),
                             ),
+                          ),
+                        ),
                       );
                     },
                   ),
+h100
+              
                 ],
               ),
             ),

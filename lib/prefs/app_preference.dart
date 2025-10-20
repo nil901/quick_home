@@ -46,7 +46,7 @@ class AppPreference {
 
   Future<void> clearSharedPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // हेच पुरेसं आहे
+    await prefs.clear();
     print("✅ SharedPreferences cleared");
   }
 

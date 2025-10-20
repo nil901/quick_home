@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/screen/dashboard/mid_screens/sub_categories_screen.dart';
+import 'package:quick_home/util/size.dart';
 
 class CategoriesScreenDetails extends StatefulWidget {
   const CategoriesScreenDetails({super.key});

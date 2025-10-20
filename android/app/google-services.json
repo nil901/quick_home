@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "91517816937",
+    "project_id": "qwikhom-79b47",
+    "storage_bucket": "qwikhom-79b47.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91517816937:android:c197c461d031a6578692f8",
+        "android_client_info": {
+          "package_name": "com.example.quick_home"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbi9B_uys5hOiqxFKDOCDZn1lJp3PFbQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91517816937:android:afb073ee0d59acea8692f8",
+        "android_client_info": {
+          "package_name": "com.quick_home"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbi9B_uys5hOiqxFKDOCDZn1lJp3PFbQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

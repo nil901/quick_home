@@ -110,7 +110,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 borderRadius: BorderRadius.circular(12),
                 child: GooglePlaceAutoCompleteTextField(
                   textEditingController: _searchController,
-                  googleAPIKey: "YOUR_API_KEY", // replace with your own
+                  googleAPIKey: "AIzaSyBGv9znbx4hAdCp_6YK0-HO2XVKI4ZXALk", 
                   inputDecoration: const InputDecoration(
                     hintText: "Search for area, street name...",
                     border: InputBorder.none,

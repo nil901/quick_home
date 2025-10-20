@@ -9,8 +9,6 @@ import 'package:quick_home/screen/auth/sign_up_screen.dart';
 import '../../util/toast_msg.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -18,7 +16,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController phoneController = TextEditingController(
-    text: "9960523475",
+    text: "7757872473",
   );
   bool isLoading = false;
 

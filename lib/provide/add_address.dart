@@ -48,11 +48,11 @@ class AddAddressNotifier extends StateNotifier<AsyncValue<String>> {
   }
 }
 
-final editAddressProvider =
-    StateNotifierProvider<EditAddressNotifier, AsyncValue<String>>(
-      (ref) => EditAddressNotifier(),
-    );
 
+final editAddressProvider =
+StateNotifierProvider<EditAddressNotifier, AsyncValue<String>>(
+      (ref) => EditAddressNotifier(),
+);
 class EditAddressNotifier extends StateNotifier<AsyncValue<String>> {
   EditAddressNotifier() : super(const AsyncData(''));
 

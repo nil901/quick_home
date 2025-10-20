@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/api_services/splash_service.dart';
+import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/screen/auth/login_screen.dart';
 
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -40,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: HexColor('#E4F9FF'),
+      backgroundColor:kwhite,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

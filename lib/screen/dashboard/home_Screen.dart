@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -16,6 +17,13 @@ import '../../util/size.dart';
 import '../wigets/bannar_slider.dart';
 import 'mid_screens/sub_categories_screen.dart';
 
+// final List<Map<String, String>> categories = [
+//   {'label': 'Core Home Services', 'icon': 'assets/images/cleaning.png'},
+//   {'label': 'Family Support', 'icon': 'assets/images/repair.png'},
+//   {'label': 'Personal Care', 'icon': 'assets/images/beuty.png'},
+//   {'label': 'Home Maintenance', 'icon': 'assets/images/homecleaning.png'},
+// ];
+
 class Home extends ConsumerStatefulWidget {
   const Home({super.key});
 
@@ -24,8 +32,6 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
-  List<bool> isSelectedList = [];
-
   @override
   void initState() {
     super.initState();
@@ -33,17 +39,12 @@ class _HomeState extends ConsumerState<Home> {
     HomeServices().categoryApi(ref);
     HomeServices().offerApi(ref);
     HomeServices().profileApi(ref);
+    
   }
 
   @override
   Widget build(BuildContext context) {
     final category = ref.watch(categoryProvider);
-
-    // Initialize selection list once categories are loaded
-    if (isSelectedList.length != category.length) {
-      isSelectedList = List.generate(category.length, (index) => false);
-    }
-
     return Material(
       color: HexColor('#E4F9FF'),
       child: SafeArea(
@@ -57,6 +58,7 @@ class _HomeState extends ConsumerState<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+               
                 Container(
                   width: double.infinity,
                   color: HexColor('#E4F9FF'),
@@ -108,6 +110,7 @@ class _HomeState extends ConsumerState<Home> {
                         ),
                       ),
 
+                      /// 📸 Banner (slider placeholder)
                       /// 📸 Banner Slider
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -120,7 +123,7 @@ class _HomeState extends ConsumerState<Home> {
                 ),
                 h10,
 
-                /// 🏷 Categories
+                /// 🏷 Categories (Updated UI like ServiceListScreen)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
                   child: Align(
@@ -141,45 +144,34 @@ class _HomeState extends ConsumerState<Home> {
                   child: ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 0,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                     itemCount: category.length,
                     itemBuilder: (context, index) {
                       final categorys = category[index];
                       return InkWell(
                         onTap: () {
-                          // Set selection state
-                          setState(() {
-                            for (int i = 0; i < isSelectedList.length; i++) {
-                              isSelectedList[i] = (i == index);
-                            }
-                          });
-
+                          print(categorys.id);
+                          // Navigate to SubCategoriesScreen on tap
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => SubCategoriesscreenDetails(
-                                    catId: categorys.id,
-                                  ),
+                                  (context) => SubCategoriesscreenDetails(catId: categorys.id,),
                             ),
                           );
                         },
                         child: Container(
-                          margin: const EdgeInsets.only(right: 19),
-                          width: 100,
+                          margin: EdgeInsets.only(right: 19),
+                          width: 100, // Adjust as per design
                           decoration: BoxDecoration(
                             color: Colors.white,
                             border: Border.all(
-                              color:
-                                  isSelectedList[index]
-                                      ? const Color(0xFF004271)
-                                      : Colors.grey.shade300,
+                              color: Color(0xFF004271),
                               width: 2,
                             ),
-                            borderRadius: BorderRadius.circular(18),
+                            borderRadius: BorderRadius.circular(
+                              18,
+                            ), // Same curvature sab corners pe
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -187,7 +179,7 @@ class _HomeState extends ConsumerState<Home> {
                               Container(
                                 width: 86,
                                 height: 82,
-                                margin: const EdgeInsets.only(top: 4),
+                                margin: const EdgeInsets.only(top: 2, left: 1),
                                 child:
                                     categorys.imageUrl != null &&
                                             categorys.imageUrl!.isNotEmpty
@@ -199,6 +191,7 @@ class _HomeState extends ConsumerState<Home> {
                                             error,
                                             stackTrace,
                                           ) {
+                                            // Show placeholder if image fails to load
                                             return Image.asset(
                                               "assets/images/logo.png",
                                               fit: BoxFit.contain,
@@ -209,9 +202,8 @@ class _HomeState extends ConsumerState<Home> {
                                             child,
                                             loadingProgress,
                                           ) {
-                                            if (loadingProgress == null) {
+                                            if (loadingProgress == null)
                                               return child;
-                                            }
                                             return const Center(
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 2,
@@ -224,34 +216,25 @@ class _HomeState extends ConsumerState<Home> {
                                           fit: BoxFit.contain,
                                         ),
                               ),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: 48,
-                                    decoration: BoxDecoration(
-                                      color:
-                                          isSelectedList[index]
-                                              ? const Color(0xFF004271)
-                                              : Colors.grey[300],
-                                      borderRadius: const BorderRadius.vertical(
-                                        bottom: Radius.circular(15),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        categorys.name.toString(),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color:
-                                              isSelectedList[index]
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                        ),
-                                      ),
+
+                              Container(
+                                width: double.infinity,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF004271),
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(15),
+                                    bottomRight: Radius.circular(15),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    categorys.name.toString(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
                                     ),
                                   ),
                                 ),
@@ -265,7 +248,7 @@ class _HomeState extends ConsumerState<Home> {
                 ),
 
                 /// Sections
-                SectionWidget(false),
+                 SectionWidget(false),
               ],
             ),
           ),
@@ -273,15 +256,16 @@ class _HomeState extends ConsumerState<Home> {
       ),
     );
   }
+
+  /// 📦 Section Builder
 }
 
-/// 📦 Section Widget
 class SectionWidget extends ConsumerWidget {
   final bool single;
-  const SectionWidget(this.single, {super.key});
+  SectionWidget(this.single);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, ref) {
     final offers = ref.watch(offerProvider);
 
     if (offers.isEmpty) {
@@ -293,117 +277,94 @@ class SectionWidget extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children:
-            homeModel.sections.map((section) {
-              final items = section.items.items;
+        children: homeModel.sections.map((section) {
+          final items = section.items.items;
 
-              log("${section.title} has ${items.length} items");
-              log(jsonEncode(items.map((e) => e.toJson()).toList()));
+          log("${section.title} has ${items.length} items");
+          log(jsonEncode(items.map((e) => e.toJson()).toList()));
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          section.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        QwikPicksScreen(item: homeModel),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Section title + See all
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(section.title,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    GestureDetector(
+                      onTap: () {
+                       Navigator.push( context, MaterialPageRoute( builder: (context) => QwikPicksScreen(item: homeModel), ), );
+                      },
+                      child: const Text("See all", style: TextStyle(color: Colors.blue)),
+                    )
+                  ],
+                ),
+              ),
+
+              // Horizontal ListView
+              SizedBox(
+                height: single ? 200 : 200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    double width = single ? 301 : 120;
+                    double height = single ? 150 : 120;
+
+                    return InkWell(
+                      onTap: (){
+                         Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ServicesDetailsScreen(serviceId: item.id,),
+                            ),
+                          );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 12),
+                        width: width,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.network(
+                                item.imageUrl,
+                                width: width,
+                                height: height,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      width: width,
+                                      height: height,
+                                      color: Colors.grey[200],
+                                      child: const Center(
+                                          child: Icon(Icons.broken_image,
+                                              color: Colors.grey, size: 40)),
+                                    ),
                               ),
-                            );
-                          },
-                          child: const Text(
-                            "See all",
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: single ? 200 : 200,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        double width = single ? 301 : 120;
-                        double height = single ? 150 : 120;
-
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ServicesDetailsScreen(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(left: 12),
-                            width: width,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Image.network(
-                                    item.imageUrl,
-                                    width: width,
-                                    height: height,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                              width: width,
-                                              height: height,
-                                              color: Colors.grey[200],
-                                              child: const Center(
-                                                child: Icon(
-                                                  Icons.broken_image,
-                                                  color: Colors.grey,
-                                                  size: 40,
-                                                ),
-                                              ),
-                                            ),
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  item.name,
-                                  style: const TextStyle(
+                            ),
+                            const SizedBox(height: 6),
+                            Text(item.name,
+                                style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
+                                    color: Colors.black87)),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
