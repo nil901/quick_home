@@ -2,8 +2,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/api_services/api_services.dart';
+<<<<<<< HEAD
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
+=======
+>>>>>>> prathamesh_branch
 import 'package:quick_home/screen/auth/otp_verify_screen.dart';
 import 'package:quick_home/screen/auth/sign_up_screen.dart';
 import '../../util/toast_msg.dart';
@@ -15,13 +18,51 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+<<<<<<< HEAD
   TextEditingController phoneController = TextEditingController(
     text: "7757872473",
   );
   bool isLoading = false;
+=======
+  TextEditingController phoneController = TextEditingController();
+  bool isLoading = false;
 
   final utils = Utils(); // Utils instance
 
+  void _showToast(String msg) {
+    utils.showTost(msg);
+  }
+
+  Future<void> loginUser() async {
+    String phone = phoneController.text.trim();
+
+    if (phone.isEmpty) {
+      _showToast('Please enter mobile number');
+      return;
+    } else if (phone.length != 10) {
+      _showToast('Mobile number must be 10 digits');
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      final response = await ApiService.postRequest(
+        '/login',
+        {"phone": phone},
+      );
+
+      if (response.data['success'] == true) {
+        final otp = response.data['data']['otp'].toString();
+        final user = response.data['data']['user'];
+        _showToast('OTP sent: $otp');
+
+        print('user data: $user'); // For testing purposes)
+>>>>>>> prathamesh_branch
+
+  final utils = Utils(); // Utils instance
+
+<<<<<<< HEAD
   void _showToast(String msg) {
     utils.showTost(msg);
   }
@@ -76,6 +117,21 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       // _showToast(e.toString());
+=======
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OtpVerify(
+
+            ),
+          ),
+        );
+      } else {
+        _showToast(response.data['message'] ?? 'Login failed');
+      }
+    } catch (e) {
+       _showToast(e.toString());
+>>>>>>> prathamesh_branch
     } finally {
       setState(() => isLoading = false);
     }
@@ -116,6 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 30),
                 Center(
+<<<<<<< HEAD
                   child:
                       isLoading
                           ? CircularProgressIndicator()
@@ -139,6 +196,28 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+=======
+                  child: isLoading
+                      ? CircularProgressIndicator()
+                      : SizedBox(
+                    width: 270,
+                    height: 46,
+                    child: ElevatedButton(
+                      onPressed: loginUser,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF004271),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      child: Text(
+                        "Send OTP",
+                        style:
+                        TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+>>>>>>> prathamesh_branch
                 ),
                 SizedBox(height: 16),
                 Center(
@@ -153,6 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color(0xff004c8c),
                             fontWeight: FontWeight.bold,
                           ),
+<<<<<<< HEAD
                           recognizer:
                               TapGestureRecognizer()
                                 ..onTap = () {
@@ -163,6 +243,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   );
                                 },
+=======
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignupScreen(),
+                                ),
+                              );
+                            },
+>>>>>>> prathamesh_branch
                         ),
                       ],
                     ),
@@ -177,11 +268,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String hint,
-    IconData icon, {
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+      TextEditingController controller,
+      String hint,
+      IconData icon, {
+        TextInputType keyboardType = TextInputType.text,
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 52),
       child: Container(
