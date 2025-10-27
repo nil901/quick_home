@@ -30,7 +30,7 @@ class CommonTextField extends StatelessWidget {
         prefixIcon: Icon(prefixIcon, color: Colors.grey),
         contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30), // गोलाकार edges
+          borderRadius: BorderRadius.circular(30), 
           borderSide: BorderSide.none,
         ),
         filled: true,

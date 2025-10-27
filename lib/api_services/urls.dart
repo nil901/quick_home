@@ -10,3 +10,15 @@ const String getProfile = "get-profile";
 const String updateProfile = "update-profile";
 const String wishlist = "wishlist";
 const String wishlistDelete = "wishlist-delete";
+const String wishlistAdd = "wishlist-store";
+const String viewService = "view-service";
+const String addToCart = "addToCart";
+const String getCart = "cart";
+const String deleteCart = "cartRemove";
+const String cartUpdateQuantity = "cartUpdateQuantity";
+const String getBookingOptions = "bookingOptions";
+
+
+
+
+

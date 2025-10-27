@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/api_services/Providers.dart';
+import 'package:quick_home/api_services/api_services.dart';
+import 'package:quick_home/api_services/urls.dart';
 import 'package:quick_home/color/colors.dart';
+import 'package:quick_home/prefs/app_preference.dart';
+import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/provide/home_prov.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
+import 'package:quick_home/util/ratting.dart';
 import 'package:quick_home/util/size.dart';
 
 class SubCategoriesscreenDetails extends ConsumerStatefulWidget {
@@ -130,25 +135,25 @@ class _SubCategoriesscreenDetailsState
                   h10,
                   CleaningCardList(),
 
-                  ComboSection(
-                    title: "Fresh & Comfy Combo",
-                    offerCode: "NEW15",
-                    service: "Sofa + Carpet cleaning",
-                    price: 1499,
-                    oldPrice: 1999,
-                    rating: 4,
-                    reviews: "25 k reviews",
-                  ),
-                  SizedBox(height: 20),
-                  ComboSection(
-                    title: "Sparkle Combo",
-                    offerCode: "NEW15",
-                    service: "Basic home + Bathroom",
-                    price: 1499,
-                    oldPrice: 1999,
-                    rating: 4,
-                    reviews: "10 k reviews",
-                  ),
+                  // ComboSection(
+                  //   title: "Fresh & Comfy Combo",
+                  //   offerCode: "NEW15",
+                  //   service: "Sofa + Carpet cleaning",
+                  //   price: 1499,
+                  //   oldPrice: 1999,
+                  //   rating: 4,
+                  //   reviews: "25 k reviews",
+                  // ),
+                  // SizedBox(height: 20),
+                  // ComboSection(
+                  //   title: "Sparkle Combo",
+                  //   offerCode: "NEW15",
+                  //   service: "Basic home + Bathroom",
+                  //   price: 1499,
+                  //   oldPrice: 1999,
+                  //   rating: 4,
+                  //   reviews: "10 k reviews",
+                  // ),
                 ],
               ),
             ),
@@ -205,6 +210,7 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
     });
   }
 
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     final subCategory = ref.watch(productProvider);
@@ -223,203 +229,269 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
         final item = subCategory[index];
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 14),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
             color: Colors.white,
-            border: Border.all(color: Colors.grey, width: 0.5),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12.withOpacity(0.05),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Left: Image + Book/Counter
-                Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        item.imageUrl ?? '',
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            "assets/images/logo.png",
-                            width: 70,
-                            height: 70,
-                            fit: BoxFit.contain,
-                          );
-                        },
-                      ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// ---- Left Image + Book Section ----
+              Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      item.imageUrl ?? '',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          "assets/images/logo.png",
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        );
+                      },
                     ),
-                    const SizedBox(height: 8),
-                    bookedStatus[index]
-                        ? Container(
-                          height: 30,
+                  ),
+                  const SizedBox(height: 10),
+
+                  // ---- Book Now / Counter ----
+                  bookedStatus[index]
+                      ? Container(
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: kscoundPrimaryColor,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  if (countStatus[index] > 0) {
+                                    countStatus[index]--;
+                                  }
+                                  if (countStatus[index] == 0) {
+                                    bookedStatus[index] = false;
+                                  }
+                                });
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  "–",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              "${countStatus[index]}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  countStatus[index]++;
+                                });
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  "+",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                      : InkWell(
+                        onTap: () {
+                          setState(() {
+                            bookedStatus[index] = true;
+                            countStatus[index] = 1;
+                          });
+                        },
+                        child: Container(
                           decoration: BoxDecoration(
                             color: kscoundPrimaryColor,
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    if (countStatus[index] > 0) {
-                                      countStatus[index]--;
-                                    }
-                                    if (countStatus[index] == 0) {
-                                      bookedStatus[index] = false;
-                                    }
-                                  });
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  child: Text(
-                                    "–",
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                "${countStatus[index]}",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    countStatus[index]++;
-                                  });
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  child: Text(
-                                    "+",
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 14,
                           ),
-                        )
-                        : InkWell(
-                          onTap: () {
-                            setState(() {
-                              bookedStatus[index] = true;
-                              countStatus[index] = 1;
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: kscoundPrimaryColor,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 5,
-                              horizontal: 13,
-                            ),
-                            child: const Text(
-                              "Book Now",
-                              style: TextStyle(fontSize: 15),
+                          child: const Text(
+                            "Book Now",
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
+                      ),
+
+                  const SizedBox(height: 8),
+                  const Text(
+                    "4 options",
+                    style: TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 12),
+
+              /// ---- Right Content ----
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Title + Wishlist Icon
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.name,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () async {
+                            try {
+                              final response =
+                                  await ApiService.postRequest(wishlistAdd, {
+                                    "user": AppPreference().getInt(
+                                      PreferencesKey.userId,
+                                    ),
+                                    "service": item?.id.toString(),
+                                    "wishlisted":
+                                        item.isWishlisted == true ? 0 : 1,
+                                  });
+                              print(response?.data['data']);
+                              if (response.data['success'] == true) {
+                                HomeServices().subCategoriesApi(
+                                  ref,
+                                  item?.subcategoryId,
+                                );
+                                final data = response.data['data'] as List;
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                print(data);
+                              } else {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            } catch (e) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              print("Error fetching appointments: $e");
+                              throw Exception("Failed to load data");
+                            }
+                          },
+                          child: Icon(
+                            item.isWishlisted == true
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+
+                    /// Description
+                    Text(
+                      item.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                    ),
                     const SizedBox(height: 8),
-                    const Text(
-                      "4 options",
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
+
+                    /// Price
+                    Text(
+                      "Starts at ₹${item.priceOnetime}",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    /// Rating Row
+                    Row(
+                      children: [
+                        RatingStarsComman(
+                          rating: item.averageRating ?? 0,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          "(${item.totalReviews ?? 0} reviews)",
+                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    /// View Details
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    ServicesDetailsScreen(serviceId: item.id),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "View Details",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(width: 12),
-
-                // Right: Service details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.name,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.description,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "Starts at ₹${item.priceOnetime}",
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                          Icon(
-                            Icons.star_half,
-                            size: 16,
-                            color: Colors.orangeAccent,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ServicesDetailsScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "View Details",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -688,7 +760,6 @@ class ServiceListScreen extends ConsumerWidget {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          // Show a placeholder if image fails to load
                           return Image.asset(
                             "assets/images/logo.png",
                             fit: BoxFit.contain,

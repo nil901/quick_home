@@ -21,8 +21,6 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
-
 class UserInfoScreen extends ConsumerStatefulWidget {
   const UserInfoScreen({super.key});
 
@@ -39,50 +37,54 @@ class _UserInfoScreenState extends ConsumerState<UserInfoScreen> {
   bool isLoading = false;
 
   // 🟢 Image picker from gallery
-Future<void> _pickImageFromGallery() async {
-  PermissionStatus status;
+  Future<void> _pickImageFromGallery() async {
+    PermissionStatus status;
 
-  if (Platform.isAndroid) {
-    // Android 13 (API 33) and above → use READ_MEDIA_IMAGES
-    if (await Permission.photos.isGranted ||
-        await Permission.mediaLibrary.isGranted ||
-        await Permission.storage.isGranted) {
-      status = PermissionStatus.granted;
-    } else {
-      if (await Permission.mediaLibrary.isDenied ||
-          await Permission.mediaLibrary.isRestricted) {
-        status = await Permission.mediaLibrary.request();
-      } else if (await Permission.storage.isDenied ||
-          await Permission.storage.isRestricted) {
-        status = await Permission.storage.request();
+    if (Platform.isAndroid) {
+      // Android 13 (API 33) and above → use READ_MEDIA_IMAGES
+      if (await Permission.photos.isGranted ||
+          await Permission.mediaLibrary.isGranted ||
+          await Permission.storage.isGranted) {
+        status = PermissionStatus.granted;
       } else {
-        status = await Permission.photos.request();
+        if (await Permission.mediaLibrary.isDenied ||
+            await Permission.mediaLibrary.isRestricted) {
+          status = await Permission.mediaLibrary.request();
+        } else if (await Permission.storage.isDenied ||
+            await Permission.storage.isRestricted) {
+          status = await Permission.storage.request();
+        } else {
+          status = await Permission.photos.request();
+        }
       }
+    } else {
+      status = await Permission.photos.request();
     }
-  } else {
-    status = await Permission.photos.request();
-  }
 
-  if (status.isGranted) {
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = pickedFile;
-      });
+    if (status.isGranted) {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = pickedFile;
+        });
+      }
+    } else {
+      openAppSettings(); // 👈 opens settings if user denied permanently
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Gallery permission denied! Please allow it in Settings.',
+          ),
+        ),
+      );
     }
-  } else {
-    openAppSettings(); // 👈 opens settings if user denied permanently
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Gallery permission denied! Please allow it in Settings.')),
-    );
   }
-}
-
 
   // 🟢 API call with Dio
   Future<void> updateProfile({
-    required  userId,
+    required userId,
     required String name,
     required String email,
     required String phone,
@@ -114,7 +116,7 @@ Future<void> _pickImageFromGallery() async {
       );
 
       if (response.statusCode == 200) {
-      HomeServices(). profileApi(ref);
+        HomeServices().profileApi(ref);
         print("✅ Profile updated successfully");
         print(response.data);
       } else {
@@ -170,28 +172,25 @@ Future<void> _pickImageFromGallery() async {
                       border: Border.all(color: kprimary, width: 2),
                     ),
                     child: ClipOval(
-                      child: _imageFile != null
-                          ? Image.file(
-                              File(_imageFile!.path),
-                              fit: BoxFit.cover,
-                            )
-                          : (profile?.imageUrl != null &&
+                      child:
+                          _imageFile != null
+                              ? Image.file(
+                                File(_imageFile!.path),
+                                fit: BoxFit.cover,
+                              )
+                              : (profile?.imageUrl != null &&
                                   profile!.imageUrl!.isNotEmpty)
                               ? Image.network(
-                                  profile.imageUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder:
-                                      (context, error, stackTrace) =>  Icon(
-                                    Icons.person,
-                                    color: kprimary,
-                                    size: 60,
-                                  ),
-                                )
-                              :  Icon(
-                                  Icons.person,
-                                  color: kprimary,
-                                  size: 60,
-                                ),
+                                profile.imageUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stackTrace) => Icon(
+                                      Icons.person,
+                                      color: kprimary,
+                                      size: 60,
+                                    ),
+                              )
+                              : Icon(Icons.person, color: kprimary, size: 60),
                     ),
                   ),
                   Positioned(
@@ -243,7 +242,6 @@ Future<void> _pickImageFromGallery() async {
                   InkWell(
                     onTap: () async {
                       setState(() => isLoading = true);
-
                       await updateProfile(
                         userId: AppPreference().getInt(PreferencesKey.userId),
                         name: _nameController.text,
@@ -256,9 +254,9 @@ Future<void> _pickImageFromGallery() async {
                       setState(() => isLoading = false);
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content:
-                                Text("Profile updated successfully ✅")),
+                        SnackBar(
+                          content: Text("Profile updated successfully ✅"),
+                        ),
                       );
                     },
                     child: Container(
@@ -269,14 +267,19 @@ Future<void> _pickImageFromGallery() async {
                         color: kprimary,
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child: isLoading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2)
-                          : const Text(
-                              "Update",
-                              style:
-                                  TextStyle(fontSize: 15, color: Colors.white),
-                            ),
+                      child:
+                          isLoading
+                              ? const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              )
+                              : const Text(
+                                "Update",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
+                              ),
                     ),
                   ),
                 ],
@@ -303,8 +306,10 @@ Future<void> _pickImageFromGallery() async {
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 15,
+            vertical: 12,
+          ),
           labelText: label,
           border: InputBorder.none,
         ),
@@ -313,50 +318,49 @@ Future<void> _pickImageFromGallery() async {
   }
 }
 
-  Widget _roundedTextField(
-    String hintText, {
-    TextEditingController? controller,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Container(
-      width: 349,
-      height: 49,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: HexColor('#EAEAEA'), width: 0.25),
-        boxShadow: [
-          BoxShadow(
-            color: HexColor('#0000000D'),
-            offset: const Offset(0, 4),
-            blurRadius: 4,
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: controller, // ✅ controller added here
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          hintText: hintText,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 22,
-            vertical: 12,
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Colors.black12),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Colors.black12),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: HexColor('#004271'), width: 1.5),
-          ),
+Widget _roundedTextField(
+  String hintText, {
+  TextEditingController? controller,
+  TextInputType keyboardType = TextInputType.text,
+}) {
+  return Container(
+    width: 349,
+    height: 49,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: HexColor('#EAEAEA'), width: 0.25),
+      boxShadow: [
+        BoxShadow(
+          color: HexColor('#0000000D'),
+          offset: const Offset(0, 4),
+          blurRadius: 4,
+        ),
+      ],
+    ),
+    child: TextField(
+      controller: controller, // ✅ controller added here
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        hintText: hintText,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 22,
+          vertical: 12,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Colors.black12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Colors.black12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: HexColor('#004271'), width: 1.5),
         ),
       ),
-    );
-  }
-
+    ),
+  );
+}
