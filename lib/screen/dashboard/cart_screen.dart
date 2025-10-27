@@ -428,7 +428,21 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       ref.read(cartProvider.notifier).update((state) {
         return state.map((item) {
           if (item.id.toString() == cartId) {
-            return item.copyWith(quantity: newQuantity);
+            // compute unit price from unitPrice/basePrice/addonsPrice
+            double unit = 0;
+            try {
+              unit =
+                  double.tryParse(item.unitPrice ?? '') ??
+                  double.tryParse(item.basePrice ?? '') ??
+                  0;
+            } catch (_) {
+              unit = 0;
+            }
+            final total = (unit * newQuantity);
+            return item.copyWith(
+              quantity: newQuantity,
+              totalPrice: total.toStringAsFixed(2),
+            );
           }
           return item;
         }).toList();
@@ -442,13 +456,25 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       });
 
       if (response.data['status'] != true) {
-        // Rollback in case server fails
+        // Rollback in case server fails: restore previous quantity and totalPrice
         ref.read(cartProvider.notifier).update((state) {
           return state.map((item) {
             if (item.id.toString() == cartId) {
+              final prevQty = (newQuantity > 0) ? newQuantity - 1 : 1;
+              double unit = 0;
+              try {
+                unit =
+                    double.tryParse(item.unitPrice ?? '') ??
+                    double.tryParse(item.basePrice ?? '') ??
+                    0;
+              } catch (_) {
+                unit = 0;
+              }
+              final prevTotal = (unit * prevQty);
               return item.copyWith(
-                quantity: newQuantity - 1,
-              ); // Example rollback
+                quantity: prevQty,
+                totalPrice: prevTotal.toStringAsFixed(2),
+              );
             }
             return item;
           }).toList();

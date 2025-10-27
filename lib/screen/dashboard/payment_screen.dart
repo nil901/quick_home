@@ -10,7 +10,7 @@ class PaymentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: HexColor('#FFFFFF'),
-    appBar: CustomAppBar(title: 'Your Payment'),
+      appBar: CustomAppBar(title: 'Your Payment'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -22,16 +22,19 @@ class PaymentScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: HexColor('#FFFFFF'),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: HexColor('#EAEAEA'), width: 1
-              ),),
+                border: Border.all(color: HexColor('#EAEAEA'), width: 1),
+              ),
               child: Row(
                 children: [
-                Image.asset('assets/images/home.png', width: 16, height: 18),
+                  Image.asset('assets/images/home.png', width: 16, height: 18),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Home - Tidake colony, Durvankur Lawns, Nashik',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   Icon(Icons.edit_outlined, color: Colors.black),
@@ -46,16 +49,23 @@ class PaymentScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: HexColor('#FFFFFF'),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: HexColor('#EAEAEA'), width: 1
-              ),),
+                border: Border.all(color: HexColor('#EAEAEA'), width: 1),
+              ),
               child: Row(
-                children:  [
-                  Image.asset('assets/images/timeIcon.png', width: 18, height: 18),
+                children: [
+                  Image.asset(
+                    'assets/images/timeIcon.png',
+                    width: 18,
+                    height: 18,
+                  ),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Tue, Oct 07 - 4:30 PM',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   Icon(Icons.edit_outlined, color: Colors.black),
@@ -72,10 +82,7 @@ class PaymentScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: HexColor('#FFFFFF'),
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: HexColor('#E2E2E2'),
-                  width: 1,
-                ),
+                border: Border.all(color: HexColor('#E2E2E2'), width: 1),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,10 +93,7 @@ class PaymentScreen extends StatelessWidget {
                     height: 95,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: HexColor('#B5B5B5'),
-                        width: 1,
-                      ),
+                      border: Border.all(color: HexColor('#B5B5B5'), width: 1),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
@@ -121,7 +125,10 @@ class PaymentScreen extends StatelessWidget {
                             const SizedBox(height: 6),
                             const Text(
                               'Comprehensive cleaning for a spotless home.',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -172,7 +179,9 @@ class PaymentScreen extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05), // ✅ 0x0000000D equivalent
+                    color: Colors.black.withOpacity(
+                      0.05,
+                    ), // ✅ 0x0000000D equivalent
                     offset: const Offset(0, 4),
                     blurRadius: 4,
                   ),
@@ -212,33 +221,26 @@ class PaymentScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: HexColor('#E4F9FF'),
-                borderRadius: BorderRadius.circular(10), // optional for rounded look
+                borderRadius: BorderRadius.circular(
+                  10,
+                ), // optional for rounded look
               ),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Price Details',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Item total'),
-                      Text('AED 2,499'),
-                    ],
+                    children: [Text('Item total'), Text('AED 2,499')],
                   ),
                   SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Taxes and fee'),
-                      Text('AED 50'),
-                    ],
+                    children: [Text('Taxes and fee'), Text('AED 50')],
                   ),
                   Divider(height: 25, thickness: 1),
                   Row(
@@ -314,7 +316,9 @@ class PaymentScreen extends StatelessWidget {
               height: 44,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: HexColor('#004271'), // ✅ Updated background color
+                  backgroundColor: HexColor(
+                    '#004271',
+                  ), // ✅ Updated background color
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15), // ✅ Updated radius
                   ),
@@ -331,7 +335,6 @@ class PaymentScreen extends StatelessWidget {
                 ),
               ),
             ),
-
           ],
         ),
       ),

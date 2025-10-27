@@ -275,7 +275,8 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                         const CleanerCountSelector(),
 
                         MatrialOptions(matrial: service.materials!),
-
+                        SizedBox(height: 10),
+                        Divider(),
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -523,9 +524,9 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                       "material": cardClickState ? 1 : 0,
                                       "providersCount": selectedCount,
                                     });
-                                  formData.fields.forEach((field) {
-  print("${field.key}: ${field.value}");
-});
+                                    formData.fields.forEach((field) {
+                                      print("${field.key}: ${field.value}");
+                                    });
                                     final response = await dio.post(
                                       "http://admin.qwikhom.ae/api/addToCart",
                                       data: formData,
