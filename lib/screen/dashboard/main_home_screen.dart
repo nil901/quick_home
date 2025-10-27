@@ -6,7 +6,6 @@ import 'package:quick_home/screen/dashboard/booking_screen.dart';
 import 'package:quick_home/screen/dashboard/home_Screen.dart';
 import 'package:quick_home/screen/dashboard/profilr_screen.dart';
 import 'package:quick_home/screen/dashboard/subscription_screen.dart';
-import 'package:quick_home/screen/dashboard/wishlist_screen.dart';
 import 'package:quick_home/util/enum.dart';
 
 class MainHomeScreen extends ConsumerWidget {
@@ -17,15 +16,18 @@ class MainHomeScreen extends ConsumerWidget {
     final Map<BottomTab, Widget> pages = {
       BottomTab.home: Home(),
       BottomTab.bookings: MyBookingsScreen(),
-      BottomTab.Wishlist: WishlistScreen(),
+      BottomTab.subscription: SubscriptionScreen(),
       BottomTab.profile: MyProfileScreen(),
     };
+
     double bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+
     return Scaffold(
       backgroundColor: kwhite,
       body: Stack(
         children: [
           pages[selectedTab]!,
+
           Positioned(
             left: 16,
             right: 16,
@@ -62,9 +64,9 @@ class MainHomeScreen extends ConsumerWidget {
                       selectedTab == BottomTab.bookings,
                     ),
                     _navItem(
-                      "assets/images/like.png",
-                      "Wishlist",
-                      selectedTab == BottomTab.Wishlist,
+                      "assets/images/subscription.png",
+                      "Subscription",
+                      selectedTab == BottomTab.subscription,
                     ),
                     _navItem(
                       "assets/images/profile.png",

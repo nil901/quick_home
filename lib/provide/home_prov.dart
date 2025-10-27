@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/api_services/api_services.dart';
@@ -10,7 +8,6 @@ import 'package:quick_home/model/home_model.dart';
 import 'package:quick_home/model/offers_model.dart';
 import 'package:quick_home/model/profile_model.dart';
 import 'package:quick_home/model/serviceModel.dart';
-import 'package:quick_home/model/service_details_model.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/screen/dashboard/mid_screens/sub_categories_screen.dart';
@@ -99,7 +96,6 @@ class HomeServices {
     try {
       final response = await ApiService.postRequest(servicesOfSubcategory, {
         "subcategory": subCategory,
-        "user": AppPreference().getInt(PreferencesKey.userId),
         // "subcategory"
       });
       print("ssssssssssssssssssssssssssssssssss${subCategory}");
@@ -125,7 +121,7 @@ class HomeServices {
       });
 
       if (response.data['success'] == true) {
-        final userJson = response.data['user'];
+         final userJson = response.data['user'];
         final profile = ProfileModel.fromJson(userJson);
 
         ref.read(profileProvider.notifier).state = profile;
@@ -133,27 +129,6 @@ class HomeServices {
     } catch (e) {
       print("Error fetching profile: $e");
       throw Exception("Failed to load profile data");
-    }
-  }
-
-  Future<void> ServiceDetailsAPi(WidgetRef ref) async {
-    try {
-      final response = await ApiService.postRequest(viewService, {
-        "service": 49,
-        "type": "",
-      });
-      print("${response.data}");
-      if (response.data['success'] == true) {
-        final userJson = response.data['data']['service'];
-        log("Service Details: ${userJson}");
-        final details = ServiceDetailsModel.fromJson(userJson);
-
-        ref.read(serviceDetailsProvider.notifier).state = details;
-        log("Service Details: ${details.data?.service?.name}");
-      }
-    } catch (e) {
-      print("Error fetching service details: $e");
-      throw Exception("Failed to load service details");
     }
   }
 }

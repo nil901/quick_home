@@ -8,7 +8,7 @@ enum BookingTab { inProgress, upcoming, completed, cancelled }
 enum BottomTab {
   home,
   bookings,
-  Wishlist,
-  profile,
+  subscription,
+  pro, subscriptionfile, profile, Wishlist,
 }
 

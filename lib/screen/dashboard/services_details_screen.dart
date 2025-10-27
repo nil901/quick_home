@@ -1,70 +1,20 @@
-import 'dart:developer';
-import 'dart:math';
-
-import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:quick_home/api_services/Providers.dart';
-import 'package:quick_home/api_services/api_services.dart';
-import 'package:quick_home/api_services/urls.dart';
-import 'package:quick_home/color/colors.dart';
-import 'package:quick_home/model/service_details_model.dart';
-import 'package:quick_home/prefs/app_preference.dart';
-import 'package:quick_home/prefs/preferences_keys.dart';
-import 'package:quick_home/provide/home_prov.dart';
+import 'package:quick_home/screen/wigets/cleanrequirement.dart';
 import 'package:quick_home/screen/wigets/faq_comman.dart';
-import 'package:quick_home/screen/wigets/how_many_pepole.dart';
-import 'package:quick_home/screen/wigets/matrial_options.dart';
-import 'package:quick_home/screen/wigets/service_option.dart';
-import 'package:quick_home/util/ratting.dart';
-import 'package:quick_home/util/size.dart';
-import 'package:quick_home/util/toast_msg.dart';
+import 'package:quick_home/screen/wigets/review.dart';
 
-class ServicesDetailsScreen extends ConsumerStatefulWidget {
-  const ServicesDetailsScreen({super.key, required this.serviceId});
-  final int serviceId;
+class ServicesDetailsScreen extends StatefulWidget {
+  const ServicesDetailsScreen({super.key});
   @override
-  ConsumerState<ServicesDetailsScreen> createState() =>
-      _ServicesDetailsScreenState();
+  State<ServicesDetailsScreen> createState() => _ServicesDetailsScreenState();
 }
 
-class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
+class _ServicesDetailsScreenState extends State<ServicesDetailsScreen> {
   bool isEnglish = true;
 
   @override
-  void initState() {
-    ServiceDetailsAPi(ref);
-    super.initState();
-  }
-
-  bool _isLoading = false;
-  Future<void> ServiceDetailsAPi(WidgetRef ref) async {
-    try {
-      final response = await ApiService.postRequest(viewService, {
-        "service": widget.serviceId,
-        "type": "",
-      });
-
-      if (response.data['success'] == true) {
-        final details = ServiceDetailsModel.fromJson(response.data);
-        ref.read(serviceDetailsProvider.notifier).state = details;
-        //  log("Service Details: ${details.data?.service?.name}");
-      }
-    } catch (e) {
-      print("Error fetching service details: $e");
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final serviceDetails = ref.watch(serviceDetailsProvider);
-
-    final service = serviceDetails?.data?.service;
-    final selectedPlan = ref.watch(selectedPlanProvider);
-    final selectedMaterial = ref.watch(selectedMaterialProvider);
-    final selectedCount = ref.watch(cleanerCountProvider);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -84,493 +34,395 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
         ),
         centerTitle: true,
       ),
-      body:
-          service == null
-              ? const Center(
-                child: CircularProgressIndicator(),
-              ) // loader while null
-              : Stack(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Language Switch
+            Padding(
+              padding: const EdgeInsets.only(top: 18, left: 16, right: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Language Switch
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 18,
-                            left: 16,
-                            right: 16,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  ServiceDetailsAPi(ref);
-                                  setState(() => isEnglish = true);
-                                },
-                                child: _langButton(
-                                  selected: isEnglish,
-                                  text: 'In English',
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() => isEnglish = false);
-                                },
-                                child: _langButton(
-                                  selected: !isEnglish,
-                                  text: 'In Arabic',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Top Image
-                        Center(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 16,
-                            ),
-                            height: 200,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: NetworkImage('${service?.imageUrl}'),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Title, Rating, Price, Book Now
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isEnglish ? '${service?.name}' : 'كي الملابس',
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                isEnglish
-                                    ? '${service?.shortDescription}'
-                                    : 'ملابس خالية من التجاعيد، نظيفة وجاهزة للارتداء في أي وقت.',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey,
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  RatingStarsComman(
-                                    rating: service?.averageRating ?? 0,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '(${service?.totalReviews ?? 0} reviews)',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 15),
-                              Row(
-                                children: [
-                                  Text(
-                                    'AED ${service?.subscriptionPlans?.firstWhere((e) => e.frequencyType == "onetime")?.pricePerTime ?? ''}',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 8),
-                                  const Spacer(),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xffE4F9FF),
-                                      foregroundColor: const Color(0xff004271),
-                                      elevation: 0,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 22,
-                                        vertical: 10,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                    onPressed: () {},
-                                    child: Text(
-                                      isEnglish ? 'Book Now' : 'احجز الآن',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 22),
-                        const Divider(thickness: 0.9),
-                        // About the Service
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          child: Text(
-                            isEnglish ? 'About the service' : 'عن الخدمة',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            isEnglish
-                                ? '${service?.description}'
-                                : 'وداعًا للتجاعيد! خدمة الكي الاحترافية تضمن أن ملابسك تبدو مرتبة ونظيفة وجاهزة للارتداء في أي وقت.',
-                            style: const TextStyle(fontSize: 13.2, height: 1.5),
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Divider(thickness: 0.9, color: Colors.grey[300]),
-                        // Our Process Title
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          child: Text(
-                            isEnglish ? 'Select requirements' : 'حدد المتطلبات',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-
-                        ServiceOptions(plans: service.subscriptionPlans!),
-
-                        const CleanerCountSelector(),
-
-                        MatrialOptions(matrial: service.materials!),
-
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: service.processes?.length,
-                          itemBuilder: (context, index) {
-                            final step = service.processes![index];
-
-                            final isImageLeft = index % 2 == 1 ? true : false;
-
-                            return _timelineStep(
-                              stepNum: index + 1,
-                              isImageLeft: isImageLeft,
-                              imagePath: step.imageUrl ?? '',
-                              title: isEnglish ? step.title! : step.title!,
-                              description:
-                                  isEnglish
-                                      ? step.description
-                                      : step.description.toString(),
-                              isLast: index == service.processes!.length - 1,
-                            );
-                          },
-                        ),
-
-                        const SizedBox(height: 18),
-                        Divider(thickness: 0.9, color: Colors.grey[300]),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          child: Text(
-                            isEnglish
-                                ? "What's Included?"
-                                : 'ما الذي يتضمنه ذلك؟',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: service.whatsInclude?.length,
-                                itemBuilder: (context, index) {
-                                  final text = service.whatsInclude?[index];
-                                  return _includedText(isEnglish ? text : text);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Divider(thickness: 0.9, color: Colors.grey[300]),
-                        // What We Need From You (card style)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          child: Text(
-                            isEnglish
-                                ? 'What We Need From You'
-                                : 'ما الذي نحتاجه منك',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 4,
-                          ),
-                          child: SizedBox(
-                            height: 120, // <--- fix: define a height
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: service.requirements?.length ?? 0,
-                              itemBuilder: (context, index) {
-                                final req = service.requirements?[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 12),
-                                  child: neededCard(
-                                    icon: Image.network(
-                                      req?.imageUrl ?? '',
-                                      height: 50,
-                                      width: 50,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (
-                                        context,
-                                        error,
-                                        stackTrace,
-                                      ) {
-                                        return Image.asset(
-                                          'assets/images/logo.png',
-                                          height: 50,
-                                          width: 50,
-                                          color: kgrey,
-                                          fit: BoxFit.cover,
-                                        );
-                                      },
-                                    ),
-                                    text:
-                                        isEnglish
-                                            ? (req?.title ?? 'Requirement')
-                                            : 'متطلب الخدمة',
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Frequently asked questions',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16, right: 16),
-                          child: FaqComman(faqData: service.faq),
-                        ), // tumhare FAQ ki class ka naam yahan daalo
-                        const SizedBox(height: 20),
-
-                        h50,
-                      ],
-                    ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => isEnglish = true);
+                    },
+                    child: _langButton(selected: isEnglish, text: 'In English'),
                   ),
-
-                  Positioned(
-                    bottom: 20,
-                    left: 16,
-                    right: 16,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[300],
-                              foregroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: const Text('Cancel'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Consumer(
-                            builder: (context, ref, _) {
-                              // final selectedPlan = ref.watch(
-                              //   selectedPlanProvider,
-                              // );
-                              // final selectedMaterial = ref.watch(
-                              //   selectedMaterialProvider,
-                              // );
-                              // final selectedCount =
-                              //     ref.watch(cleanerCountProvider) ?? 0;
-
-                              // double totalPrice = 0;
-
-                              // // ✅ Add plan price if selected
-                              // if (selectedPlan != null) {
-                              //   totalPrice +=
-                              //       double.tryParse(
-                              //         selectedPlan.pricePerTime ?? '0',
-                              //       ) ??
-                              //       0;
-                              // }
-
-                              // // ✅ Add material price * count
-                              // final materialPrice =
-                              //     double.tryParse(
-                              //       selectedMaterial?.materialPrice ?? '0',
-                              //     ) ??
-                              //     0;
-                              // totalPrice += materialPrice * selectedCount;
-                              final selectedPlan = ref.watch(
-                                selectedPlanProvider,
-                              );
-                              final cardClickState = ref.watch(
-                                cardClickStateProvider,
-                              );
-                              final selectedMaterial = ref.watch(
-                                selectedMaterialProvider,
-                              );
-                              final selectedCount =
-                                  ref.watch(cleanerCountProvider) ?? 0;
-
-                              double totalPrice = 0;
-
-                              // ✅ Always add plan price * count
-                              if (selectedPlan != null) {
-                                totalPrice +=
-                                    (double.tryParse(
-                                          selectedPlan.pricePerTime ?? '0',
-                                        ) ??
-                                        0) *
-                                    selectedCount;
-                              }
-
-                              // ✅ Add material price * count only if material is selected
-                              if (selectedMaterial != null) {
-                                totalPrice +=
-                                    (double.tryParse(
-                                          selectedMaterial.materialPrice ?? '0',
-                                        ) ??
-                                        0) *
-                                    selectedCount;
-                              }
-
-                              return ElevatedButton(
-                                onPressed: () async {
-                                  try {
-                                    Dio dio = Dio();
-
-                                    FormData formData = FormData.fromMap({
-                                      "user": AppPreference().getInt(
-                                        PreferencesKey.userId,
-                                      ),
-                                      "service": widget.serviceId,
-                                      "package": selectedPlan?.id,
-                                      "material": cardClickState ? 1 : 0,
-                                      "providersCount": selectedCount,
-                                    });
-                                  formData.fields.forEach((field) {
-  print("${field.key}: ${field.value}");
-});
-                                    final response = await dio.post(
-                                      "http://admin.qwikhom.ae/api/addToCart",
-                                      data: formData,
-                                    );
-
-                                    if (response.data['status'] == true) {
-                                      print("Added to cart successfully");
-                                      Utils().showTost(
-                                        "Added to cart successfully",
-                                      );
-                                    } else {
-                                      print(
-                                        "Failed: ${response.data['message']}",
-                                      );
-                                      Utils().showTost(
-                                        "Failed: ${response.data['message']}",
-                                      );
-                                    }
-                                  } catch (e) {
-                                    print("Error: $e");
-                                  }
-                                },
-
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xff004271),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Service Cost AED ${totalPrice.toStringAsFixed(2)}',
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => isEnglish = false);
+                    },
+                    child: _langButton(selected: !isEnglish, text: 'In Arabic'),
                   ),
                 ],
               ),
+            ),
+            // Top Image
+            Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 16,
+                ),
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(10),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/Ironing.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            // Title, Rating, Price, Book Now
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isEnglish ? 'Ironing' : 'كي الملابس',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    isEnglish
+                        ? 'Wrinkle-free clothes, crisp and neat – ready \nto wear anytime.'
+                        : 'ملابس خالية من التجاعيد، نظيفة وجاهزة للارتداء في أي وقت.',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      RatingBarIndicator(
+                        rating: 4,
+                        itemBuilder:
+                            (context, index) =>
+                                const Icon(Icons.star, color: Colors.grey),
+                        itemCount: 5,
+                        itemSize: 18.0,
+                        unratedColor: Colors.grey.shade300,
+                      ),
+                      const SizedBox(width: 5),
+                      const SizedBox(width: 4),
+                      const Text(
+                        '(30k reviews)',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      const Text(
+                        'AED 4.99',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Spacer(),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xffE4F9FF),
+                          foregroundColor: const Color(0xff004271),
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 22,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: Text(
+                          isEnglish ? 'Book Now' : 'احجز الآن',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 22),
+            const Divider(thickness: 0.9),
+            // About the Service
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Text(
+                isEnglish ? 'About the service' : 'عن الخدمة',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                isEnglish
+                    ? 'Say goodbye to wrinkles and creases! Our professional ironing service ensures your clothes look crisp, neat, and perfectly pressed – ready to wear for work, casual outings, or special occasions.'
+                    : 'وداعًا للتجاعيد! خدمة الكي الاحترافية تضمن أن ملابسك تبدو مرتبة ونظيفة وجاهزة للارتداء في أي وقت.',
+                style: const TextStyle(fontSize: 13.2, height: 1.5),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Divider(thickness: 0.9, color: Colors.grey[300]),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: const CleaningRequirementPage(),
+            ),
+            Divider(thickness: 0.9, color: Colors.grey[300]),
+            // Our Process Title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Text(
+                isEnglish ? 'Our Process' : 'عملية الخدمة',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
+              ),
+            ),
+            // Our Process Timeline
+            _timelineStep(
+              stepNum: 1,
+              isImageLeft: false,
+              imagePath: 'assets/images/Mobile.png',
+              title: isEnglish ? 'Book Service' : 'حجز الخدمة',
+              description:
+                  isEnglish
+                      ? 'Schedule ironing at your \npreferred time through the \napp.'
+                      : 'حدد موعد كي الملابس المفضل من خلال التطبيق.',
+            ),
+            _timelineStep(
+              stepNum: 2,
+              isImageLeft: true,
+              imagePath: 'assets/images/Clean.png',
+              title: isEnglish ? 'We Arrive' : 'نصل إلى بابك',
+              description:
+                  isEnglish
+                      ? 'Our professional staff \ncomes to your doorstep \nwith all essentials.'
+                      : 'يصل موظفونا المحترفون إلى بابك بكل المستلزمات.',
+            ),
+            _timelineStep(
+              stepNum: 3,
+              isImageLeft: false,
+              imagePath: 'assets/images/Iron.png',
+              title: isEnglish ? 'At-Home Ironing' : 'كي الملابس في المنزل',
+              description:
+                  isEnglish
+                      ? 'Clothes are ironed neatly at \nyour place, hassle-free.'
+                      : 'يتم كي الملابس بشكل مرتب في منزلك بسهولة.',
+            ),
+            _timelineStep(
+              stepNum: 4,
+              isImageLeft: true,
+              imagePath: 'assets/images/Cloths.png',
+              title: isEnglish ? 'Ready to Wear' : 'جاهز للارتداء',
+              description:
+                  isEnglish
+                      ? 'Crisp, wrinkle-free outfits \nhanded over instantly.'
+                      : 'ملابس مرتبة وجاهزة للارتداء فوراً.',
+              isLast: true,
+            ),
+            const SizedBox(height: 18),
+            Divider(thickness: 0.9, color: Colors.grey[300]),
+            // What's Included
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Text(
+                isEnglish ? "What's Included?" : 'ما الذي يتضمنه ذلك؟',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _includedText(
+                    isEnglish
+                        ? 'Professional at-home ironing'
+                        : 'كي احترافي في المنزل',
+                  ),
+                  _includedText(
+                    isEnglish
+                        ? 'Use of safe, quality equipment'
+                        : 'استخدام معدات آمنة وعالية الجودة',
+                  ),
+                  _includedText(
+                    isEnglish
+                        ? 'Neat folding/hanging after ironing'
+                        : 'طي/تعليق الملابس بشكل مرتب بعد الكي',
+                  ),
+                  _includedText(
+                    isEnglish
+                        ? 'Quick service with care handle'
+                        : 'خدمة سريعة مع عناية خاصة',
+                  ),
+                  _includedText(
+                    isEnglish
+                        ? 'Clothes ready to wear instantly'
+                        : 'ملابس جاهزة للارتداء فوراً',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            Divider(thickness: 0.9, color: Colors.grey[300]),
+            // What We Need From You (card style)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Text(
+                isEnglish ? 'What We Need From You' : 'ما الذي نحتاجه منك',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    neededCard(
+                      icon: Image.asset('assets/images/Clean.png', height: 50),
+                      text:
+                          isEnglish
+                              ? 'Clean clothes,\nready to iron'
+                              : 'ملابس نظيفة وجاهزة للكي',
+                    ),
+                    const SizedBox(width: 12),
+                    neededCard(
+                      icon: Image.asset('assets/images/Clean.png', height: 50),
+                      text:
+                          isEnglish
+                              ? 'Ironing board\nor flat surface'
+                              : 'طاولة الكي أو سطح مستوي',
+                    ),
+                    const SizedBox(width: 12),
+                    neededCard(
+                      icon: Image.asset('assets/images/Clean.png', height: 50),
+                      text:
+                          isEnglish
+                              ? 'Access to\nelectricity'
+                              : 'الوصول إلى الكهرباء',
+                    ),
+                    const SizedBox(width: 12),
+                    neededCard(
+                      icon: Image.asset('assets/images/Clean.png', height: 50),
+                      text:
+                          isEnglish
+                              ? 'Access to\nelectricity'
+                              : 'الوصول إلى الكهرباء',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Row(
+                children: [
+                  Text(
+                    'Frequently asked questions',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: const FaqComman(),
+            ), // tumhare FAQ ki class ka naam yahan daalo
+            const SizedBox(height: 20),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: const ReviewsWidget(),
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff004271),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width * 0.05,
+                        vertical: MediaQuery.of(context).size.height * 0.017,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Service Cost',
+                          style: TextStyle(fontSize: 11),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.02,
+                        ),
+                        const Text(
+                          'AED 3,199',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff004271),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width * 0.20,
+                        vertical: MediaQuery.of(context).size.height * 0.017,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text('Done'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -595,9 +447,9 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
   static Widget _timelineStep({
     required int stepNum,
     required bool isImageLeft,
-    required String imagePath, // network URL expected
+    required String imagePath,
     required String title,
-    required description,
+    required String description,
     bool isLast = false,
   }) {
     final img = ClipRRect(
@@ -609,40 +461,11 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
           top: 4,
           bottom: 4,
         ),
-        child: Image.network(
+        child: Image.asset(
           imagePath,
           height: 120,
           width: 130,
           fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            // fallback in case image fails to load
-            return Container(
-              height: 120,
-              width: 130,
-              color: Colors.grey[200],
-              child: Image.asset(
-                "assets/images/logo.png",
-                height: 50,
-                color: Colors.grey,
-              ),
-            );
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return SizedBox(
-              height: 120,
-              width: 130,
-              child: Center(
-                child: CircularProgressIndicator(
-                  value:
-                      loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                ),
-              ),
-            );
-          },
         ),
       ),
     );
@@ -666,7 +489,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
             ),
           ),
         ),
-        if (!isLast) Container(width: 3, height: 90, color: Colors.grey[300]),
+        Container(width: 3, height: 90, color: Colors.grey[300]),
       ],
     );
 
@@ -732,8 +555,8 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
     );
   }
 
-  static Widget _includedText(text) => Padding(
-    padding: EdgeInsets.only(bottom: 10),
+  static Widget _includedText(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
     child: Text('• $text', style: const TextStyle(fontSize: 15.5)),
   );
 }

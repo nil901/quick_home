@@ -248,7 +248,7 @@ class _HomeState extends ConsumerState<Home> {
                 ),
 
                 /// Sections
-                 SectionWidget(false),
+                SectionWidget(false),
               ],
             ),
           ),
@@ -321,7 +321,7 @@ class SectionWidget extends ConsumerWidget {
                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ServicesDetailsScreen(serviceId: item.id,),
+                              builder: (context) => ServicesDetailsScreen(),
                             ),
                           );
                       },

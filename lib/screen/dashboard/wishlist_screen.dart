@@ -9,6 +9,7 @@ import 'package:quick_home/model/wishlist_model.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/provide/cart_prov.dart';
+import 'package:quick_home/provide/wishlist_provider.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
 import 'package:quick_home/util/ratting.dart';
 
@@ -21,36 +22,46 @@ class WishlistScreen extends ConsumerStatefulWidget {
 
 class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   bool isLoading = false;
+  bool hasError = false;
+  String errorMessage = '';
+
   Future<void> wishlistApi(WidgetRef ref) async {
+    if (isLoading) return; // Prevent multiple simultaneous calls
+
     setState(() {
       isLoading = true;
+      hasError = false;
+      errorMessage = '';
     });
-    // print("helowwckxckdnkdfn");
+
     try {
-      final response = await ApiService.postRequest(wishlist, {
-        "user": AppPreference().getInt(PreferencesKey.userId),
-      });
-      print(response?.data['data']);
+      final userId = AppPreference().getInt(PreferencesKey.userId);
+      if (userId == null) {
+        throw Exception("User ID not found");
+      }
+
+      final response = await ApiService.postRequest(wishlist, {"user": userId});
+
+      if (response?.data == null) {
+        throw Exception("Invalid response from server");
+      }
+
       if (response.data['success'] == true) {
         final data = response.data['data'] as List;
-        setState(() {
-          isLoading = false;
-        });
-        print(data);
-
         ref.read(wishlistProvider.notifier).state =
             data.map((json) => WishlistModel.fromJson(json)).toList();
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        throw Exception(response.data['message'] ?? "Failed to load wishlist");
       }
     } catch (e) {
       setState(() {
+        hasError = true;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
         isLoading = false;
       });
-      print("Error fetching appointments: $e");
-      throw Exception("Failed to load data");
     }
   }
 
@@ -99,6 +110,57 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
       body:
           isLoading
               ? Center(child: CircularProgressIndicator(color: kprimary))
+              : hasError
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Error loading wishlist',
+                      style: TextStyle(fontSize: 16, color: Colors.red),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      errorMessage,
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => wishlistApi(ref),
+                      child: Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kprimary,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : wishlist.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/empty_wishlist.png',
+                      height: 120,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Your wishlist is empty',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Add items that you like to your wishlist',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              )
               : Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: width * 0.04,
@@ -263,10 +325,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                             MaterialPageRoute(
                                               builder:
                                                   (context) =>
-                                                      ServicesDetailsScreen(
-                                                        serviceId:
-                                                            item.service!.id,
-                                                      ),
+                                                      ServicesDetailsScreen(),
                                             ),
                                           );
                                         },
@@ -296,31 +355,41 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                   final response = await ApiService.postRequest(
                                     wishlistDelete,
                                     {
-                                      "user":
-                                          "${AppPreference().getInt(PreferencesKey.userId)}",
+                                      "user": AppPreference().getInt(
+                                        PreferencesKey.userId,
+                                      ),
                                       "wishlist_id":
                                           item.wishlist?.id.toString(),
                                     },
                                   );
-                                  print(response?.data['data']);
+
                                   if (response.data['success'] == true) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Item removed from wishlist',
+                                        ),
+                                        backgroundColor: Colors.green,
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
                                     wishlistApi(ref);
-                                    final data = response.data['data'] as List;
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    print(data);
                                   } else {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
+                                    throw Exception(
+                                      response.data['message'] ??
+                                          'Failed to remove item',
+                                    );
                                   }
                                 } catch (e) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  print("Error fetching appointments: $e");
-                                  throw Exception("Failed to load data");
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Failed to remove item: ${e.toString()}',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
                                 }
                               },
                               child: Image.asset(
