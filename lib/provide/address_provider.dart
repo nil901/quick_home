@@ -5,7 +5,6 @@ import '../prefs/app_preference.dart';
 import '../prefs/preferences_keys.dart';
 import '../screen/auth/login_screen.dart';
 
-
 class AddressService {
 
   Future<bool> deleteAddress({

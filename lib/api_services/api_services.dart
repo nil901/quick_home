@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quick_home/api_services/urls.dart';
+import 'package:quick_home/model/notification_model.dart';
 
 class ApiException implements Exception {
   final int? statusCode;
@@ -229,4 +230,44 @@ class ApiService {
   //     return _mapAndRethrow(e);
   //   }
   // }
+
+  Future<NotificationModel> getNotifications(
+    String token,
+    String userId,
+  ) async {
+    try {
+      print("🔄 Fetching notifications...");
+
+      final response = await _dio.post(
+        'notifications',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+          },
+        ),
+        data: {
+          'user': userId, // 👈 API ko ye field chahiye
+        },
+      );
+
+      print("*** Response ***");
+      print("🔗 URL: ${response.realUri}");
+      print("📡 Status Code: ${response.statusCode}");
+      print("📬 Headers: ${response.headers}");
+      print("📦 Body: ${response.data}");
+
+      if (response.statusCode == 200) {
+        print("✅ Notifications fetched successfully!");
+        return NotificationModel.fromJson(response.data);
+      } else {
+        print("❌ Failed with status: ${response.statusCode}");
+        throw Exception("Failed to load notifications");
+      }
+    } catch (e, st) {
+      print("❌ Exception in getNotifications(): $e");
+      print("📜 StackTrace: $st");
+      throw Exception("Error fetching notifications: $e");
+    }
+  }
 }

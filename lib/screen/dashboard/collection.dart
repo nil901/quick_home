@@ -6,7 +6,7 @@ class Payment {
   final String name;
   final String date;
   final String price;
-
+  
   Payment({
     required this.image,
     required this.title,

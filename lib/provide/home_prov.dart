@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:quick_home/api_services/urls.dart';
 import 'package:quick_home/model/bannar_model.dart';
 import 'package:quick_home/model/category_model.dart';
 import 'package:quick_home/model/home_model.dart';
+import 'package:quick_home/model/notification_model.dart';
 import 'package:quick_home/model/offers_model.dart';
 import 'package:quick_home/model/profile_model.dart';
 import 'package:quick_home/model/serviceModel.dart';
@@ -14,6 +16,7 @@ import 'package:quick_home/model/service_details_model.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/screen/dashboard/mid_screens/sub_categories_screen.dart';
+import 'package:http/http.dart' as http;
 
 class HomeServices {
   Future<void> bannarApi(WidgetRef ref) async {

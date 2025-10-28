@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quick_home/model/address_model.dart';
+import 'package:quick_home/api_services/api_services.dart';
+import 'package:quick_home/provide/notification_provider.dart';
 import 'package:quick_home/model/bannar_model.dart';
 import 'package:quick_home/model/booking_options_model.dart';
 import 'package:quick_home/model/cart_model.dart';
@@ -9,9 +11,11 @@ import 'package:quick_home/model/offers_model.dart';
 import 'package:quick_home/model/profile_model.dart';
 import 'package:quick_home/model/serviceModel.dart';
 import 'package:quick_home/model/service_details_model.dart';
+import 'package:quick_home/model/notification_model.dart';
 import 'package:quick_home/model/wishlist_model.dart';
 import 'package:quick_home/provide/address_provider.dart';
 
+final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
 
 final bannarProvider = StateProvider<List<BannerModel>>((ref) => []);
 final categoryProvider = StateProvider<List<CategoryModel>>((ref) => []);
@@ -22,13 +26,20 @@ final offerProvider = StateProvider<List<HomeModel>>((ref) => []);
 final wishlistProvider = StateProvider<List<WishlistModel>>((ref) => []);
 final cartProvider = StateProvider<List<CartModel>>((ref) => []);
 
-final serviceDetailsProvider = StateProvider<ServiceDetailsModel?>((ref) => null);
-final bookingDateProvider =  StateProvider<List<BookingDate>>((ref) => []);
-final bookingTimeProvider =  StateProvider<List<BookingTime>>((ref) => []);
-final serviceProvider =  StateProvider<List<ServiceProvider>>((ref) => []);
+final serviceDetailsProvider = StateProvider<ServiceDetailsModel?>(
+  (ref) => null,
+);
+final bookingDateProvider = StateProvider<List<BookingDate>>((ref) => []);
+final bookingTimeProvider = StateProvider<List<BookingTime>>((ref) => []);
+final serviceProvider = StateProvider<List<ServiceProvider>>((ref) => []);
 
 final profileProvider = StateProvider<ProfileModel?>((ref) => null);
 final addressDeleteProvider = Provider((ref) => AddressService());
+
+final notificationProvider =
+    StateNotifierProvider<NotificationNotifier, AsyncValue<NotificationModel>>((
+      ref,
+    ) {
+      return NotificationNotifier(ref.watch(apiServiceProvider));
+    });
 // final serviceDetailsProvider = StateProvider<ServiceDetailsModel?>((ref) => null);
-
-

@@ -1,176 +1,278 @@
+// ✅ Step 1: Import all required packages
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/color/colors.dart';
+import 'package:quick_home/prefs/app_preference.dart';
+import 'package:quick_home/prefs/preferences_keys.dart';
+import 'package:quick_home/provide/notification_provider.dart';
+import 'package:quick_home/model/notification_model.dart';
 
-class NotificationScreen extends StatefulWidget {
+class NotificationScreen extends ConsumerStatefulWidget {
+  const NotificationScreen({super.key});
+
   @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
+  ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
+class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   bool showUnread = false;
 
-  final List<Map<String, dynamic>> notifications = [
-    {
-      "title": "Your booking has been confirmed.",
-      "subtitle":
-          "Your Service is successfully booked. Our professional will reach you on time.",
-      "buttonText": "Track",
-      "isUnread": true,
-    },
-    {
-      "title": "Your service has started.",
-      "subtitle": "The service is now in progress at your location.",
-      "buttonText": "View",
-      "isUnread": true,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ Step 2: Fetch notifications from API
+    Future.microtask(() async {
+      try {
+        print("🔄 Fetching notifications from API...");
+
+        // ✅ Get token and userId from preferences
+        final token = AppPreference().getString(PreferencesKey.token) ?? '';
+        final userId = AppPreference().getInt(PreferencesKey.userId).toString();
+
+        await ref
+            .read(notificationProvider.notifier)
+            .fetchNotifications(token, userId);
+
+        print("✅ Notifications fetched successfully!");
+      } catch (e) {
+        print("❌ Error while fetching notifications: $e");
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> filteredNotifications =
-        showUnread
-            ? notifications.where((n) => n['isUnread'] == true).toList()
-            : notifications;
+    // ✅ Step 3: Watch provider
+    final notificationsAsync = ref.watch(notificationProvider);
+    print("📡 Provider State: $notificationsAsync");
 
     return Scaffold(
       backgroundColor: kwhite,
       appBar: AppBar(
         backgroundColor: kscoundPrimaryColor,
         titleSpacing: 0,
-        title: Text("Notifications", style: TextStyle(fontSize: 18)),
+        title: const Text("Notifications", style: TextStyle(fontSize: 18)),
         actions: [
           IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.pop(context),
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
+
+      // ✅ Step 4: Handle all states
+      body: notificationsAsync.when(
+        loading: () {
+          print("⏳ Notifications loading...");
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (error, _) {
+          print("❌ Provider Error: $error");
+          return Center(child: Text("Error: $error"));
+        },
+        data: (data) {
+          print("📩 Raw Notification Data: ${data.toString()}");
+
+          // ✅ Extract notifications list
+          final List<NotificationItem> allNotifications =
+              data.data?.notifications ?? [];
+
+          print("📬 Total Notifications: ${allNotifications.length}");
+
+          // ✅ Apply filter for unread
+          final filteredNotifications =
+              showUnread
+                  ? allNotifications.where((n) => n.readAt == null).toList()
+                  : allNotifications;
+
+          print(
+            "📊 Filter Applied: ${showUnread ? "Unread Only" : "All"} | Showing: ${filteredNotifications.length}",
+          );
+
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      showUnread = false;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: showUnread ? Colors.transparent : kprimary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      "All",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: showUnread ? Colors.black54 : Colors.white,
+                // ✅ Filter Buttons
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        print("🟢 Showing ALL notifications");
+                        setState(() {
+                          showUnread = false;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: showUnread ? Colors.transparent : kprimary,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          "All",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: showUnread ? Colors.black54 : Colors.white,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () {
+                        print("🟡 Showing only UNREAD notifications");
+                        setState(() {
+                          showUnread = true;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: showUnread ? kprimary : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          "Unread",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: showUnread ? kwhite : Colors.black54,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      showUnread = true;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: showUnread ?kprimary : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      "Unread",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: showUnread ?kwhite: Colors.black54,
-                      ),
-                    ),
-                  ),
+
+                const SizedBox(height: 16),
+
+                // ✅ Notifications List
+                Expanded(
+                  child:
+                      filteredNotifications.isEmpty
+                          ? const Center(child: Text("No notifications found."))
+                          : ListView.builder(
+                            itemCount: filteredNotifications.length,
+                            itemBuilder: (context, index) {
+                              final item = filteredNotifications[index];
+                              final title =
+                                  item.data?.message ?? "No message available";
+                              final subtitle =
+                                  item.data?.time ?? "No time available";
+                              final isUnread = item.readAt == null;
+
+                              print(
+                                "📨 Notification ${index + 1}: ${item.data?.message} | Unread: $isUnread",
+                              );
+
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    color:
+                                        isUnread
+                                            ? Colors.grey.shade100
+                                            : Colors.white,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (isUnread)
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            right: 12,
+                                            top: 8,
+                                          ),
+                                          width: 12,
+                                          height: 12,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.green,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        )
+                                      else
+                                        const SizedBox(width: 24),
+
+                                      // Message + Time + Button
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              title,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              subtitle,
+                                              style: const TextStyle(
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            GestureDetector(
+                                              onTap: () {
+                                                print(
+                                                  "👁️‍🗨️ View button tapped for notification: ${item.data?.message}",
+                                                );
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  border: Border.all(
+                                                    color: kprimary,
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                child: const Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 20,
+                                                    vertical: 7,
+                                                  ),
+                                                  child: Text(
+                                                    "View",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                 ),
               ],
             ),
-
-            SizedBox(height: 16),
-
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredNotifications.length,
-                itemBuilder: (context, index) {
-                  final item = filteredNotifications[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Green dot for unread
-                          if (item['isUnread'] == true)
-                            Container(
-                              margin: EdgeInsets.only(right: 12, top: 8),
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
-                              ),
-                            )
-                          else
-                            SizedBox(width: 24),
-
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item['title'],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  item['subtitle'],
-                                  style: TextStyle(color: Colors.black54),
-                                ),
-                                SizedBox(height: 8),
-                               Container(
-                                //height: 20,
-                                decoration: BoxDecoration(
-borderRadius: BorderRadius.circular(10),
-border: Border.all(color: kprimary,width: 1.5)
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 7),
-                                  child: Text(item['buttonText'],style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                                ),
-                               )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
