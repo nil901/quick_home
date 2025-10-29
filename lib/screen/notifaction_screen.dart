@@ -1,7 +1,6 @@
 // ✅ Step 1: Import all required packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
@@ -29,7 +28,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
         // ✅ Get token and userId from preferences
         final token = AppPreference().getString(PreferencesKey.token) ?? '';
-        final userId = AppPreference().getInt(PreferencesKey.userId).toString();
+        final userId =
+            AppPreference().getInt(PreferencesKey.userId)?.toString() ?? '';
 
         await ref
             .read(notificationProvider.notifier)
@@ -164,13 +164,16 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                             itemBuilder: (context, index) {
                               final item = filteredNotifications[index];
                               final title =
-                                  item.data?.message ?? "No message available";
+                                  item.data?.title ?? "No title available";
                               final subtitle =
+                                  item.data?.description ??
+                                  "No description available";
+                              final time =
                                   item.data?.time ?? "No time available";
                               final isUnread = item.readAt == null;
 
                               print(
-                                "📨 Notification ${index + 1}: ${item.data?.message} | Unread: $isUnread",
+                                "📨 Notification ${index + 1}: $title | Unread: $isUnread",
                               );
 
                               return Padding(
@@ -191,6 +194,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      // Green dot for unread
                                       if (isUnread)
                                         Container(
                                           margin: const EdgeInsets.only(
@@ -227,11 +231,19 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                                                 color: Colors.black54,
                                               ),
                                             ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              time,
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
                                             const SizedBox(height: 8),
                                             GestureDetector(
                                               onTap: () {
                                                 print(
-                                                  "👁️‍🗨️ View button tapped for notification: ${item.data?.message}",
+                                                  "👁️‍🗨️ View tapped for: $title",
                                                 );
                                               },
                                               child: Container(

@@ -315,11 +315,13 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                                   countStatus[index]++;
                                 });
                               },
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
                                 child: Text(
-                                  "+",
-                                  style: TextStyle(
+                                  '+',
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -387,38 +389,58 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                         ),
                         InkWell(
                           onTap: () async {
+                            print(
+                              "❤️ Tapped on: ${item.name} (ID: ${item.id}) | Current isWishlisted: ${item.isWishlisted}",
+                            );
+                            setState(() => isLoading = true);
+
+                            // 🔹 Optimistic UI Update (icon turant change ho)
+                            setState(() {
+                              item.isWishlisted = !(item.isWishlisted ?? false);
+                            });
+
                             try {
                               final response =
                                   await ApiService.postRequest(wishlistAdd, {
                                     "user": AppPreference().getInt(
                                       PreferencesKey.userId,
                                     ),
-                                    "service": item?.id.toString(),
+                                    "service": item.id.toString(),
                                     "wishlisted":
-                                        item.isWishlisted == true ? 0 : 1,
+                                        item.isWishlisted == true ? 1 : 0,
                                   });
-                              print(response?.data['data']);
+
+                              print("✅ Server Response: ${response.data}");
+
                               if (response.data['success'] == true) {
-                                HomeServices().subCategoriesApi(
+                                // ✅ Refresh list
+                                await HomeServices().SubcategoreyProductApi(
                                   ref,
-                                  item?.subcategoryId,
+                                  item.subcategoryId,
                                 );
-                                final data = response.data['data'] as List;
-                                setState(() {
-                                  isLoading = false;
-                                });
-                                print(data);
                               } else {
+                                print(
+                                  "⚠️ Server reported failure: ${response.data['message'] ?? 'No message'}",
+                                );
+                                // 🔹 Revert icon if failed
+                                setState(() {
+                                  item.isWishlisted =
+                                      !(item.isWishlisted ?? false);
+                                });
+                              }
+                            } catch (e) {
+                              print("❌ Exception on wishlist toggle: $e");
+                              // 🔹 Revert icon if error
+                              setState(() {
+                                item.isWishlisted =
+                                    !(item.isWishlisted ?? false);
+                              });
+                            } finally {
+                              if (mounted) {
                                 setState(() {
                                   isLoading = false;
                                 });
                               }
-                            } catch (e) {
-                              setState(() {
-                                isLoading = false;
-                              });
-                              print("Error fetching appointments: $e");
-                              throw Exception("Failed to load data");
                             }
                           },
                           child: Icon(
@@ -426,6 +448,10 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                                 ? Icons.favorite
                                 : Icons.favorite_border,
                             size: 20,
+                            color:
+                                item.isWishlisted == true
+                                    ? Colors.black
+                                    : Colors.grey,
                           ),
                         ),
                       ],

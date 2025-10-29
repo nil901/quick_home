@@ -2,7 +2,7 @@ class NotificationModel {
   bool? status;
   int? statusCode;
   String? message;
-  NotificationData? data; // renamed
+  NotificationData? data;
 
   NotificationModel({this.status, this.statusCode, this.message, this.data});
 
@@ -54,7 +54,7 @@ class NotificationItem {
   String? type;
   String? notifiableType;
   int? notifiableId;
-  NotificationDetail? data; // renamed inner Data
+  NotificationDetail? data;
   String? readAt;
   String? createdAt;
   String? updatedAt;
@@ -99,19 +99,34 @@ class NotificationItem {
 }
 
 class NotificationDetail {
-  String? message;
+  String? title;
+  String? description;
+  String? bookingId;
+  String? type;
   String? time;
 
-  NotificationDetail({this.message, this.time});
+  NotificationDetail({
+    this.title,
+    this.description,
+    this.bookingId,
+    this.type,
+    this.time,
+  });
 
   NotificationDetail.fromJson(Map<String, dynamic> json) {
-    message = json['message'];
+    title = json['title'];
+    description = json['description'];
+    bookingId = json['booking_id']?.toString();
+    type = json['type'];
     time = json['time'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['message'] = message;
+    data['title'] = title;
+    data['description'] = description;
+    data['booking_id'] = bookingId;
+    data['type'] = type;
     data['time'] = time;
     return data;
   }

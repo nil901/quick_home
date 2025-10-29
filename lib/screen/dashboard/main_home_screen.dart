@@ -62,7 +62,7 @@ class MainHomeScreen extends ConsumerWidget {
                       selectedTab == BottomTab.bookings,
                     ),
                     _navItem(
-                      "assets/images/like.png",
+                      "assets/images/booking.png",
                       "Wishlist",
                       selectedTab == BottomTab.Wishlist,
                     ),

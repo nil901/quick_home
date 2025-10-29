@@ -236,7 +236,7 @@ class ApiService {
     String userId,
   ) async {
     try {
-      print("🔄 Fetching notifications...");
+      print("🔄 Fetching notifications for user: $userId");
 
       final response = await _dio.post(
         'notifications',
@@ -247,11 +247,11 @@ class ApiService {
           },
         ),
         data: {
-          'user': userId, // 👈 API ko ye field chahiye
+          'user': userId, // 👈 backend expects user field
         },
       );
 
-      print("*** Response ***");
+      print("\n*** Response ***");
       print("🔗 URL: ${response.realUri}");
       print("📡 Status Code: ${response.statusCode}");
       print("📬 Headers: ${response.headers}");
@@ -259,10 +259,26 @@ class ApiService {
 
       if (response.statusCode == 200) {
         print("✅ Notifications fetched successfully!");
-        return NotificationModel.fromJson(response.data);
+
+        // Parsing response to NotificationModel
+        final model = NotificationModel.fromJson(response.data);
+
+        // 🧾 Optional: Console log of each notification
+        if (model.data?.notifications != null &&
+            model.data!.notifications!.isNotEmpty) {
+          for (var n in model.data!.notifications!) {
+            print(
+              "🛎️ ${n.data?.title ?? 'No Title'} | ${n.data?.description ?? 'No Description'} | Time: ${n.data?.time}",
+            );
+          }
+        } else {
+          print("ℹ️ No notifications found in response.");
+        }
+
+        return model;
       } else {
-        print("❌ Failed with status: ${response.statusCode}");
-        throw Exception("Failed to load notifications");
+        print("❌ Failed with status code: ${response.statusCode}");
+        throw Exception("Failed to load notifications (status != 200)");
       }
     } catch (e, st) {
       print("❌ Exception in getNotifications(): $e");
