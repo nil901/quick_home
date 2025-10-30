@@ -22,10 +22,10 @@ class WishlistModel {
 }
 
 class Wishlist {
-  dynamic? id;
-  dynamic? userId;
-  dynamic? serviceId;
-  dynamic? offerId;
+  dynamic id;
+  dynamic userId;
+  dynamic serviceId;
+  dynamic offerId;
   String? createdAt;
   String? updatedAt;
   Service? service;
@@ -66,9 +66,9 @@ class Wishlist {
 }
 
 class Service {
-  dynamic? id;
-  dynamic? categoryId;
-  dynamic? subcategoryId;
+  dynamic id;
+  dynamic categoryId;
+  dynamic subcategoryId;
   String? name;
   String? description;
   List<String>? whatsInclude;
@@ -91,7 +91,7 @@ class Service {
   bool? qwikpick;
   bool? beautyAndEasy;
   double? averageRating;
-  dynamic? totalReviews;
+  dynamic totalReviews;
   String? imageUrl;
 
   Service({
@@ -124,38 +124,51 @@ class Service {
     this.imageUrl,
   });
 
-  factory Service.fromJson(Map<String, dynamic> json) => Service(
-    id: json["id"],
-    categoryId: json["category_id"],
-    subcategoryId: json["subcategory_id"],
-    name: json["name"],
-    description: json["description"],
-    whatsInclude:
-        json["whats_include"] == null
-            ? []
-            : List<String>.from(json["whats_include"].map((x) => x)),
-    shortDescription: json["short_description"],
-    priceOnetime: json["price_onetime"],
-    priceOnetimeDescription: json["price_onetime_description"],
-    durationOnetime: json["duration_onetime"],
-    priceWeekly: json["price_weekly"],
-    priceWeeklyDescription: json["price_weekly_description"],
-    priceMonthly: json["price_monthly"],
-    priceMonthlyDescription: json["price_monthly_description"],
-    priceYearly: json["price_yearly"],
-    priceYearlyDescription: json["price_yearly_description"],
-    isArabic: json["is_arabic"],
-    duration: json["duration"],
-    status: json["status"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"],
-    media: json["media"],
-    qwikpick: json["qwikpick"],
-    beautyAndEasy: json["beauty_and_easy"],
-    totalReviews: json["total_reviews"],
-    averageRating: (json["average_rating"] ?? 0).toDouble(),
-    imageUrl: json["image_url"],
-  );
+  factory Service.fromJson(Map<String, dynamic> json) {
+    // Handle image_url type safety (can be String or List)
+    String? resolvedImage;
+    if (json["image_url"] is List) {
+      final list = json["image_url"] as List;
+      resolvedImage = list.isNotEmpty ? list.first.toString() : null;
+    } else if (json["image_url"] is String) {
+      resolvedImage = json["image_url"];
+    }
+
+    return Service(
+      id: json["id"],
+      categoryId: json["category_id"],
+      subcategoryId: json["subcategory_id"],
+      name: json["name"],
+      description: json["description"],
+      whatsInclude:
+          json["whats_include"] == null
+              ? []
+              : List<String>.from(
+                json["whats_include"].map((x) => x.toString()),
+              ),
+      shortDescription: json["short_description"],
+      priceOnetime: json["price_onetime"],
+      priceOnetimeDescription: json["price_onetime_description"],
+      durationOnetime: json["duration_onetime"],
+      priceWeekly: json["price_weekly"],
+      priceWeeklyDescription: json["price_weekly_description"],
+      priceMonthly: json["price_monthly"],
+      priceMonthlyDescription: json["price_monthly_description"],
+      priceYearly: json["price_yearly"],
+      priceYearlyDescription: json["price_yearly_description"],
+      isArabic: json["is_arabic"],
+      duration: json["duration"],
+      status: json["status"],
+      createdAt: json["created_at"],
+      updatedAt: json["updated_at"],
+      media: json["media"],
+      qwikpick: json["qwikpick"],
+      beautyAndEasy: json["beauty_and_easy"],
+      totalReviews: json["total_reviews"],
+      averageRating: (json["average_rating"] ?? 0).toDouble(),
+      imageUrl: resolvedImage,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -192,7 +205,6 @@ class Service {
 }
 
 class Offer {
-  // सध्या offer null आहे, पण structure ठेवला future साठी
   Offer();
 
   factory Offer.fromJson(Map<String, dynamic> json) => Offer();

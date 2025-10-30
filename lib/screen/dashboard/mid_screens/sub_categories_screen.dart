@@ -500,8 +500,10 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                           context,
                           MaterialPageRoute(
                             builder:
-                                (context) =>
-                                    ServicesDetailsScreen(serviceId: item.id),
+                                (context) => ServicesDetailsScreen(
+                                  serviceId: item.id,
+                                  name: item.name,
+                                ),
                           ),
                         );
                       },

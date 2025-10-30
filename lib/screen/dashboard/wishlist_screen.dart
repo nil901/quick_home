@@ -21,43 +21,36 @@ class WishlistScreen extends ConsumerStatefulWidget {
 
 class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   bool isLoading = false;
+
   Future<void> wishlistApi(WidgetRef ref) async {
     setState(() {
       isLoading = true;
     });
-    // print("helowwckxckdnkdfn");
     try {
       final response = await ApiService.postRequest(wishlist, {
         "user": AppPreference().getInt(PreferencesKey.userId),
       });
-      print(response?.data['data']);
+      print("📦 API Response: ${response?.data}");
       if (response.data['success'] == true) {
         final data = response.data['data'] as List;
-        setState(() {
-          isLoading = false;
-        });
-        print(data);
-
         ref.read(wishlistProvider.notifier).state =
             data.map((json) => WishlistModel.fromJson(json)).toList();
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        print("⚠️ Wishlist API returned success=false");
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print("❌ Error fetching wishlist: $e");
+      print("🔍 StackTrace: $stackTrace");
+    } finally {
       setState(() {
         isLoading = false;
       });
-      print("Error fetching appointments: $e");
-      throw Exception("Failed to load data");
     }
   }
 
   @override
   void initState() {
     wishlistApi(ref);
-    // TODO: implement initState
     super.initState();
   }
 
@@ -70,6 +63,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     const kscoundPrimaryColor = Color(0xFFE6F6FF);
     const kblack = Colors.black;
     final wishlist = ref.watch(wishlistProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -79,14 +73,14 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
           onTap: () {
             wishlistApi(ref);
           },
-          child: Text(
+          child: const Text(
             'My Wishlist',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -98,7 +92,14 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
       ),
       body:
           isLoading
-              ? Center(child: CircularProgressIndicator(color: kprimary))
+              ? const Center(child: CircularProgressIndicator(color: kprimary))
+              : (wishlist.isEmpty)
+              ? const Center(
+                child: Text(
+                  "No items in your wishlist",
+                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                ),
+              )
               : Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: width * 0.04,
@@ -108,6 +109,11 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                   itemCount: wishlist.length,
                   itemBuilder: (context, index) {
                     final item = wishlist[index];
+                    final service = item.service;
+
+                    // Safe check
+                    if (service == null) return const SizedBox.shrink();
+
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 15),
                       child: Stack(
@@ -128,13 +134,14 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Left: Image + Book Now / Counter + Options
+                                // Left: Image + Book Now
                                 Column(
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
-                                        item.service?.imageUrl ?? '',
+                                        service.imageUrl ??
+                                            'https://via.placeholder.com/150',
                                         height: 80,
                                         width: 80,
                                         fit: BoxFit.cover,
@@ -157,10 +164,9 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                         loadingBuilder: (
                                           context,
                                           child,
-                                          loadingProgress,
+                                          progress,
                                         ) {
-                                          if (loadingProgress == null)
-                                            return child;
+                                          if (progress == null) return child;
                                           return Container(
                                             height: 80,
                                             width: 80,
@@ -194,14 +200,6 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
-                                    // Text(
-                                    //   "options 4",
-                                    //   style: const TextStyle(
-                                    //     fontSize: 13,
-                                    //     fontWeight: FontWeight.w400,
-                                    //   ),
-                                    // ),
                                   ],
                                 ),
                                 const SizedBox(width: 12),
@@ -213,7 +211,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        item.service!.name.toString(),
+                                        service.name ?? "Unnamed Service",
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -221,16 +219,18 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        item.service!.shortDescription
-                                            .toString(),
+                                        service.shortDescription ??
+                                            "No description available",
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey[700],
                                         ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        "Starts at AED ${item.service!.priceOnetime}",
+                                        "Starts at AED ${service.priceOnetime ?? '0'}",
                                         style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
@@ -242,11 +242,11 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                         children: [
                                           RatingStarsComman(
                                             rating:
-                                                item.service!.averageRating ??
-                                                0,
+                                                service.averageRating ?? 0.0,
                                           ),
+                                          const SizedBox(width: 4),
                                           Text(
-                                            '(${item.service!.totalReviews} reviews)',
+                                            '(${service.totalReviews ?? 0} reviews)',
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: HexColor("#353535"),
@@ -254,7 +254,6 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                           ),
                                         ],
                                       ),
-
                                       const SizedBox(height: 15),
                                       InkWell(
                                         onTap: () {
@@ -264,8 +263,9 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                               builder:
                                                   (context) =>
                                                       ServicesDetailsScreen(
-                                                        serviceId:
-                                                            item.service!.id,
+                                                        serviceId: service.id,
+                                                        name:
+                                                            service.name ?? "",
                                                       ),
                                             ),
                                           );
@@ -286,7 +286,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                             ),
                           ),
 
-                          // 🗑 Delete Icon (Top Right)
+                          // 🗑 Delete Icon
                           Positioned(
                             top: 8,
                             right: 8,
@@ -302,30 +302,24 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                           item.wishlist?.id.toString(),
                                     },
                                   );
-                                  print(response?.data['data']);
+                                  print(
+                                    "🗑 Delete Response: ${response?.data}",
+                                  );
                                   if (response.data['success'] == true) {
+                                    print(
+                                      "✅ Wishlist item deleted successfully",
+                                    );
                                     wishlistApi(ref);
-                                    final data = response.data['data'] as List;
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    print(data);
                                   } else {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
+                                    print("⚠️ Wishlist delete failed");
                                   }
-                                } catch (e) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  print("Error fetching appointments: $e");
-                                  throw Exception("Failed to load data");
+                                } catch (e, stackTrace) {
+                                  print("❌ Error deleting wishlist item: $e");
+                                  print("🔍 StackTrace: $stackTrace");
                                 }
                               },
                               child: Image.asset(
                                 'assets/images/delete.png',
-                                //color: Colors.black54,
                                 height: 22,
                               ),
                             ),

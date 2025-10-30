@@ -342,6 +342,7 @@ class SectionWidget extends ConsumerWidget {
                                 builder:
                                     (context) => ServicesDetailsScreen(
                                       serviceId: item.id,
+                                      name: item.name,
                                     ),
                               ),
                             );

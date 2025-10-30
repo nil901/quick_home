@@ -22,8 +22,13 @@ import 'package:quick_home/util/size.dart';
 import 'package:quick_home/util/toast_msg.dart';
 
 class ServicesDetailsScreen extends ConsumerStatefulWidget {
-  const ServicesDetailsScreen({super.key, required this.serviceId});
+  const ServicesDetailsScreen({
+    super.key,
+    required this.serviceId,
+    required this.name,
+  });
   final int serviceId;
+  final String name;
   @override
   ConsumerState<ServicesDetailsScreen> createState() =>
       _ServicesDetailsScreenState();
@@ -40,10 +45,14 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
 
   bool _isLoading = false;
   Future<void> ServiceDetailsAPi(WidgetRef ref) async {
+    ref.read(serviceDetailsProvider.notifier).state = null;
     try {
       final response = await ApiService.postRequest(viewService, {
-        "service": widget.serviceId,
+        ""
+                "service":
+            widget.serviceId,
         "type": "",
+        "user": AppPreference().getInt(PreferencesKey.userId),
       });
 
       if (response.data['success'] == true) {
@@ -61,9 +70,6 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
     final serviceDetails = ref.watch(serviceDetailsProvider);
 
     final service = serviceDetails?.data?.service;
-    final selectedPlan = ref.watch(selectedPlanProvider);
-    final selectedMaterial = ref.watch(selectedMaterialProvider);
-    final selectedCount = ref.watch(cleanerCountProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -76,9 +82,15 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
         ),
         title: Row(
           children: [
-            Text(
-              isEnglish ? 'Ironing' : 'كي الملابس',
-              style: const TextStyle(color: Colors.black),
+            Flexible(
+              child: Text(
+                '${widget?.name}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -86,9 +98,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
       ),
       body:
           service == null
-              ? const Center(
-                child: CircularProgressIndicator(),
-              ) // loader while null
+              ? Center(child: CircularProgressIndicator())
               : Stack(
                 children: [
                   SingleChildScrollView(
@@ -96,7 +106,6 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Language Switch
                         Padding(
                           padding: const EdgeInsets.only(
                             top: 18,
@@ -106,47 +115,47 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  ServiceDetailsAPi(ref);
-                                  setState(() => isEnglish = true);
-                                },
-                                child: _langButton(
-                                  selected: isEnglish,
-                                  text: 'In English',
-                                ),
-                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     ServiceDetailsAPi(ref);
+                              //     setState(() => isEnglish = true);
+                              //   },
+                              //   child: _langButton(
+                              //     selected: isEnglish,
+                              //     text: 'In English',
+                              //   ),
+                              // ),
                               const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() => isEnglish = false);
-                                },
-                                child: _langButton(
-                                  selected: !isEnglish,
-                                  text: 'In Arabic',
-                                ),
-                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     setState(() => isEnglish = false);
+                              //   },
+                              //   child: _langButton(
+                              //     selected: !isEnglish,
+                              //     text: 'In Arabic',
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
                         // Top Image
-                        Center(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 16,
-                            ),
-                            height: 200,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: NetworkImage('${service?.imageUrl}'),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Center(
+                        //   child: Container(
+                        //     margin: const EdgeInsets.symmetric(
+                        //       vertical: 16,
+                        //       horizontal: 16,
+                        //     ),
+                        //     height: 200,
+                        //     decoration: BoxDecoration(
+                        //       color: Colors.grey[100],
+                        //       borderRadius: BorderRadius.circular(10),
+                        //       image: DecorationImage(
+                        //         image: NetworkImage('${service?.imageUrl}'),
+                        //         fit: BoxFit.cover,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                         // Title, Rating, Price, Book Now
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -154,7 +163,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                isEnglish ? '${service?.name}' : 'كي الملابس',
+                                '${service?.name}',
                                 style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
@@ -163,7 +172,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                               const SizedBox(height: 6),
                               Text(
                                 isEnglish
-                                    ? '${service?.shortDescription}'
+                                    ? '${service?.description}'
                                     : 'ملابس خالية من التجاعيد، نظيفة وجاهزة للارتداء في أي وقت.',
                                 style: const TextStyle(
                                   fontSize: 13,
@@ -202,26 +211,182 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
 
                                   const SizedBox(width: 8),
                                   const Spacer(),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xffE4F9FF),
-                                      foregroundColor: const Color(0xff004271),
-                                      elevation: 0,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 22,
-                                        vertical: 10,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                    onPressed: () {},
-                                    child: Text(
-                                      isEnglish ? 'Book Now' : 'احجز الآن',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
+                                  Builder(
+                                    builder: (context) {
+                                      bool showQuantity =
+                                          (serviceDetails
+                                                  ?.data
+                                                  ?.inCartQuantity ??
+                                              0) >
+                                          0;
+
+                                      if (showQuantity) {
+                                        return Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // ➖ Minus Button
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: const Color(
+                                                  0xffE4F9FF,
+                                                ),
+                                                foregroundColor: const Color(
+                                                  0xff004271,
+                                                ),
+                                                shape: const CircleBorder(),
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                elevation: 0,
+                                              ),
+                                              onPressed: () async {
+                                                final currentQty =
+                                                    serviceDetails
+                                                        ?.data
+                                                        ?.inCartQuantity ??
+                                                    0;
+
+                                                if (currentQty > 1) {
+                                                  await updateQuantity(
+                                                    serviceDetails!
+                                                        .data!
+                                                        .service!
+                                                        .id
+                                                        .toString(),
+                                                    currentQty - 1,
+                                                  );
+                                                  setState(() {});
+                                                } else {
+                                                  await updateQuantity(
+                                                    serviceDetails!
+                                                        .data!
+                                                        .service!
+                                                        .id
+                                                        .toString(),
+                                                    0,
+                                                  );
+                                                  setState(() {});
+                                                }
+                                              },
+                                              child: const Icon(
+                                                Icons.remove,
+                                                size: 18,
+                                              ),
+                                            ),
+
+                                            // Quantity Display
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 20,
+                                                    vertical: 8,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xffE4F9FF),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Text(
+                                                "${serviceDetails?.data?.inCartQuantity ?? 1}",
+                                                style: const TextStyle(
+                                                  color: Color(0xff004271),
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ),
+
+                                            // ➕ Plus Button
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: const Color(
+                                                  0xffE4F9FF,
+                                                ),
+                                                foregroundColor:
+                                                    (serviceDetails
+                                                                    ?.data
+                                                                    ?.allowIncrement ??
+                                                                0) ==
+                                                            0
+                                                        ? Colors
+                                                            .grey // disabled color
+                                                        : const Color(
+                                                          0xff004271,
+                                                        ),
+                                                shape: const CircleBorder(),
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                elevation: 0,
+                                              ),
+                                              onPressed:
+                                                  (serviceDetails
+                                                                  ?.data
+                                                                  ?.allowIncrement ??
+                                                              0) ==
+                                                          0
+                                                      ? null // disable button
+                                                      : () async {
+                                                        await updateQuantity(
+                                                          serviceDetails!
+                                                              .data!
+                                                              .service!
+                                                              .id
+                                                              .toString(),
+                                                          (serviceDetails
+                                                                      .data!
+                                                                      .inCartQuantity ??
+                                                                  0) +
+                                                              1,
+                                                        );
+                                                        setState(() {});
+                                                      },
+                                              child: const Icon(
+                                                Icons.add,
+                                                size: 18,
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      } else {
+                                        return ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xffE4F9FF,
+                                            ),
+                                            foregroundColor: const Color(
+                                              0xff004271,
+                                            ),
+                                            elevation: 0,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 22,
+                                              vertical: 10,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            await updateQuantity(
+                                              serviceDetails!.data!.service!.id
+                                                  .toString(),
+                                              1,
+                                            );
+                                            setState(() {});
+                                          },
+                                          child: Text(
+                                            isEnglish
+                                                ? 'Book Now'
+                                                : 'احجز الآن',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
                                   ),
                                 ],
                               ),
@@ -230,7 +395,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                         ),
                         const SizedBox(height: 22),
                         const Divider(thickness: 0.9),
-                        // About the Service
+
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -274,8 +439,10 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
 
                         const CleanerCountSelector(),
 
-                        MatrialOptions(matrial: service.materials!),
-                        SizedBox(height: 10),
+                        MaterialOptions(
+                          material: serviceDetails!.data!.service!,
+                        ),
+
                         Divider(),
                         ListView.builder(
                           shrinkWrap: true,
@@ -420,6 +587,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                         ), // tumhare FAQ ki class ka naam yahan daalo
                         const SizedBox(height: 20),
 
+                        ///buildQuantityOrBookButton(serviceDetails),
                         h50,
                       ],
                     ),
@@ -449,33 +617,6 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                         Expanded(
                           child: Consumer(
                             builder: (context, ref, _) {
-                              // final selectedPlan = ref.watch(
-                              //   selectedPlanProvider,
-                              // );
-                              // final selectedMaterial = ref.watch(
-                              //   selectedMaterialProvider,
-                              // );
-                              // final selectedCount =
-                              //     ref.watch(cleanerCountProvider) ?? 0;
-
-                              // double totalPrice = 0;
-
-                              // // ✅ Add plan price if selected
-                              // if (selectedPlan != null) {
-                              //   totalPrice +=
-                              //       double.tryParse(
-                              //         selectedPlan.pricePerTime ?? '0',
-                              //       ) ??
-                              //       0;
-                              // }
-
-                              // // ✅ Add material price * count
-                              // final materialPrice =
-                              //     double.tryParse(
-                              //       selectedMaterial?.materialPrice ?? '0',
-                              //     ) ??
-                              //     0;
-                              // totalPrice += materialPrice * selectedCount;
                               final selectedPlan = ref.watch(
                                 selectedPlanProvider,
                               );
@@ -490,7 +631,6 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
 
                               double totalPrice = 0;
 
-                              // ✅ Always add plan price * count
                               if (selectedPlan != null) {
                                 totalPrice +=
                                     (double.tryParse(
@@ -500,14 +640,15 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                     selectedCount;
                               }
 
-                              // ✅ Add material price * count only if material is selected
-                              if (selectedMaterial != null) {
+                              if (selectedMaterial == "With Material") {
                                 totalPrice +=
-                                    (double.tryParse(
-                                          selectedMaterial.materialPrice ?? '0',
-                                        ) ??
-                                        0) *
-                                    selectedCount;
+                                    (serviceDetails
+                                                ?.data
+                                                ?.service
+                                                ?.withMaterialPrice ??
+                                            0)
+                                        .toDouble() *
+                                    (selectedCount > 0 ? selectedCount : 1);
                               }
 
                               return ElevatedButton(
@@ -573,6 +714,158 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                 ],
               ),
     );
+  }
+
+  Widget buildQuantityOrBookButton(ServiceDetailsModel? serviceDetails) {
+    final qty = serviceDetails?.data?.inCartQuantity ?? 0;
+
+    if (qty > 0) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ➖ Minus Button
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xffE4F9FF),
+              foregroundColor: const Color(0xff004271),
+              shape: const CircleBorder(),
+              padding: const EdgeInsets.all(8),
+              elevation: 0,
+            ),
+            onPressed: () async {
+              final newQty = (qty - 1).clamp(0, 100); // 0 min, 100 max
+              await updateQuantity(
+                serviceDetails!.data!.service!.id.toString(),
+                newQty,
+              );
+              setState(() {});
+            },
+            child: const Icon(Icons.remove, size: 18),
+          ),
+
+          // Quantity Display
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xffE4F9FF),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              "$qty",
+              style: const TextStyle(
+                color: Color(0xff004271),
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+          ),
+
+          // ➕ Plus Button
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xffE4F9FF),
+              foregroundColor: const Color(0xff004271),
+              shape: const CircleBorder(),
+              padding: const EdgeInsets.all(8),
+              elevation: 0,
+            ),
+            onPressed: () async {
+              final newQty = (qty + 1).clamp(0, 100); // 0 min, 100 max
+              await updateQuantity(
+                serviceDetails!.data!.service!.id.toString(),
+                newQty,
+              );
+              setState(() {});
+            },
+            child: const Icon(Icons.add, size: 18),
+          ),
+        ],
+      );
+    } else {
+      return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xffE4F9FF),
+          foregroundColor: const Color(0xff004271),
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        onPressed: () async {
+          await updateQuantity(
+            serviceDetails!.data!.service!.id.toString(),
+            1, // start quantity
+          );
+          setState(() {});
+        },
+        child: Text(
+          isEnglish ? 'Book Now' : 'احجز الآن',
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      );
+    }
+  }
+
+  Future<void> updateQuantity(String cartId, int newQuantity) async {
+    try {
+      // 1️⃣ Update local cart immediately
+      ref.read(cartProvider.notifier).update((state) {
+        if (state == null) return state;
+        return state.map((item) {
+          if (item.id.toString() == cartId) {
+            return item.copyWith(quantity: newQuantity);
+          }
+          return item;
+        }).toList();
+      });
+
+      // 2️⃣ Call API
+      final response = await ApiService.postRequest(cartUpdateQuantity, {
+        "user": AppPreference().getInt(PreferencesKey.userId),
+        "service": cartId,
+        "quantity": newQuantity,
+      });
+
+      // 3️⃣ If API fails, rollback
+      if (response.data['status'] != true) {
+        // Optional: refresh service details from API
+        ServiceDetailsAPi(ref);
+
+        // Rollback local quantity
+        ref.read(serviceDetailsProvider.notifier).update((state) {
+          if (state == null) return state;
+          final currentData = state.data;
+          if (currentData == null) return state;
+
+          final updatedData = currentData.copyWith(
+            inCartQuantity: (currentData.inCartQuantity ?? 0) - 0,
+          );
+
+          return state.copyWith(data: updatedData);
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to update quantity")),
+        );
+      } else {
+        // ✅ If API success, update serviceDetails quantity too
+        ref.read(serviceDetailsProvider.notifier).update((state) {
+          if (state == null) return state;
+          final currentData = state.data;
+          if (currentData == null) return state;
+
+          final updatedData = currentData.copyWith(inCartQuantity: newQuantity);
+
+          return state.copyWith(data: updatedData);
+        });
+      }
+    } catch (e) {
+      print("Error updating quantity: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Something went wrong")));
+    }
   }
 
   static Widget _langButton({required bool selected, required String text}) {

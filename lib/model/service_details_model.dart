@@ -4,31 +4,57 @@ class ServiceDetailsModel {
   String? message;
   ServiceData? data;
 
-  ServiceDetailsModel({
-    this.success,
-    this.statusCode,
-    this.message,
-    this.data,
-  });
+  ServiceDetailsModel({this.success, this.statusCode, this.message, this.data});
 
   factory ServiceDetailsModel.fromJson(Map<String, dynamic> json) {
     return ServiceDetailsModel(
-      success: json['success'],
-      statusCode: json['status_code'],
-      message: json['message'],
+      success: json['success'] as bool?,
+      statusCode: json['status_code'] as int?,
+      message: json['message'] as String?,
       data: json['data'] != null ? ServiceData.fromJson(json['data']) : null,
+    );
+  }
+
+  ServiceDetailsModel copyWith({
+    bool? success,
+    int? statusCode,
+    String? message,
+    ServiceData? data,
+  }) {
+    return ServiceDetailsModel(
+      success: success ?? this.success,
+      statusCode: statusCode ?? this.statusCode,
+      message: message ?? this.message,
+      data: data ?? this.data,
     );
   }
 }
 
 class ServiceData {
   Service? service;
+  int? inCartQuantity;
+  int? allowIncrement;
 
-  ServiceData({this.service});
+  ServiceData({this.service, this.inCartQuantity, this.allowIncrement});
 
   factory ServiceData.fromJson(Map<String, dynamic> json) {
     return ServiceData(
-      service: json['service'] != null ? Service.fromJson(json['service']) : null,
+      service:
+          json['service'] != null ? Service.fromJson(json['service']) : null,
+      inCartQuantity: json['in_cart_quantity'] as int?,
+      allowIncrement: json['allow_increment'] as int?,
+    );
+  }
+
+  ServiceData copyWith({
+    Service? service,
+    int? inCartQuantity,
+    int? allowIncrement,
+  }) {
+    return ServiceData(
+      service: service ?? this.service,
+      inCartQuantity: inCartQuantity ?? this.inCartQuantity,
+      allowIncrement: allowIncrement ?? this.allowIncrement,
     );
   }
 }
@@ -59,8 +85,12 @@ class Service {
   Map<String, FAQItem>? faq;
   List<SubscriptionPlan>? subscriptionPlans;
   List<MaterialItem>? materials;
-  List<dynamic>? servicePersons;
+  List<ServicePerson>? servicePersons;
   Prices? prices;
+  int? withMaterialPrice;
+  int? withoutMaterialPrice;
+  bool? isWishlisted;
+  String? onetimePrice;
 
   Service({
     this.id,
@@ -90,61 +120,85 @@ class Service {
     this.materials,
     this.servicePersons,
     this.prices,
+    this.withMaterialPrice,
+    this.withoutMaterialPrice,
+    this.isWishlisted,
+    this.onetimePrice,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
-      id: json['id'],
-      categoryId: json['category_id'],
-      subcategoryId: json['subcategory_id'],
-      name: json['name'],
-      description: json['description'],
+      id: json['id'] as int?,
+      categoryId: json['category_id'] as int?,
+      subcategoryId: json['subcategory_id'] as int?,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
       whatsInclude: json['whats_include'] != null
           ? List<String>.from(json['whats_include'])
           : [],
-      shortDescription: json['short_description'],
-      isArabic: json['is_arabic'],
-      duration: json['duration'],
-      status: json['status'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      shortDescription: json['short_description'] as String?,
+      isArabic: json['is_arabic'] as bool?,
+      duration: json['duration'] as String?,
+      status: json['status'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
       media: json['media'] != null ? List<String>.from(json['media']) : [],
-      qwikpick: json['qwikpick'],
-      beautyAndEasy: json['beauty_and_easy'],
+      qwikpick: json['qwikpick'] as bool?,
+      beautyAndEasy: json['beauty_and_easy'] as bool?,
       averageRating: (json['average_rating'] ?? 0).toDouble(),
       totalReviews: json['total_reviews'] ?? 0,
-      imageUrl: json['image_url'],
-      category:
-          json['category'] != null ? Category.fromJson(json['category']) : null,
+      imageUrl: json['image_url'] as String?,
+      category: json['category'] != null
+          ? Category.fromJson(json['category'])
+          : null,
       subcategory: json['subcategory'] != null
           ? Subcategory.fromJson(json['subcategory'])
           : null,
       requirements: json['requirements'] != null
           ? List<Requirement>.from(
-              json['requirements'].map((x) => Requirement.fromJson(x)))
+              json['requirements'].map((x) => Requirement.fromJson(x)),
+            )
           : [],
       processes: json['processes'] != null
           ? List<Process>.from(
-              json['processes'].map((x) => Process.fromJson(x)))
+              json['processes'].map((x) => Process.fromJson(x)),
+            )
           : [],
       faq: json['faq'] != null
-          ? Map.from(json['faq'])
-              .map((k, v) => MapEntry(k, FAQItem.fromJson(v)))
+          ? (json['faq'] as Map<String, dynamic>).map(
+              (key, value) =>
+                  MapEntry(key, FAQItem.fromJson(value as Map<String, dynamic>)),
+            )
           : {},
       subscriptionPlans: json['subscription_plans'] != null
-          ? List<SubscriptionPlan>.from(json['subscription_plans']
-              .map((x) => SubscriptionPlan.fromJson(x)))
+          ? List<SubscriptionPlan>.from(
+              json['subscription_plans'].map(
+                (x) => SubscriptionPlan.fromJson(x),
+              ),
+            )
           : [],
       materials: json['materials'] != null
           ? List<MaterialItem>.from(
-              json['materials'].map((x) => MaterialItem.fromJson(x)))
+              json['materials'].map((x) => MaterialItem.fromJson(x)),
+            )
           : [],
-      servicePersons: json['service_persons'] ?? [],
+      servicePersons: json['service_persons'] != null
+          ? List<ServicePerson>.from(
+              json['service_persons'].map(
+                (x) => ServicePerson.fromJson(x),
+              ),
+            )
+          : [],
       prices:
           json['prices'] != null ? Prices.fromJson(json['prices']) : null,
+      withMaterialPrice: json['withMaterialPrice'] as int?,
+      withoutMaterialPrice: json['withoutMaterialPrice'] as int?,
+      isWishlisted: json['is_wishlisted'] as bool?,
+      onetimePrice: json['onetime_price'] as String?,
     );
   }
 }
+
 
 class Category {
   int? id;
@@ -169,14 +223,14 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      status: json['status'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      image: json['image'],
-      imageUrl: json['image_url'],
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      status: json['status'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      image: json['image'] as String?,
+      imageUrl: json['image_url'] as String?,
     );
   }
 }
@@ -206,15 +260,15 @@ class Subcategory {
 
   factory Subcategory.fromJson(Map<String, dynamic> json) {
     return Subcategory(
-      id: json['id'],
-      categoryId: json['category_id'],
-      name: json['name'],
-      description: json['description'],
-      status: json['status'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      image: json['image'],
-      imageUrl: json['image_url'],
+      id: json['id'] as int?,
+      categoryId: json['category_id'] as int?,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      status: json['status'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      image: json['image'] as String?,
+      imageUrl: json['image_url'] as String?,
     );
   }
 }
@@ -240,13 +294,13 @@ class Requirement {
 
   factory Requirement.fromJson(Map<String, dynamic> json) {
     return Requirement(
-      id: json['id'],
-      serviceId: json['service_id'],
-      title: json['title'],
-      image: json['image'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      imageUrl: json['image_url'],
+      id: json['id'] as int?,
+      serviceId: json['service_id'] as int?,
+      title: json['title'] as String?,
+      image: json['image'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      imageUrl: json['image_url'] as String?,
     );
   }
 }
@@ -276,15 +330,15 @@ class Process {
 
   factory Process.fromJson(Map<String, dynamic> json) {
     return Process(
-      id: json['id'],
-      serviceId: json['service_id'],
-      title: json['title'],
-      description: json['description'],
-      image: json['image'],
-      order: json['order'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      imageUrl: json['image_url'],
+      id: json['id'] as int?,
+      serviceId: json['service_id'] as int?,
+      title: json['title'] as String?,
+      description: json['description'] as String?,
+      image: json['image'] as String?,
+      order: json['order'] as int?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      imageUrl: json['image_url'] as String?,
     );
   }
 }
@@ -310,13 +364,13 @@ class FAQItem {
 
   factory FAQItem.fromJson(Map<String, dynamic> json) {
     return FAQItem(
-      id: json['id'],
-      question: json['question'],
-      answer: json['answer'],
-      status: json['status'],
-      serviceId: json['service_id'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      id: json['id'] as int?,
+      question: json['question'] as String?,
+      answer: json['answer'] as String?,
+      status: json['status'] as int?,
+      serviceId: json['service_id'] as int?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
     );
   }
 }
@@ -346,15 +400,15 @@ class SubscriptionPlan {
 
   factory SubscriptionPlan.fromJson(Map<String, dynamic> json) {
     return SubscriptionPlan(
-      id: json['id'],
-      serviceId: json['service_id'],
-      frequencyType: json['frequency_type'],
-      noOfTimes: json['no_of_times'],
-      duration: json['duration'],
-      pricePerTime: json['price_per_time'],
-      description: json['description'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      id: json['id'] as int?,
+      serviceId: json['service_id'] as int?,
+      frequencyType: json['frequency_type'] as String?,
+      noOfTimes: json['no_of_times'] as int?,
+      duration: json['duration'] as int?,
+      pricePerTime: json['price_per_time'] as String?,
+      description: json['description'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
     );
   }
 }
@@ -384,15 +438,53 @@ class MaterialItem {
 
   factory MaterialItem.fromJson(Map<String, dynamic> json) {
     return MaterialItem(
-      id: json['id'],
-      serviceId: json['service_id'],
-      materialName: json['material_name'],
-      materialDescription: json['material_description'],
-      applicableTo: json['applicable_to'],
-      materialPrice: json['material_price'],
-      materialImage: json['material_image'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      id: json['id'] as int?,
+      serviceId: json['service_id'] as int?,
+      materialName: json['withMaterialPrice'] as String?,
+      materialDescription: json['material_description'] as String?,
+      applicableTo: json['applicable_to'] as String?,
+      materialPrice: json['material_price'] as String?,
+      materialImage: json['material_image'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+    );
+  }
+}
+
+class ServicePerson {
+  int? id;
+  String? name;
+  String? email;
+  String? phone;
+  String? role;
+  String? address;
+  String? createdAt;
+  String? updatedAt;
+  String? imageUrl;
+
+  ServicePerson({
+    this.id,
+    this.name,
+    this.email,
+    this.phone,
+    this.role,
+    this.address,
+    this.createdAt,
+    this.updatedAt,
+    this.imageUrl,
+  });
+
+  factory ServicePerson.fromJson(Map<String, dynamic> json) {
+    return ServicePerson(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      email: json['email'] as String?,
+      phone: json['phone'] as String?,
+      role: json['role'] as String?,
+      address: json['address'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      imageUrl: json['image_url'] as String?,
     );
   }
 }
@@ -422,15 +514,15 @@ class Prices {
 
   factory Prices.fromJson(Map<String, dynamic> json) {
     return Prices(
-      priceOnetime: json['price_onetime'],
-      priceOnetimeDescription: json['price_onetime_description'],
-      durationOnetime: json['duration_onetime'],
-      priceWeekly: json['price_weekly'],
-      priceWeeklyDescription: json['price_weekly_description'],
-      priceMonthly: json['price_monthly'],
-      priceMonthlyDescription: json['price_monthly_description'],
-      priceYearly: json['price_yearly'],
-      priceYearlyDescription: json['price_yearly_description'],
+      priceOnetime: json['price_onetime'] as String?,
+      priceOnetimeDescription: json['price_onetime_description'] as String?,
+      durationOnetime: json['duration_onetime'] as String?,
+      priceWeekly: json['price_weekly'] as String?,
+      priceWeeklyDescription: json['price_weekly_description'] as String?,
+      priceMonthly: json['price_monthly'] as String?,
+      priceMonthlyDescription: json['price_monthly_description'] as String?,
+      priceYearly: json['price_yearly'] as String?,
+      priceYearlyDescription: json['price_yearly_description'] as String?,
     );
   }
 }
