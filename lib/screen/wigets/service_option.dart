@@ -3,14 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/model/service_details_model.dart';
 
+/// 🔹 Riverpod Providers
 final selectedPlanProvider = StateProvider<SubscriptionPlan?>((ref) => null);
+final showAddToCartProvider = StateProvider<bool>((ref) => false);
+
 class ServiceOptions extends ConsumerStatefulWidget {
   final List<SubscriptionPlan> plans;
+  final VoidCallback? onPlanSelected;
 
-  const ServiceOptions({
-    super.key,
-    required this.plans,
-  });
+  const ServiceOptions({super.key, required this.plans, this.onPlanSelected});
 
   @override
   ConsumerState<ServiceOptions> createState() => _ServiceOptionsState();
@@ -19,6 +20,7 @@ class ServiceOptions extends ConsumerStatefulWidget {
 class _ServiceOptionsState extends ConsumerState<ServiceOptions> {
   int? expandedIndex;
   int? selectedIndex;
+  bool hasRemoved = false; // ✅ Added: prevent multiple removals
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,7 @@ class _ServiceOptionsState extends ConsumerState<ServiceOptions> {
     );
   }
 
-  /// Horizontal plans list with Riverpod selection
+  /// 🔹 Horizontal plans list with Riverpod + Unselect feature
   Widget buildPlansList(List<SubscriptionPlan> plans) {
     if (plans.isEmpty) return const Text("No plans available.");
 
@@ -81,15 +83,29 @@ class _ServiceOptionsState extends ConsumerState<ServiceOptions> {
           final isSelected = selectedIndex == index;
 
           return GestureDetector(
-            onTap: () {
+            onTap: () async {
+              final currentSelected = selectedIndex;
+
               setState(() {
-                selectedIndex = index; // Highlight selected
+                // 👇 Unselect if same plan tapped again
+                if (currentSelected == index) {
+                  selectedIndex = null;
+                  ref.read(selectedPlanProvider.notifier).state = null;
+                } else {
+                  selectedIndex = index;
+                  ref.read(selectedPlanProvider.notifier).state = plan;
+                }
               });
 
-              // ✅ Update Riverpod provider
-              ref.read(selectedPlanProvider.notifier).state = plan;
+              // Hide Add to Cart button when changing selection
+              ref.read(showAddToCartProvider.notifier).state = false;
 
-              // ✅ Optional: print price
+              // ✅ Only trigger callback once
+              if (!hasRemoved && widget.onPlanSelected != null) {
+                widget.onPlanSelected!();
+                hasRemoved = true;
+              }
+
               print("Selected plan price: ${plan.pricePerTime}");
             },
             child: AnimatedContainer(
@@ -107,7 +123,7 @@ class _ServiceOptionsState extends ConsumerState<ServiceOptions> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Top: description + price
+                  // 🔸 Top: description + price
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(10),
@@ -143,11 +159,15 @@ class _ServiceOptionsState extends ConsumerState<ServiceOptions> {
                       ),
                     ),
                   ),
-                  // Bottom: plan frequency
+
+                  // 🔹 Bottom: plan frequency
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? kscoundPrimaryColor : Colors.blue.shade50,
+                      color:
+                          isSelected
+                              ? kscoundPrimaryColor
+                              : Colors.blue.shade50,
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(12),
                         bottomRight: Radius.circular(12),

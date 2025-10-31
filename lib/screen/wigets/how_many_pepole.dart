@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/color/colors.dart';
-final cleanerCountProvider = StateProvider<int?>((ref) => null);
 
+final cleanerCountProvider = StateProvider<int?>((ref) => null);
+final showAddToCartProvider = StateProvider<bool>((ref) => false);
 
 class CleanerCountSelector extends ConsumerStatefulWidget {
   const CleanerCountSelector({super.key});
@@ -26,10 +27,7 @@ class _CleanerCountSelectorState extends ConsumerState<CleanerCountSelector> {
         child: ExpansionTile(
           title: const Text(
             "How many cleaners do you need?",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           iconColor: Colors.black,
           collapsedIconColor: Colors.black54,
@@ -45,13 +43,24 @@ class _CleanerCountSelectorState extends ConsumerState<CleanerCountSelector> {
 
                   return GestureDetector(
                     onTap: () {
-                      ref.read(cleanerCountProvider.notifier).state = number;
+                      // ✅ Toggle logic — same number dubara tap karne pe unselect
+                      if (isSelected) {
+                        ref.read(cleanerCountProvider.notifier).state = null;
+                        ref.read(showAddToCartProvider.notifier).state = false;
+                      } else {
+                        ref.read(cleanerCountProvider.notifier).state = number;
+                        ref.read(showAddToCartProvider.notifier).state = true;
+                      }
                     },
-                    child: Container(
-                      width: 100,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 60,
                       margin: const EdgeInsets.symmetric(horizontal: 6),
                       decoration: BoxDecoration(
-                        color: HexColor("#E4F9FF"),
+                        color:
+                            isSelected
+                                ? kprimary.withOpacity(0.1)
+                                : HexColor("#E4F9FF"),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: isSelected ? kprimary : HexColor("#E4F9FF"),

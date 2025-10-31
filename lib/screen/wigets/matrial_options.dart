@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/model/service_details_model.dart';
 
+/// 🔹 Providers
 final selectedMaterialProvider = StateProvider<String?>((ref) => null);
 final cardClickStateProvider = StateProvider<bool>((ref) => false);
+final showAddToCartProvider = StateProvider<bool>((ref) => false);
 
 class MaterialOptions extends ConsumerStatefulWidget {
   final Service material;
@@ -20,8 +22,6 @@ class _MaterialOptionsState extends ConsumerState<MaterialOptions> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedMaterial = ref.watch(selectedMaterialProvider);
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(12),
       child: Theme(
@@ -37,17 +37,28 @@ class _MaterialOptionsState extends ConsumerState<MaterialOptions> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // 🔹 With Material
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedIndex = 1;
+                      // 👇 If same card tapped again → unselect
+                      if (selectedIndex == 1) {
+                        selectedIndex = null;
+                        ref.read(selectedMaterialProvider.notifier).state =
+                            null;
+                        ref.read(cardClickStateProvider.notifier).state = false;
+                      } else {
+                        selectedIndex = 1;
+                        ref.read(selectedMaterialProvider.notifier).state =
+                            "With Material";
+                        ref.read(cardClickStateProvider.notifier).state = true;
+                      }
                     });
-                    ref.read(selectedMaterialProvider.notifier).state =
-                        "With Material";
-                    ref.read(cardClickStateProvider.notifier).state = true;
-                    print("Selected: With Material");
+                    ref.read(showAddToCartProvider.notifier).state = false;
+                    print("Selected: ${ref.read(selectedMaterialProvider)}");
                   },
-                  child: Container(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
                     width: 160,
                     height: 70,
                     margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -91,14 +102,24 @@ class _MaterialOptionsState extends ConsumerState<MaterialOptions> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedIndex = 0;
+                      // 👇 If same card tapped again → unselect
+                      if (selectedIndex == 0) {
+                        selectedIndex = null;
+                        ref.read(selectedMaterialProvider.notifier).state =
+                            null;
+                        ref.read(cardClickStateProvider.notifier).state = false;
+                      } else {
+                        selectedIndex = 0;
+                        ref.read(selectedMaterialProvider.notifier).state =
+                            "Without Material";
+                        ref.read(cardClickStateProvider.notifier).state = false;
+                      }
                     });
-                    ref.read(selectedMaterialProvider.notifier).state =
-                        "Without Material";
-                    ref.read(cardClickStateProvider.notifier).state = false;
-                    print("Selected: Without Material");
+                    ref.read(showAddToCartProvider.notifier).state = false;
+                    print("Selected: ${ref.read(selectedMaterialProvider)}");
                   },
-                  child: Container(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
                     width: 160,
                     height: 70,
                     margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -137,57 +158,6 @@ class _MaterialOptionsState extends ConsumerState<MaterialOptions> {
                     ),
                   ),
                 ),
-
-                // 🔹 With Material
-                //   GestureDetector(
-                //     onTap: () {
-                //       setState(() {
-                //         selectedIndex = 1;
-                //       });
-                //       ref.read(selectedMaterialProvider.notifier).state =
-                //           "With Material";
-                //       ref.read(cardClickStateProvider.notifier).state = true;
-                //       print("Selected: With Material");
-                //     },
-                //     child: Container(
-                //       width: 160,
-                //       height: 70,
-                //       margin: const EdgeInsets.symmetric(horizontal: 6),
-                //       decoration: BoxDecoration(
-                //         color: const Color(0xFFE4F9FF),
-                //         borderRadius: BorderRadius.circular(20),
-                //         border: Border.all(
-                //           color:
-                //               selectedIndex == 1
-                //                   ? kprimary
-                //                   : const Color(0xFFE4F9FF),
-                //           width: 2,
-                //         ),
-                //       ),
-                //       child: Column(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           const Text(
-                //             "With Material",
-                //             style: TextStyle(
-                //               fontSize: 13,
-                //               fontWeight: FontWeight.w600,
-                //               color: Colors.black87,
-                //             ),
-                //           ),
-                //           const SizedBox(height: 6),
-                //           Text(
-                //             "+ AED ${widget.material.withMaterialPrice ?? 0}",
-                //             style: TextStyle(
-                //               fontSize: 13,
-                //               fontWeight: FontWeight.bold,
-                //               color: selectedIndex == 1 ? kprimary : Colors.black,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
               ],
             ),
           ],
