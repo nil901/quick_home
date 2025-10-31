@@ -12,6 +12,7 @@ import 'package:quick_home/model/service_details_model.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/provide/home_prov.dart';
+import 'package:quick_home/screen/dashboard/cart_screen.dart';
 import 'package:quick_home/screen/dashboard/home_Screen.dart';
 import 'package:quick_home/screen/wigets/faq_comman.dart';
 import 'package:quick_home/screen/wigets/how_many_pepole.dart';
@@ -811,13 +812,122 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                       }
 
                                       return ElevatedButton(
-                                        onPressed: () {
-                                          ref
-                                              .read(
-                                                showAddToCartProvider.notifier,
-                                              )
-                                              .state = true;
-                                          setState(() {});
+                                        onPressed: () async {
+                                          final selectedPlan = ref.read(
+                                            selectedPlanProvider,
+                                          );
+                                          final selectedCount =
+                                              ref.read(cleanerCountProvider) ??
+                                              0;
+                                          final withMaterial =
+                                              ref.read(cardClickStateProvider)
+                                                  ? 1
+                                                  : 0;
+
+                                          if (selectedPlan == null) {
+                                            Utils().showTost(
+                                              "Please select a plan first",
+                                            );
+                                            return;
+                                          }
+
+                                          try {
+                                            Dio dio = Dio();
+
+                                            FormData
+                                            formData = FormData.fromMap({
+                                              "user": AppPreference().getInt(
+                                                PreferencesKey.userId,
+                                              ),
+                                              "service": widget.serviceId,
+                                              "package": selectedPlan.id,
+                                              "material": withMaterial,
+                                              "providersCount": selectedCount,
+                                            });
+
+                                            // Debugging ke liye print
+                                            formData.fields.forEach(
+                                              (f) =>
+                                                  print("${f.key}: ${f.value}"),
+                                            );
+
+                                            final response = await dio.post(
+                                              "http://admin.qwikhom.ae/api/addToCart",
+                                              data: formData,
+                                            );
+
+                                            if (response.data['status'] ==
+                                                true) {
+                                              print(
+                                                "✅ Added to cart successfully",
+                                              );
+                                              Utils().showTost(
+                                                "Added to cart successfully",
+                                              );
+
+                                              // ✅ Navigate to CartScreen
+
+                                              // 🧹 After coming back → clear cache + refresh UI
+                                              try {
+                                                print(
+                                                  "🔄 Trying to clear cache...",
+                                                );
+
+                                                ref.invalidate(
+                                                  selectedPlanProvider,
+                                                );
+                                                ref.invalidate(
+                                                  selectedMaterialProvider,
+                                                );
+                                                ref.invalidate(
+                                                  cleanerCountProvider,
+                                                );
+                                                ref.invalidate(
+                                                  cardClickStateProvider,
+                                                );
+                                                ref.invalidate(
+                                                  showAddToCartProvider,
+                                                );
+
+                                                print(
+                                                  "🧹 Cache cleared successfully! ✅",
+                                                );
+                                                await Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (context) =>
+                                                            const CartScreen(),
+                                                  ),
+                                                );
+
+                                                // 🔁 Full rebuild trigger
+                                                if (context.mounted) {
+                                                  setState(() {});
+                                                }
+
+                                                print(
+                                                  "🔁 Page fully refreshed!",
+                                                );
+                                              } catch (e) {
+                                                print(
+                                                  "⚠️ Cache clear error: $e",
+                                                );
+                                              }
+                                            } else {
+                                              print(
+                                                "❌ Failed: ${response.data['message']}",
+                                              );
+                                              Utils().showTost(
+                                                "Failed: ${response.data['message']}",
+                                              );
+                                            }
+                                          } catch (e) {
+                                            print("⚠️ Error: $e");
+                                            Utils().showTost(
+                                              "Something went wrong",
+                                            );
+                                          }
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: const Color(
@@ -844,88 +954,30 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                 // 🟧 ADD TO CART BUTTON
                                 Expanded(
                                   child: ElevatedButton(
-                                    onPressed:
-                                        isButtonDisabled
-                                            ? null
-                                            : () async {
-                                              setState(() {
-                                                isButtonDisabled = true;
-                                              });
-
-                                              try {
-                                                Dio dio = Dio();
-
-                                                FormData
-                                                formData = FormData.fromMap({
-                                                  "user": AppPreference()
-                                                      .getInt(
-                                                        PreferencesKey.userId,
-                                                      ),
-                                                  "service": widget.serviceId,
-                                                  "package":
-                                                      ref
-                                                          .read(
-                                                            selectedPlanProvider,
-                                                          )
-                                                          ?.id,
-                                                  "material":
-                                                      ref.read(
-                                                            cardClickStateProvider,
-                                                          )
-                                                          ? 1
-                                                          : 0,
-                                                  "providersCount":
-                                                      ref.read(
-                                                        cleanerCountProvider,
-                                                      ) ??
-                                                      0,
-                                                });
-
-                                                formData.fields.forEach(
-                                                  (f) => print(
-                                                    "${f.key}: ${f.value}",
-                                                  ),
-                                                );
-
-                                                final response = await dio.post(
-                                                  "http://admin.qwikhom.ae/api/addToCart",
-                                                  data: formData,
-                                                );
-
-                                                if (response.data['status'] ==
-                                                    true) {
-                                                  print(
-                                                    "✅ Added to cart successfully",
-                                                  );
-                                                  Utils().showTost(
-                                                    "Added to cart successfully",
-                                                  );
-                                                } else {
-                                                  print(
-                                                    "❌ Failed: ${response.data['message']}",
-                                                  );
-                                                  Utils().showTost(
-                                                    "Failed: ${response.data['message']}",
-                                                  );
-                                                  setState(() {
-                                                    isButtonDisabled = false;
-                                                  });
-                                                }
-                                              } catch (e) {
-                                                print("⚠️ Error: $e");
-                                                Utils().showTost(
-                                                  "Something went wrong",
-                                                );
-                                                setState(() {
-                                                  isButtonDisabled = false;
-                                                });
-                                              }
-                                            },
+                                    onPressed: () {
+                                      // ✅ Navigate to Cart Screen
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => const CartScreen(),
+                                        ),
+                                      ).then((_) {
+                                        // ✅ Back aane ke baad cache clear hoga
+                                        ref.invalidate(selectedPlanProvider);
+                                        ref.invalidate(
+                                          selectedMaterialProvider,
+                                        );
+                                        ref.invalidate(cardClickStateProvider);
+                                        ref.invalidate(cleanerCountProvider);
+                                        ref.invalidate(showAddToCartProvider);
+                                        print(
+                                          "🧹 Cache cleared after returning from CartScreen!",
+                                        );
+                                      });
+                                    },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          isButtonDisabled
-                                              ? Colors.grey[400]
-                                              : const Color(0xff004271),
+                                      backgroundColor: const Color(0xff004271),
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 14,
@@ -934,10 +986,12 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                         borderRadius: BorderRadius.circular(30),
                                       ),
                                     ),
-                                    child: Text(
-                                      isButtonDisabled
-                                          ? 'Added to Cart'
-                                          : 'View Cart',
+                                    child: const Text(
+                                      'View Cart',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ),
