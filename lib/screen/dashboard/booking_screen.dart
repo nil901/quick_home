@@ -2,66 +2,75 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:intl/intl.dart';
+import 'package:quick_home/api_services/Providers.dart';
+import 'package:quick_home/api_services/api_services.dart';
+import 'package:quick_home/api_services/urls.dart';
 
 import 'package:quick_home/color/colors.dart';
+import 'package:quick_home/model/my_booking_model.dart';
+import 'package:quick_home/prefs/app_preference.dart';
+import 'package:quick_home/prefs/preferences_keys.dart';
+import 'package:quick_home/provide/cart_prov.dart';
 import 'package:quick_home/util/enum.dart';
+import 'package:quick_home/util/no_data_found.dart';
 
 /// Dummy API Simulation Provider (तुझ्या API ने replace करायचं)
-final bookingsProvider =
-    FutureProvider.family<List<Map<String, String>>, BookingTab>((
-      ref,
-      tab,
-    ) async {
-      await Future.delayed(const Duration(milliseconds: 500));
+// final bookingsProvider =
+//     FutureProvider.family<List<Map<String, String>>, BookingTab>((
+//       ref,
+//       tab,
+//     ) async {
+//       await Future.delayed(const Duration(milliseconds: 500));
 
-      final data = {
-        BookingTab.inProgress: [
-          {
-            "title": "Home Deep Cleaning",
-            "desc": "Comprehensive cleaning for a spotless and fresh home.",
-            "date": "Friday, Sep 28",
-            "status": "In Progress",
-            "image": "assets/images/booking_service.png",
-          },
-          {
-            "title": "Plumbing Service",
-            "desc": "Quick fixes for leaks, pipe issues, and water problems.",
-            "date": "Friday, Sep 28",
-            "status": "In Progress",
-            "image": "assets/images/booking_service.png",
-          },
-        ],
-        BookingTab.upcoming: [
-          {
-            "title": "AC Service",
-            "desc": "Cooling checkup & cleaning by certified experts.",
-            "date": "Monday, Oct 2",
-            "status": "Upcoming",
-            "image": "assets/images/booking_service.png",
-          },
-        ],
-        BookingTab.completed: [
-          {
-            "title": "Car Wash",
-            "desc": "Professional car wash and detailing service.",
-            "date": "Monday, Sep 20",
-            "status": "Completed",
-            "image": "assets/images/booking_service.png",
-          },
-        ],
-        BookingTab.cancelled: [
-          {
-            "title": "Electrician",
-            "desc": "Fix wiring and electrical issues.",
-            "date": "Sunday, Sep 10",
-            "status": "Cancelled",
-            "image": "assets/images/booking_service.png",
-          },
-        ],
-      };
+//       final data = {
+//         BookingTab.inProgress: [
+//           {
+//             "title": "Home Deep Cleaning",
+//             "desc": "Comprehensive cleaning for a spotless and fresh home.",
+//             "date": "Friday, Sep 28",
+//             "status": "In Progress",
+//             "image": "assets/images/booking_service.png",
+//           },
+//           {
+//             "title": "Plumbing Service",
+//             "desc": "Quick fixes for leaks, pipe issues, and water problems.",
+//             "date": "Friday, Sep 28",
+//             "status": "In Progress",
+//             "image": "assets/images/booking_service.png",
+//           },
+//         ],
+//         BookingTab.upcoming: [
+//           {
+//             "title": "AC Service",
+//             "desc": "Cooling checkup & cleaning by certified experts.",
+//             "date": "Monday, Oct 2",
+//             "status": "Upcoming",
+//             "image": "assets/images/booking_service.png",
+//           },
+//         ],
+//         BookingTab.completed: [
+//           {
+//             "title": "Car Wash",
+//             "desc": "Professional car wash and detailing service.",
+//             "date": "Monday, Sep 20",
+//             "status": "Completed",
+//             "image": "assets/images/booking_service.png",
+//           },
+//         ],
+//         BookingTab.cancelled: [
+//           {
+//             "title": "Electrician",
+//             "desc": "Fix wiring and electrical issues.",
+//             "date": "Sunday, Sep 10",
+//             "status": "Cancelled",
+//             "image": "assets/images/booking_service.png",
+//           },
+//         ],
+//       };
 
-      return data[tab] ?? [];
-    });
+//       return data[tab] ?? [];
+//     });
 
 /// Main Screen
 class MyBookingsScreen extends ConsumerStatefulWidget {
@@ -75,14 +84,42 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   BookingTab selectedTab = BookingTab.inProgress;
 
   final tabNames = const {
-    BookingTab.inProgress: "In Progress",
+    BookingTab.inProgress: "Ongoing",
     BookingTab.upcoming: "Upcoming",
     BookingTab.completed: "Completed",
     BookingTab.cancelled: "Cancelled",
   };
 
+  bool isLoading = false;
+  Future<void> mybookingAPi(WidgetRef ref, {required String type}) async {
+    try {
+      final data = {"user": AppPreference().getInt(PreferencesKey.userId), "type": type};
+      final response = await ApiService.postRequest(getMyBooking, data);
+      if (response.data['success'] == true) {
+        final data = response.data['data'] as List;
+
+        ref.read(bookingHistoryProvider.notifier).state =
+            data.map((json) => BookingHistoryModel.fromJson(json)).toList();
+      } else {
+        print("Failed to fetch booking history: ${response.data['message']}");
+      }
+    } catch (e) {
+      print("Error fetching appointments: $e");
+      throw Exception("Failed to load data");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Default first API call
+    mybookingAPi(ref, type: "ongoing");
+  }
+
   @override
   Widget build(BuildContext context) {
+    final booking = ref.watch(bookingHistoryProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -115,11 +152,36 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                   final isSelected = tab == selectedTab;
 
                   return GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       setState(() {
                         selectedTab = tab;
+                        isLoading = true; // loading सुरू
+                      });
+
+                      String type = "";
+                      switch (tab) {
+                        case BookingTab.inProgress:
+                          type = "ongoing";
+                          break;
+                        case BookingTab.upcoming:
+                          type = "upcoming";
+                          break;
+                        case BookingTab.completed:
+                          type = "completed";
+                          break;
+                        case BookingTab.cancelled:
+                          type = "cancelled";
+                          break;
+                      }
+
+                      ref.read(bookingHistoryProvider.notifier).state = [];
+                      await mybookingAPi(ref, type: type);
+
+                      setState(() {
+                        isLoading = false; // loading संपले
                       });
                     },
+
                     child: Container(
                       margin: const EdgeInsets.only(right: 10),
                       padding: const EdgeInsets.symmetric(
@@ -164,35 +226,45 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   }
 
   Widget _buildBookingList(BookingTab tab) {
-    final asyncData = ref.watch(bookingsProvider(tab));
+    final booking = ref.watch(bookingHistoryProvider);
+    // final asyncData = ref.watch(bookingsProvider(tab));
 
-    return asyncData.when(
-      data: (list) {
-        if (list.isEmpty) {
-          return const Center(child: Text("No Bookings"));
-        }
-        return ListView.builder(
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : booking.isEmpty
+        ? Center(child: NoDataFoundScreen(onRetry: () {}))
+        : ListView.builder(
           padding: const EdgeInsets.all(12),
-          itemCount: list.length,
+          itemCount: booking.length,
           itemBuilder: (context, index) {
-            final booking = list[index];
+            final bookings = booking[index];
+
+            // Date format logic
+            String formattedDate = "";
+            try {
+              final createdAt = bookings.service!.createdAt;
+              if (createdAt is String) {
+                formattedDate = DateFormat(
+                  'EEEE, MMM d',
+                ).format(DateTime.parse(createdAt));
+              } else if (createdAt is DateTime) {
+                formattedDate = DateFormat('EEEE, MMM d').format(createdAt!);
+              }
+            } catch (e) {
+              formattedDate = "Invalid date";
+            }
             return BookingCard(
-              imageUrl: booking["image"]!,
-              title: booking["title"]!,
-              description: booking["desc"]!,
-              status: booking["status"]!,
-              date: booking["date"]!,
+              imageUrl: bookings.service!.imageUrl.toString(),
+              title: bookings.service!.name!,
+              description: bookings.service!.shortDescription!,
+              status: bookings.status!,
+              date: formattedDate,
             );
           },
         );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, st) => Center(child: Text("Error: $e")),
-    );
   }
 }
 
-/// Booking Card
 class BookingCard extends StatelessWidget {
   final String imageUrl;
   final String title;
@@ -232,7 +304,18 @@ class BookingCard extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(imageUrl, fit: BoxFit.cover),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/logo.png',
+                        fit: BoxFit.cover,
+                        height: 60,
+                        color: Colors.grey,
+                      );
+                    },
+                  ),
                 ),
               ),
               const SizedBox(width: 12),

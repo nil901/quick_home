@@ -133,9 +133,10 @@ class Service {
       subcategoryId: json['subcategory_id'] as int?,
       name: json['name'] as String?,
       description: json['description'] as String?,
-      whatsInclude: json['whats_include'] != null
-          ? List<String>.from(json['whats_include'])
-          : [],
+      whatsInclude:
+          json['whats_include'] != null
+              ? List<String>.from(json['whats_include'])
+              : [],
       shortDescription: json['short_description'] as String?,
       isArabic: json['is_arabic'] as bool?,
       duration: json['duration'] as String?,
@@ -148,49 +149,54 @@ class Service {
       averageRating: (json['average_rating'] ?? 0).toDouble(),
       totalReviews: json['total_reviews'] ?? 0,
       imageUrl: json['image_url'] as String?,
-      category: json['category'] != null
-          ? Category.fromJson(json['category'])
-          : null,
-      subcategory: json['subcategory'] != null
-          ? Subcategory.fromJson(json['subcategory'])
-          : null,
-      requirements: json['requirements'] != null
-          ? List<Requirement>.from(
-              json['requirements'].map((x) => Requirement.fromJson(x)),
-            )
-          : [],
-      processes: json['processes'] != null
-          ? List<Process>.from(
-              json['processes'].map((x) => Process.fromJson(x)),
-            )
-          : [],
-      faq: json['faq'] != null
-          ? (json['faq'] as Map<String, dynamic>).map(
-              (key, value) =>
-                  MapEntry(key, FAQItem.fromJson(value as Map<String, dynamic>)),
-            )
-          : {},
-      subscriptionPlans: json['subscription_plans'] != null
-          ? List<SubscriptionPlan>.from(
-              json['subscription_plans'].map(
-                (x) => SubscriptionPlan.fromJson(x),
-              ),
-            )
-          : [],
-      materials: json['materials'] != null
-          ? List<MaterialItem>.from(
-              json['materials'].map((x) => MaterialItem.fromJson(x)),
-            )
-          : [],
-      servicePersons: json['service_persons'] != null
-          ? List<ServicePerson>.from(
-              json['service_persons'].map(
-                (x) => ServicePerson.fromJson(x),
-              ),
-            )
-          : [],
-      prices:
-          json['prices'] != null ? Prices.fromJson(json['prices']) : null,
+      category:
+          json['category'] != null ? Category.fromJson(json['category']) : null,
+      subcategory:
+          json['subcategory'] != null
+              ? Subcategory.fromJson(json['subcategory'])
+              : null,
+      requirements:
+          json['requirements'] != null
+              ? List<Requirement>.from(
+                json['requirements'].map((x) => Requirement.fromJson(x)),
+              )
+              : [],
+      processes:
+          json['processes'] != null
+              ? List<Process>.from(
+                json['processes'].map((x) => Process.fromJson(x)),
+              )
+              : [],
+      faq:
+          json['faq'] != null
+              ? (json['faq'] as Map<String, dynamic>).map(
+                (key, value) => MapEntry(
+                  key,
+                  FAQItem.fromJson(value as Map<String, dynamic>),
+                ),
+              )
+              : {},
+      subscriptionPlans:
+          json['subscription_plans'] != null
+              ? List<SubscriptionPlan>.from(
+                json['subscription_plans'].map(
+                  (x) => SubscriptionPlan.fromJson(x),
+                ),
+              )
+              : [],
+      materials:
+          json['materials'] != null
+              ? List<MaterialItem>.from(
+                json['materials'].map((x) => MaterialItem.fromJson(x)),
+              )
+              : [],
+      servicePersons:
+          json['service_persons'] != null
+              ? List<ServicePerson>.from(
+                json['service_persons'].map((x) => ServicePerson.fromJson(x)),
+              )
+              : [],
+      prices: json['prices'] != null ? Prices.fromJson(json['prices']) : null,
       withMaterialPrice: json['withMaterialPrice'] as int?,
       withoutMaterialPrice: json['withoutMaterialPrice'] as int?,
       isWishlisted: json['is_wishlisted'] as bool?,
@@ -198,7 +204,6 @@ class Service {
     );
   }
 }
-
 
 class Category {
   int? id;

@@ -2,8 +2,6 @@
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:quick_home/api_services/Providers.dart';
 // import 'package:quick_home/screen/dashboard/qwik_picks.dart';
-// import 'package:quick_home/model/home_model.dart';
-// import 'package:quick_home/screen/dashboard/services_details_screen.dart';
 
 // class SpcialOffersWidget extends ConsumerWidget {
 //   final bool single;
@@ -13,25 +11,15 @@
 //   @override
 //   Widget build(BuildContext context, ref) {
 //     final offer = ref.watch(offerProvider);
-
-//     if (offer.isEmpty) {
-//       return const SizedBox.shrink(); // Don't show anything if no offers
-//     }
-
-//     // Flatten all items from all sections into a single list
-//     final HomeModel homeModel = offer.first;
-//     final List<Item> allItems =
-//         homeModel.sections.expand((section) => section.items.items).toList();
-
 //     return Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
 //       children: [
 //         ElevatedButton(
 //           style: ElevatedButton.styleFrom(
-//             backgroundColor: Colors.white,
-//             foregroundColor: Colors.black,
-//             padding: EdgeInsets.zero,
-//             elevation: 0,
+//             backgroundColor: Colors.white, 
+//             foregroundColor: Colors.black, 
+//             padding: EdgeInsets.zero, 
+//             elevation: 0, 
 //             shape: RoundedRectangleBorder(
 //               borderRadius: BorderRadius.circular(8),
 //             ),
@@ -39,9 +27,7 @@
 //           onPressed: () {
 //             Navigator.push(
 //               context,
-//               MaterialPageRoute(
-//                 builder: (context) => QwikPicksScreen(item: homeModel),
-//               ),
+//               MaterialPageRoute(builder: (context) => QwikPicksScreen()),
 //             );
 //             print("Button pressed");
 //           },
@@ -67,48 +53,37 @@
 //           child: ListView.builder(
 //             shrinkWrap: true,
 //             scrollDirection: Axis.horizontal,
-//             itemCount: allItems.length,
+//             itemCount: offer.length,
 //             itemBuilder: (context, index) {
 //               double width = single ? 301 : 120;
 //               double height = single ? 150 : 120;
-//               final item = allItems[index];
-//               return InkWell(
-//                 onTap: () {
-//                   Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                       builder:
-//                           (context) =>
-//                               ServicesDetailsScreen(serviceId: item.id),
+//               final offers = offer[index];
+//               return Container(
+//                 margin: const EdgeInsets.only(left: 12),
+//                 width: width,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     ClipRRect(
+//                       borderRadius: BorderRadius.circular(15),
+//                       child: Image.network(
+//                         offers.imageUrl.toString(),
+//                         width: width,
+//                         height: height,
+//                         fit: BoxFit.cover,
+//                       ),
 //                     ),
-//                   );
-//                 },
-//                 child: Container(
-//                   margin: const EdgeInsets.only(left: 12),
-//                   width: width,
-//                   child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       ClipRRect(
-//                         borderRadius: BorderRadius.circular(15),
-//                         child: Image.network(
-//                           item.imageUrl,
-//                           width: width,
-//                           height: height,
-//                           fit: BoxFit.cover,
-//                         ),
+//                     const SizedBox(height: 6),
+//                     // if (labels != null && labels!.length > index)
+//                     Text(
+//                       offers.name,
+//                       style: const TextStyle(
+//                         fontSize: 12,
+//                         fontWeight: FontWeight.bold,
+//                         color: Colors.black87,
 //                       ),
-//                       const SizedBox(height: 6),
-//                       Text(
-//                         item.name,
-//                         style: const TextStyle(
-//                           fontSize: 12,
-//                           fontWeight: FontWeight.bold,
-//                           color: Colors.black87,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
+//                     ),
+//                   ],
 //                 ),
 //               );
 //             },

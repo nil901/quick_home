@@ -1,4 +1,4 @@
-const String baseUrl = "http://admin.qwikhom.ae/api/";
+const String baseUrl = "https://admin.qwikhom.ae/api/";
 const String signupUrl = "signup";
 const String addresses = "addresses";
 const String services = "services";
@@ -17,8 +17,12 @@ const String getCart = "cart";
 const String deleteCart = "cartRemove";
 const String cartUpdateQuantity = "cartUpdateQuantity";
 const String getBookingOptions = "bookingOptions";
-
-
-
-
-
+const String getMyBooking = "myBookings";
+const String getPayment = "Payment";
+const String getSearch = "searchServices";
+const String getNotifications = "notifications";
+const String getnotifactionRead = "markAsReadNotification";
+const String getSubscription = "mySubscriptions";
+const String applyCoupon = "applyCoupon";
+const String createBookingUrl = "createBooking";
+const String providerAvailableDates = "providerAvailableDates";

@@ -4,6 +4,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/api_services/api_services.dart';
 import 'package:quick_home/api_services/urls.dart';
 import 'package:quick_home/screen/auth/login_screen.dart';
+import 'package:quick_home/util/enum.dart';
 import '../dashboard/main_home_screen.dart';
 import '../../util/toast_msg.dart';
 
@@ -64,7 +65,7 @@ class _SignupScreenState extends State<SignupScreen> {
         // ✅ Navigate to home screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MainHomeScreen()),
+          MaterialPageRoute(builder: (context) => MainHomeScreen(initialTab: BottomTab.bookings)),
         );
       } else {
         final message = response.data["message"] ?? "the user is already exist!";

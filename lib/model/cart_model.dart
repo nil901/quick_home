@@ -14,7 +14,7 @@ class CartModel {
   final String? addonsPrice;
   final String? unitPrice;
   final String? totalPrice;
-
+  final int? allowIncrement;
   CartModel({
     this.id,
     this.itemType,
@@ -31,6 +31,7 @@ class CartModel {
     this.addonsPrice,
     this.unitPrice,
     this.totalPrice,
+    this.allowIncrement,
   });
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
@@ -46,13 +47,15 @@ class CartModel {
       quantity: json['quantity'],
       providersCount: json['providers_count'],
       includeMaterial: json['include_material'],
-      selectedAddons: json['selected_addons'] != null
-          ? List<int>.from(json['selected_addons'])
-          : [],
+      selectedAddons:
+          json['selected_addons'] != null
+              ? List<int>.from(json['selected_addons'])
+              : [],
       basePrice: json['base_price'],
       addonsPrice: json['addons_price'],
       unitPrice: json['unit_price'],
       totalPrice: json['total_price'],
+      allowIncrement: json['allow_increment'],
     );
   }
 
@@ -73,6 +76,7 @@ class CartModel {
       'addons_price': addonsPrice,
       'unit_price': unitPrice,
       'total_price': totalPrice,
+      'allow_increment': allowIncrement,
     };
   }
 
@@ -93,6 +97,7 @@ class CartModel {
     String? addonsPrice,
     String? unitPrice,
     String? totalPrice,
+    int? allowIncrement,
   }) {
     return CartModel(
       id: id ?? this.id,
@@ -101,8 +106,7 @@ class CartModel {
       itemName: itemName ?? this.itemName,
       service: service ?? this.service,
       serviceFrequencyId: serviceFrequencyId ?? this.serviceFrequencyId,
-      serviceFrequencyName:
-          serviceFrequencyName ?? this.serviceFrequencyName,
+      serviceFrequencyName: serviceFrequencyName ?? this.serviceFrequencyName,
       quantity: quantity ?? this.quantity,
       providersCount: providersCount ?? this.providersCount,
       includeMaterial: includeMaterial ?? this.includeMaterial,
@@ -111,6 +115,7 @@ class CartModel {
       addonsPrice: addonsPrice ?? this.addonsPrice,
       unitPrice: unitPrice ?? this.unitPrice,
       totalPrice: totalPrice ?? this.totalPrice,
+      allowIncrement: allowIncrement ?? this.allowIncrement,
     );
   }
 }
@@ -121,12 +126,7 @@ class Service {
   final String? description;
   final String? image;
 
-  Service({
-    this.id,
-    this.name,
-    this.description,
-    this.image,
-  });
+  Service({this.id, this.name, this.description, this.image});
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
@@ -138,12 +138,7 @@ class Service {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'image': image,
-    };
+    return {'id': id, 'name': name, 'description': description, 'image': image};
   }
 
   Service copyWith({

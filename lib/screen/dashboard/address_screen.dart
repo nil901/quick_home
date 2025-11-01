@@ -31,6 +31,8 @@
 //       body: Column(
 //         children: [
 
+      
+      
 //           // // Map section (untouched)
 //           // SizedBox(
 //           //   height: 250,
@@ -49,9 +51,9 @@
 //           // ),
 //           SizedBox(
 //             height: 250,
-
+           
 //           ),
-
+      
 //           // Address + Form (scrollable)
 //           Expanded(
 //             child: SingleChildScrollView(
@@ -93,9 +95,9 @@
 //                       ),
 //                     ],
 //                   ),
-
+      
 //                   const Divider(),
-
+      
 //                   // Form fields
 //                   _buildTextField("House/Flat Number*"),
 //                   const SizedBox(height: 12),
@@ -103,7 +105,7 @@
 //                   const SizedBox(height: 12),
 //                   _buildTextField("Name"),
 //                   const SizedBox(height: 16),
-
+      
 //                   // Save As buttons
 //                   Row(
 //                     children: [
@@ -128,7 +130,7 @@
 //               ),
 //             ),
 //           ),
-
+      
 //           // Bottom Button
 //           SafeArea(
 //             child: Center(
@@ -140,7 +142,7 @@
 //                   onPressed: () {
 //                     _showSlotSelector(context);
 //                   },
-
+      
 //                   style: ElevatedButton.styleFrom(
 //                     // backgroundColor: Colors.grey.shade300,
 //                     // foregroundColor: Colors.black54,
@@ -332,6 +334,7 @@
 //   );
 // }
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
@@ -434,17 +437,13 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
 
     if (_mapController != null) {
       _mapController!.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: latLng, zoom: 17),
-        ),
+        CameraUpdate.newCameraPosition(CameraPosition(target: latLng, zoom: 17)),
       );
     }
 
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        latLng.latitude,
-        latLng.longitude,
-      );
+      List<Placemark> placemarks =
+      await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
 
@@ -463,6 +462,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
           // Reset flag once used
           _isFromSearch = false;
         }
+
       }
     } catch (e) {
       debugPrint("Reverse geocode failed: $e");
@@ -490,25 +490,21 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
 
     if (widget.address != null) {
       // EDIT
-      ref
-          .read(editAddressProvider.notifier)
-          .editAddress(
-            addressId: widget.address!.id!,
-            contactDetails: contactDetails,
-            addressDetails: addressDetails,
-            type: type,
-            isDefault: 1,
-          );
+      ref.read(editAddressProvider.notifier).editAddress(
+        addressId: widget.address!.id!,
+        contactDetails: contactDetails,
+        addressDetails: addressDetails,
+        type: type,
+        isDefault: 1,
+      );
     } else {
       // ADD
-      ref
-          .read(addAddressProvider.notifier)
-          .addAddress(
-            contactDetails: contactDetails,
-            addressDetails: addressDetails,
-            type: type,
-            isDefault: 1,
-          );
+      ref.read(addAddressProvider.notifier).addAddress(
+        contactDetails: contactDetails,
+        addressDetails: addressDetails,
+        type: type,
+        isDefault: 1,
+      );
     }
   }
 
@@ -516,42 +512,42 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
   Widget build(BuildContext context) {
     final addressState = ref.watch(addAddressProvider);
 
-    // ref.listen<AsyncValue<String>>(addAddressProvider, (previous, next) {
-    //   next.when(
-    //     data: (msg) {
-    //       if (msg.isNotEmpty) {
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //           SnackBar(content: Text(msg)),
-    //         );
-    //         Navigator.pop(context, true); // 👈 Pop after successful add
-    //       }
-    //     },
-    //     loading: () {},
-    //     error: (e, st) {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(content: Text(e.toString())),
-    //       );
-    //     },
-    //   );
-    // });
+      // ref.listen<AsyncValue<String>>(addAddressProvider, (previous, next) {
+      //   next.when(
+      //     data: (msg) {
+      //       if (msg.isNotEmpty) {
+      //         ScaffoldMessenger.of(context).showSnackBar(
+      //           SnackBar(content: Text(msg)),
+      //         );
+      //         Navigator.pop(context, true); // 👈 Pop after successful add
+      //       }
+      //     },
+      //     loading: () {},
+      //     error: (e, st) {
+      //       ScaffoldMessenger.of(context).showSnackBar(
+      //         SnackBar(content: Text(e.toString())),
+      //       );
+      //     },
+      //   );
+      // });
     ref.listen<AsyncValue<String>>(addAddressProvider, (previous, next) {
       next.when(
         data: (msg) {
           if (msg.isNotEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(msg)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(msg)),
+            );
             Navigator.pop(context, true);
           }
         },
         loading: () {},
         error: (e, st) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(e.toString())));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.toString())));
         },
       );
     });
+
 
     // ✅ Listen for Edit Address Success
     //   ref.listen<AsyncValue<String>>(editAddressProvider, (previous, next) {
@@ -577,20 +573,21 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
       next.when(
         data: (msg) {
           if (msg.isNotEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(msg)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(msg)),
+            );
             Navigator.pop(context, true);
           }
         },
         loading: () {},
         error: (e, st) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(e.toString())));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.toString())));
         },
       );
     });
+
+
 
     return Scaffold(
       backgroundColor: kwhite,
@@ -602,16 +599,14 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
             _currentLatLng == null
                 ? const Center(child: CircularProgressIndicator())
                 : GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: _currentLatLng!,
-                    zoom: 17,
-                  ),
-                  onMapCreated: (controller) => _mapController = controller,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
-                  markers: _marker != null ? {_marker!} : {},
-                  onTap: (pos) => _updatePosition(pos),
-                ),
+              initialCameraPosition:
+              CameraPosition(target: _currentLatLng!, zoom: 17),
+              onMapCreated: (controller) => _mapController = controller,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              markers: _marker != null ? {_marker!} : {},
+              onTap: (pos) => _updatePosition(pos),
+            ),
 
             /// 🔍 SEARCH BAR
             Positioned(
@@ -650,16 +645,12 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                     if (prediction.lat != null && prediction.lng != null) {
                       _isFromSearch = true;
                       setState(() {
-                        _address =
-                            prediction.description ??
-                            ""; // 🧠 Human readable address
+                        _address = prediction.description ?? ""; // 🧠 Human readable address
                       });
-                      _updatePosition(
-                        LatLng(
-                          double.parse(prediction.lat!),
-                          double.parse(prediction.lng!),
-                        ),
-                      );
+                      _updatePosition(LatLng(
+                        double.parse(prediction.lat!),
+                        double.parse(prediction.lng!),
+                      ));
                     }
                   },
                   itemClick: (Prediction prediction) {
@@ -668,6 +659,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                       TextPosition(offset: _searchController.text.length),
                     );
                   },
+
                 ),
               ),
             ),
@@ -701,28 +693,21 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                       Text(
                         "Selected Location:",
                         style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
-                        ),
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500),
                       ),
                       Text(
                         _address,
                         style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
-                      _buildTextField(
-                        "House/Flat Number*",
-                        controller: houseController,
-                      ),
+                      _buildTextField("House/Flat Number*",
+                          controller: houseController),
                       const SizedBox(height: 12),
-                      _buildTextField(
-                        "Receiver Name, Phone",
-                        controller: nameController,
-                      ),
+                      _buildTextField("Receiver Name, Phone",
+                          controller: nameController),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -730,10 +715,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                             label: Text(
                               "Home",
                               style: TextStyle(
-                                color:
-                                    isHomeSelected
-                                        ? Colors.white
-                                        : Colors.black,
+                                color: isHomeSelected ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -754,10 +736,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                             label: Text(
                               "Other",
                               style: TextStyle(
-                                color:
-                                    !isHomeSelected
-                                        ? Colors.white
-                                        : Colors.black,
+                                color: !isHomeSelected ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -780,10 +759,9 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed:
-                              addressState is AsyncLoading
-                                  ? null
-                                  : _saveAddress,
+                          onPressed: addressState is AsyncLoading
+                              ? null
+                              : _saveAddress,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: HexColor("#004271"),
                             shape: RoundedRectangleBorder(
@@ -791,18 +769,15 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                             ),
                             elevation: 0,
                           ),
-                          child:
-                              addressState is AsyncLoading
-                                  ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
-                                  : const Text(
-                                    "Save Address",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                          child: addressState is AsyncLoading
+                              ? const CircularProgressIndicator(
+                              color: Colors.white)
+                              : const Text(
+                            "Save Address",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ],
@@ -816,21 +791,16 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     );
   }
 
-  Widget _buildTextField(
-    String label, {
-    TextEditingController? controller,
-    int maxLines = 1,
-  }) {
+  Widget _buildTextField(String label,
+      {TextEditingController? controller, int maxLines = 1}) {
     return TextField(
       controller: controller,
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 10,
-        ),
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       ),
     );
   }

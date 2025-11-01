@@ -12,7 +12,10 @@ class FaqComman extends StatefulWidget {
 }
 
 class _FaqCommanState extends State<FaqComman> {
+
+
   @override
+
   @override
   Widget build(BuildContext context) {
     if (widget.faqData == null || widget.faqData!.isEmpty) {
@@ -57,7 +60,7 @@ class _FaqCommanState extends State<FaqComman> {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.black
                 ),
               ),
               children: [

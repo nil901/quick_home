@@ -14,10 +14,12 @@ import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/provide/home_prov.dart';
 import 'package:quick_home/screen/dashboard/cart_screen.dart';
 import 'package:quick_home/screen/dashboard/home_Screen.dart';
+import 'package:quick_home/screen/dashboard/main_home_screen.dart';
 import 'package:quick_home/screen/wigets/faq_comman.dart';
 import 'package:quick_home/screen/wigets/how_many_pepole.dart';
 import 'package:quick_home/screen/wigets/matrial_options.dart';
 import 'package:quick_home/screen/wigets/service_option.dart';
+import 'package:quick_home/util/enum.dart';
 import 'package:quick_home/util/ratting.dart';
 import 'package:quick_home/util/size.dart';
 import 'package:quick_home/util/toast_msg.dart';
@@ -106,7 +108,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
         print("❌ Failed to remove from cart: ${response.data['message']}");
       }
     } catch (e) {
-      print("⚠️ Error removing item: $e");
+      print("⚠ Error removing item: $e");
     }
   }
 
@@ -158,7 +160,10 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                 // 🔹 Navigate back to Home
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const Home()),
+                  MaterialPageRoute(
+                    builder:
+                        (context) => MainHomeScreen(initialTab: BottomTab.home),
+                  ),
                 );
               } catch (e, stackTrace) {
                 // 🔹 If something goes wrong
@@ -911,7 +916,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                                 );
                                               } catch (e) {
                                                 print(
-                                                  "⚠️ Cache clear error: $e",
+                                                  "⚠ Cache clear error: $e",
                                                 );
                                               }
                                             } else {
@@ -923,7 +928,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                               );
                                             }
                                           } catch (e) {
-                                            print("⚠️ Error: $e");
+                                            print("⚠ Error: $e");
                                             Utils().showTost(
                                               "Something went wrong",
                                             );

@@ -13,6 +13,7 @@ import 'package:quick_home/screen/dashboard/address_screen.dart';
 import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
 import 'package:quick_home/util/custom_app_bar.dart';
 import 'package:quick_home/util/no_data_found.dart';
+import 'package:quick_home/util/size.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -32,34 +33,63 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     super.initState();
   }
 
-  Future<void> cartApi(WidgetRef ref) async {
-    setState(() {
-      isLoading = true;
-    });
-    // print("helowwckxckdnkdfn");
-    try {
-      final response = await ApiService.postRequest(getCart, {
-        "user": AppPreference().getInt(PreferencesKey.userId),
-      });
-      print(response?.data['data']);
-      if (response.data['status'] == true) {
-        final data = response.data['data']['cart_items'] as List;
-        setState(() {
-          isLoading = false;
-        });
-        print(data);
+ Future<void> cartApi(WidgetRef ref) async {
+  setState(() {
+    isLoading = true;
+  });
 
-        ref.read(cartProvider.notifier).state =
-            data.map((json) => CartModel.fromJson(json)).toList();
-      } else {}
-    } catch (e) {
+  try {
+    final response = await ApiService.postRequest(
+      getCart,
+      {
+        "user": AppPreference().getInt(PreferencesKey.userId),
+      },
+    );
+
+    final int? statusCode = response.statusCode;
+
+    // 🔹 जर 404 आला तर — जुना डेटा क्लिअर करा आणि notify करा
+    if (statusCode == 404) {
+      ref.read(cartProvider.notifier).update((state) => []);
+      debugPrint("Cart cleared: status 404");
+      setState(() => isLoading = false);
+      return;
+    }
+
+    if (response.data['status'] == true) {
+      final List<dynamic> data = response.data['data']['cart_items'] ?? [];
+
+      // 🔹 आधी जुना डेटा clear करा
+      ref.read(cartProvider.notifier).update((state) => []);
+
+      // 🔹 नवीन डेटा तयार करा
+      final List<CartModel> newCartItems =
+          data.map((json) => CartModel.fromJson(json)).toList();
+
+      // 🔹 नवीन डेटा assign करा
+      ref.read(cartProvider.notifier).update((state) => newCartItems);
+
+      debugPrint("Cart updated successfully (${newCartItems.length} items)");
+    } else {
+      // जर status false असेल तरी clear करा
+      ref.read(cartProvider.notifier).update((state) => []);
+      debugPrint("Cart API returned false status");
+    }
+  } catch (e, stackTrace) {
+    debugPrint("Error fetching cart items: $e");
+    debugPrintStack(stackTrace: stackTrace);
+
+    // 🔹 Error आल्यासही जुना डेटा clear करा
+    ref.read(cartProvider.notifier).update((state) => []);
+  } finally {
+    if (mounted) {
       setState(() {
         isLoading = false;
       });
-      print("Error fetching appointments: $e");
-      throw Exception("Failed to load data");
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +115,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                       itemBuilder: (context, index) {
                         final item = cart[index];
                         return _buildServiceCard(
+                          allow_increment: item.allowIncrement ?? 0,
                           index: index,
                           quantity: item.quantity!,
                           isSelected: _selectedIndex == index,
@@ -92,6 +123,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                             setState(() {
                               _selectedIndex = index;
                             });
+                            ref.read(selectedCartProvider.notifier).state =
+                                item;
                           },
                           cartId: item.id.toString(),
                           imagePath: item.service!.image.toString(),
@@ -107,58 +140,147 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                       horizontal: 18,
                       vertical: 12,
                     ),
-                    child: Row(
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: kprimary, width: 1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                "Add Services",
-                                style: TextStyle(
-                                  color: kprimary,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
+                        // ✅ Conditionally show buttons only when item is selected
+                        if (_selectedIndex != null) ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () {
+                                    // Action for "Add Services"
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text("Add Services tapped"),
+                                      ),
+                                    );
+                                  },
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Container(
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                        color: kprimary,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "Add Services",
+                                      style: TextStyle(
+                                        color: kprimary,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SelectedMyAddress(),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (_selectedIndex != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => SelectedMyAddress(),
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Please select a service first",
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: kprimary,
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    minimumSize: const Size(0, 44),
+                                  ),
+                                  child: const Text("Add address & slot"),
                                 ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: kprimary,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
                               ),
-                              minimumSize: const Size(0, 44),
-                            ),
-                            child: const Text("Add address & slot"),
+                            ],
                           ),
-                        ),
+                        ] else ...[
+                          // ✅ Show disabled buttons or message when nothing is selected
+                          Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Please select an item first",
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Container(
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "Add Services",
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Please select an item first",
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey.shade400,
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    minimumSize: const Size(0, 44),
+                                  ),
+                                  child: const Text("Add address & slot"),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),
-                  const SizedBox(height: 18),
                 ],
               ),
     );
@@ -174,6 +296,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     required String price,
     required String cartId,
     required int quantity,
+    required int allow_increment,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -281,69 +404,154 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                             children: [
                               // Quantity selector
                               Container(
-                                width: 63,
-                                height: 25,
+                                width: 100,
+                                height: 35,
                                 decoration: BoxDecoration(
                                   color: kscoundPrimaryColor,
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    // Minus button
-                                    GestureDetector(
-                                      onTap: () async {
-                                        if (quantity > 1) {
-                                          await updateQuantity(
-                                            cartId,
-                                            quantity - 1,
-                                          );
-                                        }
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6.0,
-                                        ),
-                                        child: Text(
-                                          '-',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            color: kprimary,
-                                          ),
-                                        ),
+                                    // Quantity selector
+                                    Container(
+                                      width: 100,
+                                      height: 35,
+                                      decoration: BoxDecoration(
+                                        color: kscoundPrimaryColor,
+                                        borderRadius: BorderRadius.circular(5),
                                       ),
-                                    ),
-                                    Text(
-                                      '$quantity',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                    // Plus button
-                                    GestureDetector(
-                                      onTap: () async {
-                                        await updateQuantity(
-                                          cartId,
-                                          quantity + 1,
-                                        );
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6.0,
-                                        ),
-                                        child: Text(
-                                          '+',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: kprimary,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          // ➖ Minus button
+                                          GestureDetector(
+                                            onTap: () async {
+                                              if (quantity > 1) {
+                                                await updateQuantity(
+                                                  cartId,
+                                                  quantity - 1,
+                                                );
+                                              } else {
+                                                if (allow_increment == 0) {
+                                                  final response =
+                                                      await ApiService.postRequest(
+                                                        deleteCart,
+                                                        {
+                                                          "user": AppPreference()
+                                                              .getInt(
+                                                                PreferencesKey
+                                                                    .userId,
+                                                              ),
+                                                          "cartid": cartId,
+                                                        },
+                                                      );
+
+                                                  if (response.data['status'] ==
+                                                      true) {
+                                                    ref
+                                                        .read(
+                                                          cartProvider.notifier,
+                                                        )
+                                                        .update((state) {
+                                                          return state
+                                                              .where(
+                                                                (item) =>
+                                                                    item.id
+                                                                        .toString() !=
+                                                                    cartId,
+                                                              )
+                                                              .toList();
+                                                        });
+
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          "Item removed from cart",
+                                                        ),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          "Failed to delete item",
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                } else {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        "Minimum quantity is 1",
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6.0,
+                                                  ),
+                                              child: Text(
+                                                '-',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: kprimary,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
+
+                                          // Quantity number
+                                          Text(
+                                            '$quantity',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+
+                                          // ➕ Plus button
+                                          GestureDetector(
+                                            onTap:
+                                                allow_increment == 1
+                                                    ? () async {
+                                                      await updateQuantity(
+                                                        cartId,
+                                                        quantity + 1,
+                                                      );
+                                                    }
+                                                    : null, // disabled
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6.0,
+                                                  ),
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 20,
+                                                color:
+                                                    allow_increment == 1
+                                                        ? kprimary
+                                                        : Colors.grey.shade400,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 6),
-                              // Delete button
+
+                              SizedBox(width: 20),
                               GestureDetector(
                                 onTap: () async {
                                   try {
@@ -383,7 +591,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        const SnackBar(
+                                        SnackBar(
                                           content: Text(
                                             "Failed to delete item",
                                           ),
@@ -406,6 +614,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                                   color: kprimary,
                                 ),
                               ),
+
+                              w10,
                             ],
                           ),
                         ],
@@ -428,21 +638,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       ref.read(cartProvider.notifier).update((state) {
         return state.map((item) {
           if (item.id.toString() == cartId) {
-            // compute unit price from unitPrice/basePrice/addonsPrice
-            double unit = 0;
-            try {
-              unit =
-                  double.tryParse(item.unitPrice ?? '') ??
-                  double.tryParse(item.basePrice ?? '') ??
-                  0;
-            } catch (_) {
-              unit = 0;
-            }
-            final total = (unit * newQuantity);
-            return item.copyWith(
-              quantity: newQuantity,
-              totalPrice: total.toStringAsFixed(2),
-            );
+            return item.copyWith(quantity: newQuantity);
           }
           return item;
         }).toList();
@@ -456,25 +652,13 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       });
 
       if (response.data['status'] != true) {
-        // Rollback in case server fails: restore previous quantity and totalPrice
+        // Rollback in case server fails
         ref.read(cartProvider.notifier).update((state) {
           return state.map((item) {
             if (item.id.toString() == cartId) {
-              final prevQty = (newQuantity > 0) ? newQuantity - 1 : 1;
-              double unit = 0;
-              try {
-                unit =
-                    double.tryParse(item.unitPrice ?? '') ??
-                    double.tryParse(item.basePrice ?? '') ??
-                    0;
-              } catch (_) {
-                unit = 0;
-              }
-              final prevTotal = (unit * prevQty);
               return item.copyWith(
-                quantity: prevQty,
-                totalPrice: prevTotal.toStringAsFixed(2),
-              );
+                quantity: newQuantity - 1,
+              ); // Example rollback
             }
             return item;
           }).toList();

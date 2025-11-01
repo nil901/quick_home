@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NoDataFoundScreen extends StatelessWidget {
-  final VoidCallback onRetry; 
+  final VoidCallback onRetry;
 
   const NoDataFoundScreen({Key? key, required this.onRetry}) : super(key: key);
 
@@ -33,10 +33,7 @@ class NoDataFoundScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
                   "No records to display right now.",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black54,
-                  ),
+                  style: TextStyle(fontSize: 15, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
               ),

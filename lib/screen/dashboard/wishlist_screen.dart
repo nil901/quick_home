@@ -9,7 +9,9 @@ import 'package:quick_home/model/wishlist_model.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/provide/cart_prov.dart';
+import 'package:quick_home/screen/dashboard/cart_screen.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
+import 'package:quick_home/util/no_data_found.dart';
 import 'package:quick_home/util/ratting.dart';
 
 class WishlistScreen extends ConsumerStatefulWidget {
@@ -21,36 +23,43 @@ class WishlistScreen extends ConsumerStatefulWidget {
 
 class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   bool isLoading = false;
-
   Future<void> wishlistApi(WidgetRef ref) async {
     setState(() {
       isLoading = true;
     });
+    // print("helowwckxckdnkdfn");
     try {
       final response = await ApiService.postRequest(wishlist, {
         "user": AppPreference().getInt(PreferencesKey.userId),
       });
-      print("📦 API Response: ${response?.data}");
+      print(response?.data['data']);
       if (response.data['success'] == true) {
         final data = response.data['data'] as List;
+        setState(() {
+          isLoading = false;
+        });
+        print(data);
+
         ref.read(wishlistProvider.notifier).state =
             data.map((json) => WishlistModel.fromJson(json)).toList();
       } else {
-        print("⚠️ Wishlist API returned success=false");
+        setState(() {
+          isLoading = false;
+        });
       }
-    } catch (e, stackTrace) {
-      print("❌ Error fetching wishlist: $e");
-      print("🔍 StackTrace: $stackTrace");
-    } finally {
+    } catch (e) {
       setState(() {
         isLoading = false;
       });
+      print("Error fetching appointments: $e");
+      throw Exception("Failed to load data");
     }
   }
 
   @override
   void initState() {
     wishlistApi(ref);
+    // TODO: implement initState
     super.initState();
   }
 
@@ -63,7 +72,6 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     const kscoundPrimaryColor = Color(0xFFE6F6FF);
     const kblack = Colors.black;
     final wishlist = ref.watch(wishlistProvider);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -73,33 +81,33 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
           onTap: () {
             wishlistApi(ref);
           },
-          child: const Text(
+          child: Text(
             'My Wishlist',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+        //   onPressed: () => Navigator.pop(context),
+        // ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartScreen()),
+              );
+            },
             icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
           ),
         ],
       ),
       body:
           isLoading
-              ? const Center(child: CircularProgressIndicator(color: kprimary))
-              : (wishlist.isEmpty)
-              ? const Center(
-                child: Text(
-                  "No items in your wishlist",
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
-                ),
-              )
+              ? Center(child: CircularProgressIndicator(color: kprimary))
+              : wishlist.isEmpty
+              ? Center(child: NoDataFoundScreen(onRetry: () {}))
               : Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: width * 0.04,
@@ -109,11 +117,6 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                   itemCount: wishlist.length,
                   itemBuilder: (context, index) {
                     final item = wishlist[index];
-                    final service = item.service;
-
-                    // Safe check
-                    if (service == null) return const SizedBox.shrink();
-
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 15),
                       child: Stack(
@@ -134,14 +137,13 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Left: Image + Book Now
+                                // Left: Image + Book Now / Counter + Options
                                 Column(
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
-                                        service.imageUrl ??
-                                            'https://via.placeholder.com/150',
+                                        item.service?.imageUrl ?? '',
                                         height: 80,
                                         width: 80,
                                         fit: BoxFit.cover,
@@ -164,9 +166,10 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                         loadingBuilder: (
                                           context,
                                           child,
-                                          progress,
+                                          loadingProgress,
                                         ) {
-                                          if (progress == null) return child;
+                                          if (loadingProgress == null)
+                                            return child;
                                           return Container(
                                             height: 80,
                                             width: 80,
@@ -200,6 +203,14 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                         ),
                                       ),
                                     ),
+                                    const SizedBox(height: 8),
+                                    // Text(
+                                    //   "options 4",
+                                    //   style: const TextStyle(
+                                    //     fontSize: 13,
+                                    //     fontWeight: FontWeight.w400,
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                                 const SizedBox(width: 12),
@@ -211,7 +222,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        service.name ?? "Unnamed Service",
+                                        item.service!.name.toString(),
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -219,18 +230,16 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        service.shortDescription ??
-                                            "No description available",
+                                        item.service!.shortDescription
+                                            .toString(),
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey[700],
                                         ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        "Starts at AED ${service.priceOnetime ?? '0'}",
+                                        "Starts at AED ${item.service!.priceOnetime}",
                                         style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
@@ -242,11 +251,11 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                         children: [
                                           RatingStarsComman(
                                             rating:
-                                                service.averageRating ?? 0.0,
+                                                item.service!.averageRating ??
+                                                0,
                                           ),
-                                          const SizedBox(width: 4),
                                           Text(
-                                            '(${service.totalReviews ?? 0} reviews)',
+                                            '(${item.service!.totalReviews} reviews)',
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: HexColor("#353535"),
@@ -254,6 +263,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                           ),
                                         ],
                                       ),
+
                                       const SizedBox(height: 15),
                                       InkWell(
                                         onTap: () {
@@ -263,9 +273,11 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                               builder:
                                                   (context) =>
                                                       ServicesDetailsScreen(
-                                                        serviceId: service.id,
+                                                        serviceId:
+                                                            item.service!.id,
                                                         name:
-                                                            service.name ?? "",
+                                                            item.service!.name
+                                                                .toString(),
                                                       ),
                                             ),
                                           );
@@ -286,7 +298,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                             ),
                           ),
 
-                          // 🗑 Delete Icon
+                          // 🗑 Delete Icon (Top Right)
                           Positioned(
                             top: 8,
                             right: 8,
@@ -302,24 +314,30 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                           item.wishlist?.id.toString(),
                                     },
                                   );
-                                  print(
-                                    "🗑 Delete Response: ${response?.data}",
-                                  );
+                                  print(response?.data['data']);
                                   if (response.data['success'] == true) {
-                                    print(
-                                      "✅ Wishlist item deleted successfully",
-                                    );
                                     wishlistApi(ref);
+                                    final data = response.data['data'] as List;
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    print(data);
                                   } else {
-                                    print("⚠️ Wishlist delete failed");
+                                    setState(() {
+                                      isLoading = false;
+                                    });
                                   }
-                                } catch (e, stackTrace) {
-                                  print("❌ Error deleting wishlist item: $e");
-                                  print("🔍 StackTrace: $stackTrace");
+                                } catch (e) {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                  print("Error fetching appointments: $e");
+                                  throw Exception("Failed to load data");
                                 }
                               },
                               child: Image.asset(
                                 'assets/images/delete.png',
+                                //color: Colors.black54,
                                 height: 22,
                               ),
                             ),

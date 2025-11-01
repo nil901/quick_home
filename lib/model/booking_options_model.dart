@@ -4,10 +4,12 @@ class BookingDate {
   final String day;
   final String formatted;
 
+
   BookingDate({
     required this.date,
     required this.day,
     required this.formatted,
+    
   });
 
   factory BookingDate.fromJson(Map<String, dynamic> json) {
@@ -15,6 +17,7 @@ class BookingDate {
       date: json['date'],
       day: json['day'],
       formatted: json['formatted'],
+ 
     );
   }
 
@@ -22,28 +25,33 @@ class BookingDate {
         'date': date,
         'day': day,
         'formatted': formatted,
+        
       };
 }
 
 class BookingTime {
   final String time;
   final String formatted;
+    final bool available;
 
   BookingTime({
     required this.time,
     required this.formatted,
+    required this.available,
   });
 
   factory BookingTime.fromJson(Map<String, dynamic> json) {
     return BookingTime(
       time: json['time'],
       formatted: json['formatted'],
+           available: json['available'],
     );
   }
 
   Map<String, dynamic> toJson() => {
         'time': time,
         'formatted': formatted,
+        'available': available,
       };
 }
 

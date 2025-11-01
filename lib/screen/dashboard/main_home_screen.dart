@@ -9,9 +9,26 @@ import 'package:quick_home/screen/dashboard/subscription_screen.dart';
 import 'package:quick_home/screen/dashboard/wishlist_screen.dart';
 import 'package:quick_home/util/enum.dart';
 
-class MainHomeScreen extends ConsumerWidget {
+class MainHomeScreen extends ConsumerStatefulWidget {
+  final BottomTab initialTab;
+
+  MainHomeScreen({required this.initialTab});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  @override
+  ConsumerState<MainHomeScreen> createState() => _MainHomeScreenState();
+}
+
+class _MainHomeScreenState extends ConsumerState<MainHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      ref.read(bottomTabProvider.notifier).state = widget.initialTab;
+    });
+  }
+
+  Widget build(BuildContext context) {
     final selectedTab = ref.watch(bottomTabProvider);
 
     final Map<BottomTab, Widget> pages = {
@@ -62,7 +79,7 @@ class MainHomeScreen extends ConsumerWidget {
                       selectedTab == BottomTab.bookings,
                     ),
                     _navItem(
-                      "assets/images/booking.png",
+                      "assets/images/wishlist_icon.png",
                       "Wishlist",
                       selectedTab == BottomTab.Wishlist,
                     ),

@@ -8,6 +8,7 @@ import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/provide/home_prov.dart';
+import 'package:quick_home/screen/dashboard/search_screen.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
 import 'package:quick_home/util/ratting.dart';
 import 'package:quick_home/util/size.dart';
@@ -27,7 +28,7 @@ class _SubCategoriesscreenDetailsState
   @override
   void initState() {
     HomeServices().subCategoriesApi(ref, widget.catId);
-    // TODO: implement initState
+
     super.initState();
   }
 
@@ -69,34 +70,45 @@ class _SubCategoriesscreenDetailsState
                       children: [
                         //sw10,
                         Expanded(
-                          child: Container(
-                            height: 45,
-                            decoration: BoxDecoration(
-                              color: kwhite,
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: kgrey, width: 0.5),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      decoration: InputDecoration(
-                                        hintText: "Search here...!",
-                                        border: InputBorder.none,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SearchScreen(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: 45,
+                              decoration: BoxDecoration(
+                                color: kwhite,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(color: kgrey, width: 0.5),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        enabled: false,
+                                        decoration: InputDecoration(
+                                          hintText: "Search here...!",
+                                          border: InputBorder.none,
 
-                                        hintStyle: TextStyle(
-                                          color: kblack,
-                                          fontSize: 12,
-                                        ),
-                                        contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 10,
+                                          hintStyle: TextStyle(
+                                            color: kblack,
+                                            fontSize: 12,
+                                          ),
+                                          contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -315,13 +327,11 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                                   countStatus[index]++;
                                 });
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                ),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
                                 child: Text(
-                                  '+',
-                                  style: const TextStyle(
+                                  "+",
+                                  style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -389,58 +399,38 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                         ),
                         InkWell(
                           onTap: () async {
-                            print(
-                              "❤️ Tapped on: ${item.name} (ID: ${item.id}) | Current isWishlisted: ${item.isWishlisted}",
-                            );
-                            setState(() => isLoading = true);
-
-                            // 🔹 Optimistic UI Update (icon turant change ho)
-                            setState(() {
-                              item.isWishlisted = !(item.isWishlisted ?? false);
-                            });
-
                             try {
                               final response =
                                   await ApiService.postRequest(wishlistAdd, {
                                     "user": AppPreference().getInt(
                                       PreferencesKey.userId,
                                     ),
-                                    "service": item.id.toString(),
+                                    "service": item?.id.toString(),
                                     "wishlisted":
-                                        item.isWishlisted == true ? 1 : 0,
+                                        item.isWishlisted == true ? 0 : 1,
                                   });
-
-                              print("✅ Server Response: ${response.data}");
-
+                              print(response?.data['data']);
                               if (response.data['success'] == true) {
-                                // ✅ Refresh list
-                                await HomeServices().SubcategoreyProductApi(
+                                HomeServices().subCategoriesApi(
                                   ref,
-                                  item.subcategoryId,
+                                  item?.subcategoryId,
                                 );
-                              } else {
-                                print(
-                                  "⚠️ Server reported failure: ${response.data['message'] ?? 'No message'}",
-                                );
-                                // 🔹 Revert icon if failed
+                                final data = response.data['data'] as List;
                                 setState(() {
-                                  item.isWishlisted =
-                                      !(item.isWishlisted ?? false);
+                                  isLoading = false;
                                 });
-                              }
-                            } catch (e) {
-                              print("❌ Exception on wishlist toggle: $e");
-                              // 🔹 Revert icon if error
-                              setState(() {
-                                item.isWishlisted =
-                                    !(item.isWishlisted ?? false);
-                              });
-                            } finally {
-                              if (mounted) {
+                                print(data);
+                              } else {
                                 setState(() {
                                   isLoading = false;
                                 });
                               }
+                            } catch (e) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              print("Error fetching appointments: $e");
+                              throw Exception("Failed to load data");
                             }
                           },
                           child: Icon(
@@ -448,10 +438,6 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                                 ? Icons.favorite
                                 : Icons.favorite_border,
                             size: 20,
-                            color:
-                                item.isWishlisted == true
-                                    ? Colors.black
-                                    : Colors.grey,
                           ),
                         ),
                       ],

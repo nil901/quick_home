@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/api_services/api_services.dart';
@@ -6,11 +7,31 @@ import 'package:quick_home/model/address_model.dart';
 import 'package:quick_home/model/bannar_model.dart';
 import 'package:quick_home/model/booking_options_model.dart';
 import 'package:quick_home/model/cart_model.dart';
+import 'package:quick_home/model/my_booking_model.dart';
 import 'package:quick_home/model/wishlist_model.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
+import 'package:dio/dio.dart';
 
 class cartServices {
+  Future<void> mybookingAPi(WidgetRef ref, {required String type}) async {
+    try {
+      final data = {"user": 18, "type": type};
+      final response = await ApiService.postRequest(getMyBooking, data);
+      if (response.data['success'] == true) {
+        final data = response.data['data'] as List;
+
+        ref.read(bookingHistoryProvider.notifier).state =
+            data.map((json) => BookingHistoryModel.fromJson(json)).toList();
+      } else {
+        print("Failed to fetch booking history: ${response.data['message']}");
+      }
+    } catch (e) {
+      print("Error fetching appointments: $e");
+      throw Exception("Failed to load data");
+    }
+  }
+
   Future<void> addressApi(WidgetRef ref) async {
     // print("helowwckxckdnkdfn");
     try {
@@ -74,35 +95,50 @@ class cartServices {
     }
   }
 
-  Future<void> bookingOptionsApi(WidgetRef ref) async {
+    Future<void> bookingOptionsApi(
+    WidgetRef ref, {
+      serviceProviders,
+      date,
+  }) async {
+    final selectedItem = ref.read(selectedCartProvider);
+
     try {
-      final response = await ApiService.postRequest(getBookingOptions, {
-        "user": AppPreference().getInt(PreferencesKey.userId),
-        "service": 49,
-      });
+      final response = await ApiService.postRequest(
+        getBookingOptions,
+        {
+          "user": AppPreference().getInt(PreferencesKey.userId),
+          "service": selectedItem?.service?.id,
+          "serviceProvider": serviceProviders,
+          "date": date,
+        },
+      );
 
       if (response.data['success'] == true) {
         final jsonData = response.data['data'];
 
-        final data = jsonData['dates'] as List;
-        final time = jsonData['times'] as List;
-        final service = jsonData['service_providers'] as List;
-        print("data is $data");
+        final dateList = jsonData['dates'] as List;
+        final timeList = jsonData['times'] as List;
+        final serviceList = jsonData['service_providers'] as List;
+
+        // Update Riverpod States
         ref.read(bookingDateProvider.notifier).state =
-            data.map((json) => BookingDate.fromJson(json)).toList();
+            dateList.map((e) => BookingDate.fromJson(e)).toList();
 
         ref.read(bookingTimeProvider.notifier).state =
-            time.map((json) => BookingTime.fromJson(json)).toList();
+            timeList.map((e) => BookingTime.fromJson(e)).toList();
 
         ref.read(serviceProvider.notifier).state =
-            service.map((json) => ServiceProvider.fromJson(json)).toList();
+            serviceList.map((e) => ServiceProvider.fromJson(e)).toList();
 
+        print("✅ Booking options updated successfully");
       } else {
-        print("API returned error: ${response.data['message']}");
+        print("❌ API returned error: ${response.data['message']}");
       }
     } catch (e) {
-      print("Error fetching booking options: $e");
+      print("❌ Error fetching booking options: $e");
       throw Exception("Failed to load booking options");
     }
   }
 }
+
+

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:quick_home/screen/dashboard/main_home_screen.dart';
+import 'package:quick_home/util/enum.dart';
 
 class OtpVerify extends StatefulWidget {
   final String otp; // received OTP from backend
@@ -73,7 +74,7 @@ class _OtpVerifyState extends State<OtpVerify> {
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) =>  MainHomeScreen()),
+            MaterialPageRoute(builder: (context) =>  MainHomeScreen(initialTab: BottomTab.bookings)),
           );
         });
       } else {

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quick_home/api_services/urls.dart';
-import 'package:quick_home/model/notification_model.dart';
 
 class ApiException implements Exception {
   final int? statusCode;
@@ -174,18 +173,18 @@ class ApiService {
     }
   }
 
-  static Future<Response> postRequest(
-    String endpoint,
-    Map<String, dynamic> data, {
-    Options? options,
-  }) async {
-    try {
-      final res = await _dio.post(endpoint, data: data, options: options);
-      return _handleResponse(res);
-    } catch (e) {
-      return _mapAndRethrow(e);
-    }
+static Future<Response> postRequest(
+  String endpoint,
+  dynamic data, {   // 👈 changed from Map<String, dynamic> to dynamic
+  Options? options,
+}) async {
+  try {
+    final res = await _dio.post(endpoint, data: data, options: options);
+    return _handleResponse(res);
+  } catch (e) {
+    return _mapAndRethrow(e);
   }
+}
 
   static Future<Response> putRequest(
     String endpoint,
@@ -230,60 +229,4 @@ class ApiService {
   //     return _mapAndRethrow(e);
   //   }
   // }
-
-  Future<NotificationModel> getNotifications(
-    String token,
-    String userId,
-  ) async {
-    try {
-      print("🔄 Fetching notifications for user: $userId");
-
-      final response = await _dio.post(
-        'notifications',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/json',
-          },
-        ),
-        data: {
-          'user': userId, // 👈 backend expects user field
-        },
-      );
-
-      print("\n*** Response ***");
-      print("🔗 URL: ${response.realUri}");
-      print("📡 Status Code: ${response.statusCode}");
-      print("📬 Headers: ${response.headers}");
-      print("📦 Body: ${response.data}");
-
-      if (response.statusCode == 200) {
-        print("✅ Notifications fetched successfully!");
-
-        // Parsing response to NotificationModel
-        final model = NotificationModel.fromJson(response.data);
-
-        // 🧾 Optional: Console log of each notification
-        if (model.data?.notifications != null &&
-            model.data!.notifications!.isNotEmpty) {
-          for (var n in model.data!.notifications!) {
-            print(
-              "🛎️ ${n.data?.title ?? 'No Title'} | ${n.data?.description ?? 'No Description'} | Time: ${n.data?.time}",
-            );
-          }
-        } else {
-          print("ℹ️ No notifications found in response.");
-        }
-
-        return model;
-      } else {
-        print("❌ Failed with status code: ${response.statusCode}");
-        throw Exception("Failed to load notifications (status != 200)");
-      }
-    } catch (e, st) {
-      print("❌ Exception in getNotifications(): $e");
-      print("📜 StackTrace: $st");
-      throw Exception("Error fetching notifications: $e");
-    }
-  }
 }
