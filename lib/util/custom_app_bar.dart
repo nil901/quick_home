@@ -21,9 +21,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       height: preferredSize.height,
       decoration: BoxDecoration(
         color: HexColor('#E4F9FF'),
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(20),
-        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
       child: SafeArea(
         child: Row(
@@ -39,8 +37,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          MainHomeScreen(initialTab: targetTab!),
+                      builder: (_) => MainHomeScreen(initialTab: targetTab!),
                     ),
                     (route) => false,
                   );

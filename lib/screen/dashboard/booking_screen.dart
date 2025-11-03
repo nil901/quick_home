@@ -84,7 +84,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   BookingTab selectedTab = BookingTab.inProgress;
 
   final tabNames = const {
-    BookingTab.inProgress: "Ongoing",
+    BookingTab.inProgress: "In Progress",
     BookingTab.upcoming: "Upcoming",
     BookingTab.completed: "Completed",
     BookingTab.cancelled: "Cancelled",
@@ -93,7 +93,10 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   bool isLoading = false;
   Future<void> mybookingAPi(WidgetRef ref, {required String type}) async {
     try {
-      final data = {"user": AppPreference().getInt(PreferencesKey.userId), "type": type};
+      final data = {
+        "user": AppPreference().getInt(PreferencesKey.userId),
+        "type": type,
+      };
       final response = await ApiService.postRequest(getMyBooking, data);
       if (response.data['success'] == true) {
         final data = response.data['data'] as List;
@@ -161,7 +164,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                       String type = "";
                       switch (tab) {
                         case BookingTab.inProgress:
-                          type = "ongoing";
+                          type = "In Progress";
                           break;
                         case BookingTab.upcoming:
                           type = "upcoming";

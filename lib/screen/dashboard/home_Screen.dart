@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -39,7 +38,6 @@ class _HomeState extends ConsumerState<Home> {
     HomeServices().categoryApi(ref);
     HomeServices().offerApi(ref);
     HomeServices().profileApi(ref);
-    
   }
 
   @override
@@ -58,7 +56,6 @@ class _HomeState extends ConsumerState<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               
                 Container(
                   width: double.infinity,
                   color: HexColor('#E4F9FF'),
@@ -109,6 +106,9 @@ class _HomeState extends ConsumerState<Home> {
                           ),
                         ),
                       ),
+
+                      /// 📸 Banner (slider placeholder)
+                      /// 📸 Banner Slider
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: BannerSlider(),
@@ -153,7 +153,9 @@ class _HomeState extends ConsumerState<Home> {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => SubCategoriesscreenDetails(catId: categorys.id,),
+                                  (context) => SubCategoriesscreenDetails(
+                                    catId: categorys.id,
+                                  ),
                             ),
                           );
                         },
@@ -245,7 +247,7 @@ class _HomeState extends ConsumerState<Home> {
                 ),
 
                 /// Sections
-                 SectionWidget(false),
+                SectionWidget(false),
               ],
             ),
           ),
@@ -274,94 +276,124 @@ class SectionWidget extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: homeModel.sections.map((section) {
-          final items = section.items.items;
+        children:
+            homeModel.sections.map((section) {
+              final items = section.items.items;
 
-          log("${section.title} has ${items.length} items");
-          log(jsonEncode(items.map((e) => e.toJson()).toList()));
+              log("${section.title} has ${items.length} items");
+              log(jsonEncode(items.map((e) => e.toJson()).toList()));
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Section title + See all
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(section.title,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    GestureDetector(
-                      onTap: () {
-                       Navigator.push( context, MaterialPageRoute( builder: (context) => QwikPicksScreen(item: homeModel), ), );
-                      },
-                      child: const Text("See all", style: TextStyle(color: Colors.blue)),
-                    )
-                  ],
-                ),
-              ),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Section title + See all
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          section.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        QwikPicksScreen(item: homeModel),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "See all",
+                            style: TextStyle(color: Colors.blue),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
-              // Horizontal ListView
-              SizedBox(
-                height: single ? 200 : 200,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    double width = single ? 301 : 120;
-                    double height = single ? 150 : 120;
+                  // Horizontal ListView
+                  SizedBox(
+                    height: single ? 200 : 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        double width = single ? 301 : 120;
+                        double height = single ? 150 : 120;
 
-                    return InkWell(
-                      onTap: (){
-                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ServicesDetailsScreen(serviceId: item.id,name: item.name,),
-                            ),
-                          );
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(left: 12),
-                        width: width,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                              child: Image.network(
-                                item.imageUrl,
-                                width: width,
-                                height: height,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(
-                                      width: width,
-                                      height: height,
-                                      color: Colors.grey[200],
-                                      child: const Center(
-                                          child: Icon(Icons.broken_image,
-                                              color: Colors.grey, size: 40)),
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => ServicesDetailsScreen(
+                                      serviceId: item.id,
+                                      name: item.name,
                                     ),
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(item.name,
-                                style: const TextStyle(
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 12),
+                            width: width,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image.network(
+                                    item.imageUrl,
+                                    width: width,
+                                    height: height,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              width: width,
+                                              height: height,
+                                              color: Colors.grey[200],
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.broken_image,
+                                                  color: Colors.grey,
+                                                  size: 40,
+                                                ),
+                                              ),
+                                            ),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87)),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        }).toList(),
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
       ),
     );
   }

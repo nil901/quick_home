@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/color/colors.dart';
-final cleanerCountProvider = StateProvider<int?>((ref) => null);
 
+final cleanerCountProvider = StateProvider<int?>((ref) => null);
 
 class CleanerCountSelector extends ConsumerStatefulWidget {
   const CleanerCountSelector({super.key});
@@ -26,10 +26,7 @@ class _CleanerCountSelectorState extends ConsumerState<CleanerCountSelector> {
         child: ExpansionTile(
           title: const Text(
             "How many cleaners do you need?",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           iconColor: Colors.black,
           collapsedIconColor: Colors.black54,
@@ -45,7 +42,13 @@ class _CleanerCountSelectorState extends ConsumerState<CleanerCountSelector> {
 
                   return GestureDetector(
                     onTap: () {
-                      ref.read(cleanerCountProvider.notifier).state = number;
+                      if (selectedCount == number) {
+                        // If already selected → unselect
+                        ref.read(cleanerCountProvider.notifier).state = null;
+                      } else {
+                        // Else select this number
+                        ref.read(cleanerCountProvider.notifier).state = number;
+                      }
                     },
                     child: Container(
                       width: 100,

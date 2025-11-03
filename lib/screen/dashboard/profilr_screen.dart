@@ -4,6 +4,8 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/provide/address_provider.dart';
+import 'package:quick_home/screen/dashboard/Collection.dart';
+import 'package:quick_home/screen/dashboard/booking_screen.dart';
 import 'package:quick_home/screen/dashboard/my_subscriptions_screen.dart';
 import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
 import 'package:quick_home/util/size.dart';
@@ -145,12 +147,26 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                   _buildOptionTile(
                     imagePath: "assets/images/wallet.png",
                     label: "Collections",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CollectionScreen(),
+                        ),
+                      );
+                    },
                   ),
                   _buildOptionTile(
                     imagePath: "assets/images/booking.png",
                     label: "My Bookings",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyBookingsScreen(),
+                        ),
+                      );
+                    },
                   ),
                   _buildOptionTile(
                     imagePath: "assets/images/subscription.png",
