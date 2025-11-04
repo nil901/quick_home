@@ -178,7 +178,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                 ],
                               ),
                             )
-                            : searchList.isEmpty ? NoDataFoundScreen(onRetry: (){}): ListView.builder(
+                            : searchList.isEmpty
+                            ? NoDataFoundScreen(onRetry: () {})
+                            : ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: searchList.length,
@@ -349,8 +351,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                                       );
                                                     }
                                                   },
-                                                  
-                                                  
+
                                                   child: Icon(
                                                     item.isWishlisted == true
                                                         ? Icons.favorite

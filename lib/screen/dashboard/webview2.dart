@@ -30,7 +30,7 @@ class _WebviewFileUploadScreenState extends State<WebviewFileUploadScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        appBar: AppBar(title: const Text("Privacy Policy")),
+        appBar: AppBar(title: const Text("terms & Conditions")),
         body: SafeArea(
           child: Column(
             children: [

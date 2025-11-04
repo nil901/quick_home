@@ -47,8 +47,9 @@ Future<void> _initLocalNotification() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  const InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
@@ -112,15 +113,16 @@ class _MyAppState extends State<MyApp> {
   void _showLocalNotification(RemoteNotification notification) async {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-      'high_importance_channel', // channel id
-      'High Importance Notifications', // channel name
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-    );
+          'high_importance_channel', // channel id
+          'High Importance Notifications', // channel name
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
+        );
 
-    const NotificationDetails platformDetails =
-        NotificationDetails(android: androidDetails);
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+    );
 
     await flutterLocalNotificationsPlugin.show(
       DateTime.now().microsecond, // unique id
@@ -151,7 +153,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ),
-      home:  SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }

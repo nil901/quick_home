@@ -95,23 +95,20 @@ class cartServices {
     }
   }
 
-    Future<void> bookingOptionsApi(
+  Future<void> bookingOptionsApi(
     WidgetRef ref, {
-      serviceProviders,
-      date,
+    serviceProviders,
+    date,
   }) async {
     final selectedItem = ref.read(selectedCartProvider);
 
     try {
-      final response = await ApiService.postRequest(
-        getBookingOptions,
-        {
-          "user": AppPreference().getInt(PreferencesKey.userId),
-          "service": selectedItem?.service?.id,
-          "serviceProvider": serviceProviders,
-          "date": date,
-        },
-      );
+      final response = await ApiService.postRequest(getBookingOptions, {
+        "user": AppPreference().getInt(PreferencesKey.userId),
+        "service": selectedItem?.service?.id,
+        "serviceProvider": serviceProviders,
+        "date": date,
+      });
 
       if (response.data['success'] == true) {
         final jsonData = response.data['data'];
@@ -140,5 +137,3 @@ class cartServices {
     }
   }
 }
-
-

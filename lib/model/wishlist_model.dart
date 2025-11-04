@@ -1,31 +1,21 @@
-import 'dart:convert';
-
 class WishlistModel {
   Wishlist? wishlist;
-  Service? service;
-  Offer? offer;
 
-  WishlistModel({this.wishlist, this.service, this.offer});
+  WishlistModel({this.wishlist});
 
   factory WishlistModel.fromJson(Map<String, dynamic> json) => WishlistModel(
     wishlist:
         json["wishlist"] == null ? null : Wishlist.fromJson(json["wishlist"]),
-    service: json["service"] == null ? null : Service.fromJson(json["service"]),
-    offer: json["offer"] == null ? null : Offer.fromJson(json["offer"]),
   );
 
-  Map<String, dynamic> toJson() => {
-    "wishlist": wishlist?.toJson(),
-    "service": service?.toJson(),
-    "offer": offer?.toJson(),
-  };
+  Map<String, dynamic> toJson() => {"wishlist": wishlist?.toJson()};
 }
 
 class Wishlist {
-  dynamic? id;
-  dynamic? userId;
-  dynamic? serviceId;
-  dynamic? offerId;
+  dynamic id;
+  dynamic userId;
+  dynamic serviceId;
+  dynamic offerId;
   String? createdAt;
   String? updatedAt;
   Service? service;
@@ -66,9 +56,9 @@ class Wishlist {
 }
 
 class Service {
-  dynamic? id;
-  dynamic? categoryId;
-  dynamic? subcategoryId;
+  dynamic id;
+  dynamic categoryId;
+  dynamic subcategoryId;
   String? name;
   String? description;
   List<String>? whatsInclude;
@@ -87,11 +77,12 @@ class Service {
   String? status;
   String? createdAt;
   String? updatedAt;
-  String? media;
+  List<String>? media; // ✅ Updated: List instead of String
+  List<String>? mediaUrls; // ✅ New field added
   bool? qwikpick;
   bool? beautyAndEasy;
   double? averageRating;
-  dynamic? totalReviews;
+  dynamic totalReviews;
   String? imageUrl;
 
   Service({
@@ -117,6 +108,7 @@ class Service {
     this.createdAt,
     this.updatedAt,
     this.media,
+    this.mediaUrls,
     this.qwikpick,
     this.beautyAndEasy,
     this.averageRating,
@@ -133,7 +125,7 @@ class Service {
     whatsInclude:
         json["whats_include"] == null
             ? []
-            : List<String>.from(json["whats_include"].map((x) => x)),
+            : List<String>.from(json["whats_include"].map((x) => x.toString())),
     shortDescription: json["short_description"],
     priceOnetime: json["price_onetime"],
     priceOnetimeDescription: json["price_onetime_description"],
@@ -149,7 +141,14 @@ class Service {
     status: json["status"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
-    media: json["media"],
+    media:
+        json["media"] == null
+            ? []
+            : List<String>.from(json["media"].map((x) => x.toString())),
+    mediaUrls:
+        json["media_urls"] == null
+            ? []
+            : List<String>.from(json["media_urls"].map((x) => x.toString())),
     qwikpick: json["qwikpick"],
     beautyAndEasy: json["beauty_and_easy"],
     totalReviews: json["total_reviews"],
@@ -183,6 +182,7 @@ class Service {
     "created_at": createdAt,
     "updated_at": updatedAt,
     "media": media,
+    "media_urls": mediaUrls,
     "qwikpick": qwikpick,
     "beauty_and_easy": beautyAndEasy,
     "average_rating": averageRating,
@@ -192,7 +192,6 @@ class Service {
 }
 
 class Offer {
-  // सध्या offer null आहे, पण structure ठेवला future साठी
   Offer();
 
   factory Offer.fromJson(Map<String, dynamic> json) => Offer();
