@@ -5,6 +5,7 @@ import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/provide/address_provider.dart';
 import 'package:quick_home/screen/dashboard/Collection.dart';
+import 'package:quick_home/screen/dashboard/SettingsScreen.dart';
 import 'package:quick_home/screen/dashboard/booking_screen.dart';
 import 'package:quick_home/screen/dashboard/my_subscriptions_screen.dart';
 import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
@@ -184,7 +185,14 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                   _buildOptionTile(
                     imagePath: "assets/images/setting.png",
                     label: "Settings",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsScreen(),
+                        ),
+                      );
+                    },
                   ),
 
                   _buildOptionTile(

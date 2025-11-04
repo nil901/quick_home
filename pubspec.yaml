@@ -37,6 +37,7 @@ dependencies:
   firebase_messaging: ^16.0.3
   flutter_local_notifications: ^19.5.0
   ionicons: ^0.2.2
+  webview_flutter: ^4.13.0
 
 
 

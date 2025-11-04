@@ -1151,7 +1151,7 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
         DateTime today = DateTime.now();
         int todayIndex = bookingDates.indexWhere((d) {
           try {
-            final date = DateFormat("MMM dd, yyyy").parse(d.formatted);
+            final date = DateFormat("MMM, dd, yyyy").parse(d.formatted);
             return date.year == today.year &&
                 date.month == today.month &&
                 date.day == today.day;
@@ -1319,12 +1319,14 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
           Consumer(
             builder: (context, ref, _) {
               final service = ref.watch(serviceProvider);
-              print("dddddddddddddddddddddddddddddddddddddddddd");
+              print("➡️ Experts Loaded: ${service.length}");
+
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: List.generate(service.length, (index) {
                     final expert = service[index];
+
                     return Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: ExpertCard(
@@ -1341,10 +1343,48 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
                             );
 
                             if (response.data['success'] == true) {
+                              print(
+                                "✅ API Success for Provider: ${service[index].id}",
+                              );
+
+                              final dates = response.data['dates'];
+                              print("📍 DATE RECEIVED → $dates");
+                              print("📍 DATE TYPE → ${dates.runtimeType}");
+
+                              // ✅ If server did not send dates, generate fallback
+                              if (dates == null || dates.isEmpty) {
+                                print(
+                                  "⚠️ No dates from server, generating next 7 days...",
+                                );
+
+                                final today = DateTime.now();
+                                final generated = List.generate(7, (index) {
+                                  final date = today.add(Duration(days: index));
+                                  return {
+                                    "date": DateFormat(
+                                      "yyyy-MM-dd",
+                                    ).format(date),
+                                    "formatted": DateFormat(
+                                      "MMM dd, yyyy",
+                                    ).format(date),
+                                    "day": DateFormat("EEEE").format(date),
+                                  };
+                                });
+
+                                print("📍 Generated Dates: $generated");
+
+                                // TODO: Store in your bookingDate Provider
+                                // ref.read(bookingDateProvider.notifier).setDates(generated);
+                              } else {
+                                // TODO: Store server dates in provider
+                                // ref.read(bookingDateProvider.notifier).setDates(dates);
+                              }
+
+                              // Existing code
                               Future.microtask(
                                 () => cartServices().bookingOptionsApi(
                                   ref,
-                                  serviceProviders: expert.id,
+                                  serviceProviders: service[index].id,
                                 ),
                               );
                             } else {
@@ -1355,7 +1395,7 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
                               );
                             }
                           } catch (e) {
-                            print("Error updating quantity: $e");
+                            print("❌ Error fetching dates: $e");
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text("Something went wrong"),

@@ -16,13 +16,6 @@ import '../../util/size.dart';
 import '../wigets/bannar_slider.dart';
 import 'mid_screens/sub_categories_screen.dart';
 
-// final List<Map<String, String>> categories = [
-//   {'label': 'Core Home Services', 'icon': 'assets/images/cleaning.png'},
-//   {'label': 'Family Support', 'icon': 'assets/images/repair.png'},
-//   {'label': 'Personal Care', 'icon': 'assets/images/beuty.png'},
-//   {'label': 'Home Maintenance', 'icon': 'assets/images/homecleaning.png'},
-// ];
-
 class Home extends ConsumerStatefulWidget {
   const Home({super.key});
 
@@ -43,6 +36,7 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     final category = ref.watch(categoryProvider);
+
     return Material(
       color: HexColor('#E4F9FF'),
       child: SafeArea(
@@ -56,13 +50,14 @@ class _HomeState extends ConsumerState<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ===== Search + Banner =====
                 Container(
                   width: double.infinity,
                   color: HexColor('#E4F9FF'),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// 🔍 Search bar
+                      // Search Bar
                       Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: InkWell(
@@ -79,7 +74,6 @@ class _HomeState extends ConsumerState<Home> {
                             decoration: BoxDecoration(
                               color: kwhite,
                               borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: kgrey, width: 0.5),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
@@ -107,48 +101,38 @@ class _HomeState extends ConsumerState<Home> {
                         ),
                       ),
 
-                      /// 📸 Banner (slider placeholder)
-                      /// 📸 Banner Slider
+                      // Banner Slider
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: BannerSlider(),
                       ),
-
-                      h20,
                     ],
+                  ),
+                ),
+
+                h10,
+
+                // ===== Categories Title =====
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                  child: Text(
+                    'All Categories',
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17),
                   ),
                 ),
                 h10,
 
-                /// 🏷 Categories (Updated UI like ServiceListScreen)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'All Categories',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-
+                // ===== Categories Horizontal (compact) =====
                 SizedBox(
-                  height: 136,
+                  height: 118, // compact height to match screenshot
                   child: ListView.builder(
-                    shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: category.length,
                     itemBuilder: (context, index) {
                       final categorys = category[index];
                       return InkWell(
                         onTap: () {
-                          print(categorys.id);
-                          // Navigate to SubCategoriesScreen on tap
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -160,55 +144,29 @@ class _HomeState extends ConsumerState<Home> {
                           );
                         },
                         child: Container(
-                          margin: EdgeInsets.only(right: 19),
-                          width: 100, // Adjust as per design
+                          margin: const EdgeInsets.only(right: 12),
+                          width: 85, // <= compact width (change here if needed)
                           decoration: BoxDecoration(
                             color: Colors.white,
                             border: Border.all(
-                              color: Color(0xFF004271),
-                              width: 2,
+                              color: const Color(0xFF004271),
+                              width: 1.6,
                             ),
-                            borderRadius: BorderRadius.circular(
-                              18,
-                            ), // Same curvature sab corners pe
+                            borderRadius: BorderRadius.circular(14),
                           ),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              // small image area
                               Container(
-                                width: 86,
-                                height: 82,
-                                margin: const EdgeInsets.only(top: 2, left: 1),
+                                width: 75,
+                                height: 60,
+                                margin: const EdgeInsets.only(top: 4),
                                 child:
                                     categorys.imageUrl != null &&
                                             categorys.imageUrl!.isNotEmpty
                                         ? Image.network(
                                           categorys.imageUrl!,
                                           fit: BoxFit.contain,
-                                          errorBuilder: (
-                                            context,
-                                            error,
-                                            stackTrace,
-                                          ) {
-                                            // Show placeholder if image fails to load
-                                            return Image.asset(
-                                              "assets/images/logo.png",
-                                              fit: BoxFit.contain,
-                                            );
-                                          },
-                                          loadingBuilder: (
-                                            context,
-                                            child,
-                                            loadingProgress,
-                                          ) {
-                                            if (loadingProgress == null)
-                                              return child;
-                                            return const Center(
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                              ),
-                                            );
-                                          },
                                         )
                                         : Image.asset(
                                           "assets/images/logo.png",
@@ -216,24 +174,25 @@ class _HomeState extends ConsumerState<Home> {
                                         ),
                               ),
 
+                              // compact label area
                               Container(
+                                height: 35,
                                 width: double.infinity,
-                                height: 48,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Color(0xFF004271),
                                   borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(15),
-                                    bottomRight: Radius.circular(15),
+                                    bottomLeft: Radius.circular(14),
+                                    bottomRight: Radius.circular(14),
                                   ),
                                 ),
                                 child: Center(
                                   child: Text(
                                     categorys.name.toString(),
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 11,
                                     ),
                                   ),
                                 ),
@@ -246,8 +205,12 @@ class _HomeState extends ConsumerState<Home> {
                   ),
                 ),
 
-                /// Sections
-                SectionWidget(false),
+                h10,
+
+                // ===== Sections (Offers / Campaigns / Others) =====
+                const SizedBox(height: 4),
+                SectionWidget(), // replaced below
+                const SizedBox(height: 100),
               ],
             ),
           ),
@@ -255,13 +218,12 @@ class _HomeState extends ConsumerState<Home> {
       ),
     );
   }
-
-  /// 📦 Section Builder
 }
 
+/// ------------------ SECTION WIDGET (Compact Horizontal Cards Like Screenshot) ------------------
+
 class SectionWidget extends ConsumerWidget {
-  final bool single;
-  SectionWidget(this.single);
+  const SectionWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {
@@ -273,128 +235,156 @@ class SectionWidget extends ConsumerWidget {
 
     final homeModel = offers[0];
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children:
-            homeModel.sections.map((section) {
-              final items = section.items.items;
+    // iterate through sections from API
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children:
+          homeModel.sections.map<Widget>((section) {
+            final items = section.items.items;
 
-              log("${section.title} has ${items.length} items");
-              log(jsonEncode(items.map((e) => e.toJson()).toList()));
+            // determine if section is "Special Offers & Campaigns" (keep bigger if you need)
+            final String titleLower =
+                section.title?.toString().toLowerCase() ?? '';
+            final bool isOfferCampaign =
+                titleLower.contains('offer') || titleLower.contains('campaign');
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Section title + See all
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          section.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Section Title + See all
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        section.title ?? '',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => QwikPicksScreen(item: homeModel),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "See all",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        QwikPicksScreen(item: homeModel),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            "See all",
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
-                  // Horizontal ListView
-                  SizedBox(
-                    height: single ? 200 : 200,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        double width = single ? 301 : 120;
-                        double height = single ? 150 : 120;
+                // Horizontal list for this section
+                SizedBox(
+                  height:
+                      isOfferCampaign
+                          ? 180
+                          : 160, // offers slightly taller if needed
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(left: 16, right: 8),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
 
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => ServicesDetailsScreen(
-                                      serviceId: item.id,
-                                      name: item.name,
-                                    ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(left: 12),
-                            width: width,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Image.network(
-                                    item.imageUrl,
-                                    width: width,
-                                    height: height,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                              width: width,
-                                              height: height,
-                                              color: Colors.grey[200],
-                                              child: const Center(
-                                                child: Icon(
-                                                  Icons.broken_image,
-                                                  color: Colors.grey,
-                                                  size: 40,
-                                                ),
-                                              ),
-                                            ),
+                      // widths:
+                      // - For offers/campaigns you wanted more visual weight in earlier messages — keep a bit larger
+                      // - For all other sections we show compact cards (matches screenshot)
+                      final double cardWidth =
+                          isOfferCampaign
+                              ? MediaQuery.of(context).size.width *
+                                  0.78 // slightly large for offers/campaigns
+                              : 120; // compact width for other sections
+
+                      final double imageHeight = isOfferCampaign ? 120 : 90;
+
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => ServicesDetailsScreen(
+                                    serviceId: item.id,
+                                    name: item.name,
                                   ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: cardWidth,
+                          margin: const EdgeInsets.only(right: 12, bottom: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            // border: Border.all(
+                            //   color: Colors.grey.shade300,
+                            //   width: 1,
+                            // ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // image area
+                              ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(12),
+                                  topRight: Radius.circular(12),
                                 ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  item.name,
+                                child: Image.network(
+                                  item.imageUrl,
+                                  width: cardWidth,
+                                  height: imageHeight,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (_, __, ___) => Container(
+                                        width: cardWidth,
+                                        height: imageHeight,
+                                        color: Colors.grey[200],
+                                        alignment: Alignment.center,
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          size: 32,
+                                        ),
+                                      ),
+                                ),
+                              ),
+
+                              // title / meta
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  item.name ?? '',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                ],
-              );
-            }).toList(),
-      ),
+                ),
+              ],
+            );
+          }).toList(),
     );
   }
 }

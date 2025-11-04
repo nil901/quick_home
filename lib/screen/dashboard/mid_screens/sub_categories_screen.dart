@@ -278,13 +278,13 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  
+
                   // ---- Book Now / Counter ----
                   bookedStatus[index]
                       ? Container(
                         height: 32,
                         decoration: BoxDecoration(
-                          color: kscoundPrimaryColor,
+                          color: Color(0xff004271),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Row(
@@ -351,7 +351,7 @@ class _CleaningCardListState extends ConsumerState<CleaningCardList> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: kscoundPrimaryColor,
+                            color: Color(0xff004271),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           padding: const EdgeInsets.symmetric(
