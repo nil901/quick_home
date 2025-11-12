@@ -10,6 +10,7 @@ import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/screen/dashboard/cart_screen.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
+import 'package:quick_home/util/enum.dart';
 import 'package:quick_home/util/no_data_found.dart';
 import 'package:quick_home/util/ratting.dart';
 
@@ -58,27 +59,16 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: kscoundPrimaryColor,
-        elevation: 0,
-        title: InkWell(
-          onTap: () => wishlistApi(ref),
-          child: const Text(
-            'My Wishlist',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-          ),
+        leading: InkWell(
+          onTap: () {
+            ref.read(bottomTabProvider.notifier).state = BottomTab.home;
+          },
+          child: const Icon(Icons.arrow_back, color: Colors.black),
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const CartScreen()),
-              );
-            },
-            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-          ),
-        ],
+        backgroundColor: kscoundPrimaryColor,
+        titleSpacing: 0,
+        title: const Text("My Wishlist", style: TextStyle(fontSize: 18)),
+        elevation: 0,
       ),
       body:
           isLoading

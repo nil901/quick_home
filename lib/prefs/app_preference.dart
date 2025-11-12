@@ -51,4 +51,26 @@ class AppPreference {
   }
 
   String get uName => getString(PreferencesKey.userId);
+
+  // ----- Guest helpers -----
+  Future<void> setGuest(bool value) async {
+    await setBool(PreferencesKey.isGuest, value);
+  }
+
+  bool isGuest({bool defValue = false}) {
+    return getBool(PreferencesKey.isGuest, defValue: defValue);
+  }
+
+  /// Create a simple local guest id and store it. This is a client-side
+  /// convenience only; server APIs may not accept this id. If your backend
+  /// supports anonymous sessions, prefer using a server endpoint instead.
+  Future<void> createLocalGuestUser() async {
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    // Create a positive guest id within 9-digit range to avoid 0
+    final guestId = (ts % 1000000000) + 100000;
+    await setInt(PreferencesKey.userId, guestId);
+    await setGuest(true);
+    // mark not logged in
+    await setBool(PreferencesKey.isLoggedIn, false);
+  }
 }

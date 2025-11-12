@@ -33,63 +33,59 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     super.initState();
   }
 
- Future<void> cartApi(WidgetRef ref) async {
-  setState(() {
-    isLoading = true;
-  });
+  Future<void> cartApi(WidgetRef ref) async {
+    setState(() {
+      isLoading = true;
+    });
 
-  try {
-    final response = await ApiService.postRequest(
-      getCart,
-      {
+    try {
+      final response = await ApiService.postRequest(getCart, {
         "user": AppPreference().getInt(PreferencesKey.userId),
-      },
-    );
-
-    final int? statusCode = response.statusCode;
-
-    // 🔹 जर 404 आला तर — जुना डेटा क्लिअर करा आणि notify करा
-    if (statusCode == 404) {
-      ref.read(cartProvider.notifier).update((state) => []);
-      debugPrint("Cart cleared: status 404");
-      setState(() => isLoading = false);
-      return;
-    }
-
-    if (response.data['status'] == true) {
-      final List<dynamic> data = response.data['data']['cart_items'] ?? [];
-
-      // 🔹 आधी जुना डेटा clear करा
-      ref.read(cartProvider.notifier).update((state) => []);
-
-      // 🔹 नवीन डेटा तयार करा
-      final List<CartModel> newCartItems =
-          data.map((json) => CartModel.fromJson(json)).toList();
-
-      // 🔹 नवीन डेटा assign करा
-      ref.read(cartProvider.notifier).update((state) => newCartItems);
-
-      debugPrint("Cart updated successfully (${newCartItems.length} items)");
-    } else {
-      // जर status false असेल तरी clear करा
-      ref.read(cartProvider.notifier).update((state) => []);
-      debugPrint("Cart API returned false status");
-    }
-  } catch (e, stackTrace) {
-    debugPrint("Error fetching cart items: $e");
-    debugPrintStack(stackTrace: stackTrace);
-
-    // 🔹 Error आल्यासही जुना डेटा clear करा
-    ref.read(cartProvider.notifier).update((state) => []);
-  } finally {
-    if (mounted) {
-      setState(() {
-        isLoading = false;
       });
+
+      final int? statusCode = response.statusCode;
+
+      // 🔹 जर 404 आला तर — जुना डेटा क्लिअर करा आणि notify करा
+      if (statusCode == 404) {
+        ref.read(cartProvider.notifier).update((state) => []);
+        debugPrint("Cart cleared: status 404");
+        setState(() => isLoading = false);
+        return;
+      }
+
+      if (response.data['status'] == true) {
+        final List<dynamic> data = response.data['data']['cart_items'] ?? [];
+
+        // 🔹 आधी जुना डेटा clear करा
+        ref.read(cartProvider.notifier).update((state) => []);
+
+        // 🔹 नवीन डेटा तयार करा
+        final List<CartModel> newCartItems =
+            data.map((json) => CartModel.fromJson(json)).toList();
+
+        // 🔹 नवीन डेटा assign करा
+        ref.read(cartProvider.notifier).update((state) => newCartItems);
+
+        debugPrint("Cart updated successfully (${newCartItems.length} items)");
+      } else {
+        // जर status false असेल तरी clear करा
+        ref.read(cartProvider.notifier).update((state) => []);
+        debugPrint("Cart API returned false status");
+      }
+    } catch (e, stackTrace) {
+      debugPrint("Error fetching cart items: $e");
+      debugPrintStack(stackTrace: stackTrace);
+
+      // 🔹 Error आल्यासही जुना डेटा clear करा
+      ref.read(cartProvider.notifier).update((state) => []);
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

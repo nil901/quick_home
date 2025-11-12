@@ -455,11 +455,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
                           // 🔹 Remove Button
                           TextButton(
-                            onPressed: () async{
+                            onPressed: () async {
                               print("DDDDDDDDDDDDDDDDDDDDDDD");
                               ref.read(appliedCouponProvider.notifier).state =
                                   null;
-                                     await paymentAPi(ref);
+                              await paymentAPi(ref);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("Coupon removed")),
                               );
@@ -633,7 +633,7 @@ class CouponBottomSheet extends ConsumerStatefulWidget {
 class _CouponBottomSheetState extends ConsumerState<CouponBottomSheet> {
   final TextEditingController couponController = TextEditingController();
   Future<void> paymentAPi(WidgetRef ref) async {
-   // ref.read(serviceDetailsProvider.notifier).state = null;
+    // ref.read(serviceDetailsProvider.notifier).state = null;
     try {
       final selectedItem = ref.read(selectedCartProvider);
       final cartId = selectedItem?.id;

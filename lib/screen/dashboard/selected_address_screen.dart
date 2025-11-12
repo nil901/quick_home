@@ -624,7 +624,12 @@ class _SelectedMyAddressState extends ConsumerState<SelectedMyAddress> {
   void initState() {
     super.initState();
     Future.microtask(() => cartServices().addressApi(ref));
-    Future.microtask(() => cartServices().bookingOptionsApi(ref));
+    Future.microtask(
+      () => cartServices().bookingOptionsApi(
+        ref,
+        selectedDate: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      ),
+    );
   }
 
   @override
@@ -1144,7 +1149,12 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
   void initState() {
     super.initState();
 
-    Future.microtask(() => cartServices().bookingOptionsApi(ref));
+    Future.microtask(
+      () => cartServices().bookingOptionsApi(
+        ref,
+        selectedDate: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      ),
+    );
     Future.delayed(Duration(milliseconds: 500), () {
       final bookingDates = ref.read(bookingDateProvider);
       if (bookingDates.isNotEmpty) {
@@ -1385,6 +1395,9 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
                                 () => cartServices().bookingOptionsApi(
                                   ref,
                                   serviceProviders: service[index].id,
+                                  selectedDate: DateFormat(
+                                    'yyyy-MM-dd',
+                                  ).format(DateTime.now()),
                                 ),
                               );
                             } else {
@@ -1487,6 +1500,7 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
               onPressed: () {
                 final times = ref.read(bookingTimeProvider);
                 final experts = ref.read(serviceProvider);
+                final bookingDates = ref.read(bookingDateProvider);
 
                 final availableTimes =
                     times.where((t) => t.available == true).toList();
@@ -1505,6 +1519,14 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
                   return;
                 }
 
+                if (selectedDate < 0 || selectedDate >= bookingDates.length) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Please select a date")),
+                  );
+                  return;
+                }
+
+                final selectedDateValue = bookingDates[selectedDate].formatted;
                 final selectedTimeValue =
                     availableTimes[selectedTime].formatted;
                 final selectedExpertValue = experts[selectedExpert].name;
@@ -1514,7 +1536,7 @@ class _SlotSelectorScreenState extends ConsumerState<SlotSelectorScreen> {
                   MaterialPageRoute(
                     builder:
                         (context) => PaymentScreen(
-                          selectedDate: "Selected Date",
+                          selectedDate: selectedDateValue,
                           selectedTime: selectedTimeValue,
                           selectedExpert: selectedExpertValue,
                         ),

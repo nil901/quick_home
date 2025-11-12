@@ -6,6 +6,8 @@ import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/screen/auth/otp_verify_screen.dart';
 import 'package:quick_home/screen/auth/sign_up_screen.dart';
+import 'package:quick_home/screen/dashboard/main_home_screen.dart';
+import 'package:quick_home/util/enum.dart';
 import '../../util/toast_msg.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -139,6 +141,30 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+                ),
+                SizedBox(height: 12),
+                Center(
+                  child: TextButton(
+                    onPressed: () async {
+                      // Create a local guest id and continue to main app
+                      await AppPreference().createLocalGuestUser();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  MainHomeScreen(initialTab: BottomTab.home),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Continue as Guest',
+                      style: TextStyle(
+                        color: Color(0xff004c8c),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 16),
                 Center(

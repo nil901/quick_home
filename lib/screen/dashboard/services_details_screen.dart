@@ -726,7 +726,7 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                           final showAddToCart = ref.watch(
                             showAddToCartProvider,
                           );
-
+                          
                           // 🔹 Yahan listener lagaya hai — agar user koi option change kare
                           // (plan, cleaner, material), to Book Now wapas normal ho jaye
                           ref.listen(selectedPlanProvider, (prev, next) {
@@ -818,6 +818,9 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
 
                                       return ElevatedButton(
                                         onPressed: () async {
+                                          print(
+                                            'Total Price: ${totalPrice.toStringAsFixed(2)}',
+                                          );
                                           final selectedPlan = ref.read(
                                             selectedPlanProvider,
                                           );
@@ -849,6 +852,9 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                               "material": withMaterial,
                                               "providersCount": selectedCount,
                                             });
+                                            print(
+                                              'Form Data: ${formData.fields}',
+                                            );
 
                                             // Debugging ke liye print
                                             formData.fields.forEach(
@@ -860,7 +866,6 @@ class _ServicesDetailsScreenState extends ConsumerState<ServicesDetailsScreen> {
                                               "http://admin.qwikhom.ae/api/addToCart",
                                               data: formData,
                                             );
-
                                             if (response.data['status'] ==
                                                 true) {
                                               print(

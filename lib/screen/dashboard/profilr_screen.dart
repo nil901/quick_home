@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/api_services/Providers.dart';
+import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/provide/address_provider.dart';
 import 'package:quick_home/screen/dashboard/Collection.dart';
@@ -9,6 +10,7 @@ import 'package:quick_home/screen/dashboard/SettingsScreen.dart';
 import 'package:quick_home/screen/dashboard/booking_screen.dart';
 import 'package:quick_home/screen/dashboard/my_subscriptions_screen.dart';
 import 'package:quick_home/screen/dashboard/selected_address_screen.dart';
+import 'package:quick_home/util/enum.dart';
 import 'package:quick_home/util/size.dart';
 import '../../util/custom_app_bar.dart';
 import '../auth/login_screen.dart';
@@ -27,7 +29,18 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     final profile = ref.watch(profileProvider);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: "My Profile"),
+      appBar: AppBar(
+        leading: InkWell(
+          onTap: () {
+            ref.read(bottomTabProvider.notifier).state = BottomTab.home;
+          },
+          child: const Icon(Icons.arrow_back, color: Colors.black),
+        ),
+        backgroundColor: kscoundPrimaryColor,
+        titleSpacing: 0,
+        title: const Text("My Profile", style: TextStyle(fontSize: 18)),
+        elevation: 0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

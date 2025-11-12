@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:quick_home/color/colors.dart';
 import 'package:quick_home/screen/dashboard/booking_screen.dart';
 import 'package:quick_home/screen/dashboard/home_Screen.dart';
 import 'package:quick_home/screen/dashboard/profilr_screen.dart';
-import 'package:quick_home/screen/dashboard/subscription_screen.dart';
 import 'package:quick_home/screen/dashboard/wishlist_screen.dart';
 import 'package:quick_home/util/enum.dart';
 
@@ -13,7 +11,7 @@ class MainHomeScreen extends ConsumerStatefulWidget {
   final BottomTab initialTab;
 
   MainHomeScreen({required this.initialTab});
-  @override
+
   @override
   ConsumerState<MainHomeScreen> createState() => _MainHomeScreenState();
 }
@@ -28,6 +26,7 @@ class _MainHomeScreenState extends ConsumerState<MainHomeScreen> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     final selectedTab = ref.watch(bottomTabProvider);
 
@@ -37,12 +36,20 @@ class _MainHomeScreenState extends ConsumerState<MainHomeScreen> {
       BottomTab.Wishlist: WishlistScreen(),
       BottomTab.profile: MyProfileScreen(),
     };
-    double bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+
     return Scaffold(
       backgroundColor: kwhite,
       body: Stack(
         children: [
-          pages[selectedTab]!,
+          /// ✅ Prevent Page Content from going behind Bottom Nav Bar
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: 100,
+            ), // Safe space for navigation bar
+            child: pages[selectedTab]!,
+          ),
+
+          /// Bottom Navigation Bar
           Positioned(
             left: 16,
             right: 16,

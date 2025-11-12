@@ -6,12 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:quick_home/api_services/Providers.dart';
 import 'package:quick_home/api_services/api_services.dart';
 import 'package:quick_home/api_services/urls.dart';
-
 import 'package:quick_home/color/colors.dart';
+import 'package:quick_home/model/home_model.dart';
 import 'package:quick_home/model/my_booking_model.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/provide/cart_prov.dart';
+import 'package:quick_home/screen/dashboard/services_details_screen.dart';
 import 'package:quick_home/util/enum.dart';
 import 'package:quick_home/util/no_data_found.dart';
 
@@ -116,7 +117,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   void initState() {
     super.initState();
     // Default first API call
-    mybookingAPi(ref, type: "ongoing");
+    mybookingAPi(ref, type: "Ongoing");
   }
 
   @override
@@ -158,13 +159,13 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                     onTap: () async {
                       setState(() {
                         selectedTab = tab;
-                        isLoading = true; // loading सुरू
+                        isLoading = true; // loading start
                       });
 
                       String type = "";
                       switch (tab) {
                         case BookingTab.inProgress:
-                          type = "In Progress";
+                          type = "ongoing";
                           break;
                         case BookingTab.upcoming:
                           type = "upcoming";
@@ -181,7 +182,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                       await mybookingAPi(ref, type: type);
 
                       setState(() {
-                        isLoading = false; // loading संपले
+                        isLoading = false; // loading ended
                       });
                     },
 
@@ -192,21 +193,16 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue.shade900 : Colors.white,
+                        color: isSelected ? Color(0xff004271) : Colors.white,
                         borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.blue.shade900,
-                          width: 1,
-                        ),
+                        border: Border.all(color: Color(0xff004271), width: 1),
                       ),
                       child: Center(
                         child: Text(
                           tabNames[tab]!,
                           style: TextStyle(
                             color:
-                                isSelected
-                                    ? Colors.white
-                                    : Colors.blue.shade900,
+                                isSelected ? Colors.white : Color(0xff004271),
                             fontWeight: FontWeight.w500,
                             fontSize: 13,
                           ),
@@ -245,13 +241,13 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
             // Date format logic
             String formattedDate = "";
             try {
-              final createdAt = bookings.service!.createdAt;
-              if (createdAt is String) {
+              final scheduledDate = bookings.scheduledDate;
+              if (scheduledDate != null && scheduledDate.isNotEmpty) {
                 formattedDate = DateFormat(
                   'EEEE, MMM d',
-                ).format(DateTime.parse(createdAt));
-              } else if (createdAt is DateTime) {
-                formattedDate = DateFormat('EEEE, MMM d').format(createdAt!);
+                ).format(DateTime.parse(scheduledDate));
+              } else {
+                formattedDate = "No date";
               }
             } catch (e) {
               formattedDate = "Invalid date";
@@ -262,6 +258,22 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               description: bookings.service!.shortDescription!,
               status: bookings.status!,
               date: formattedDate,
+              price:
+                  "AED ${bookings.service!.priceOnetime}", // 👈 Add this line for price
+              onViewDetails: () {
+                // 👇 Add what happens when "View Details about the Service" is clicked
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => ServicesDetailsScreen(
+                          serviceId: 2,
+                          name: 'Maids - Subscription & on-demand cleaning',
+                        ),
+                  ),
+                );
+              },
+              selectedTab: tab,
             );
           },
         );
@@ -269,19 +281,25 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
 }
 
 class BookingCard extends StatelessWidget {
+  final BookingTab selectedTab;
   final String imageUrl;
   final String title;
   final String description;
   final String status;
   final String date;
+  final String price;
+  final VoidCallback onViewDetails;
 
   const BookingCard({
+    required this.selectedTab,
     super.key,
     required this.imageUrl,
     required this.title,
     required this.description,
     required this.status,
     required this.date,
+    required this.price,
+    required this.onViewDetails,
   });
 
   @override
@@ -295,98 +313,200 @@ class BookingCard extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  border: Border.all(color: HexColor("#E2E2E2"), width: 1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        'assets/images/logo.png',
-                        fit: BoxFit.cover,
-                        height: 60,
-                        color: Colors.grey,
-                      );
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              /// Right Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: kprimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: HexColor("#353535"),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Divider(color: Colors.grey.shade300, thickness: 1),
-                    const SizedBox(height: 4),
-
-                    /// Status + Date row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: backgroundColor(status),
-                            borderRadius: BorderRadius.circular(15),
+              /// Top section (Image + Details)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Image with price below
+                  Column(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: HexColor("#E2E2E2"),
+                            width: 1,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 5,
-                              horizontal: 10,
-                            ),
-                            child: Text(
-                              status,
-                              style: TextStyle(
-                                color: getStatusColor(status),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/logo.png',
+                                fit: BoxFit.cover,
+                                height: 60,
+                                color: Colors.grey,
+                              );
+                            },
                           ),
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: kprimary,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 5,
-                              horizontal: 10,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        price,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  /// Right Content
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// Title + Menu
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                title,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: HexColor("#004271"),
+                                ),
+                              ),
                             ),
-                            child: Text(date, style: TextStyle(color: kwhite)),
+
+                            /// Three Dots Menu
+                            /// Three Dots Menu — sirf InProgress & Upcoming me hi dikhega
+                            if (selectedTab == BookingTab.inProgress ||
+                                selectedTab == BookingTab.upcoming)
+                              PopupMenuButton<String>(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                elevation: 8,
+                                offset: const Offset(0, 30),
+                                itemBuilder: (context) {
+                                  return [
+                                    PopupMenuItem(
+                                      value: 'cancel',
+                                      child: Row(
+                                        children: const [
+                                          Icon(
+                                            Icons.cancel_outlined,
+                                            size: 18,
+                                            color: Colors.black54,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'Cancel Order',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ];
+                                },
+                                onSelected: (value) {
+                                  if (value == 'cancel') {
+                                    // Handle Cancel
+                                  }
+                                },
+                                icon: const Icon(
+                                  Icons.more_vert,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 4),
+                        Text(
+                          description,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: HexColor("#353535"),
                           ),
+                        ),
+                        const SizedBox(height: 8),
+                        Divider(color: Colors.grey.shade300, thickness: 1),
+                        const SizedBox(height: 4),
+
+                        /// Status + Date Row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: backgroundColor(status),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 10,
+                                ),
+                                child: Text(
+                                  status,
+                                  style: TextStyle(
+                                    color: getStatusColor(status),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: HexColor("#004271"),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 10,
+                                ),
+                                child: Text(
+                                  date,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 10),
+
+              /// Bottom clickable text
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: onViewDetails,
+                    child: Text(
+                      "View Details about the Service",
+                      style: TextStyle(
+                        color: HexColor("#004271"),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -394,6 +514,29 @@ class BookingCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Status color helpers
+  Color backgroundColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'upcoming':
+        return HexColor("#004271");
+      case 'completed':
+        return HexColor("#E8F5E9");
+      default:
+        return HexColor("#F5F5F5");
+    }
+  }
+
+  Color getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'upcoming':
+        return HexColor("#0057B8");
+      case 'completed':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
   }
 }
 

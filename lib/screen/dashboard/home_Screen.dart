@@ -205,7 +205,7 @@ class _HomeState extends ConsumerState<Home> {
                   ),
                 ),
 
-                h10,
+                // h10,
 
                 // ===== Sections (Offers / Campaigns / Others) =====
                 const SizedBox(height: 4),
