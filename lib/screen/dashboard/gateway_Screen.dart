@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quick_home/color/colors.dart';
 
 class PaymentOptionsScreen extends StatefulWidget {
   const PaymentOptionsScreen({super.key});
@@ -59,9 +60,13 @@ class _PaymentOptionsScreenState extends State<PaymentOptionsScreen> {
               },
               child: Column(
                 children: [
-                  _upiOption("Google Pay", "gpay", "assets/gpay.png"),
-                  _upiOption("PhonePe", "phonepe", "assets/phonepe.png"),
-                  _upiOption("Paytm", "paytm", "assets/paytm.png"),
+                  _upiOption("Google Pay", "gpay", "assets/images/gpay.png"),
+                  _upiOption(
+                    "PhonePe",
+                    "phonepe",
+                    "assets/images/phonepay.png",
+                  ),
+                  _upiOption("Paytm", "paytm", "assets/images/paytm.png"),
                 ],
               ),
             ),
@@ -135,21 +140,24 @@ class _PaymentOptionsScreenState extends State<PaymentOptionsScreen> {
       ),
 
       // FIXED BOTTOM BUTTON
-      bottomSheet: Container(
-        height: 60,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        color: Colors.white,
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue.shade900,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+      bottomSheet: Padding(
+        padding: const EdgeInsets.only(left: 8, right: 8, bottom: 20),
+        child: Container(
+          width: double.infinity,
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kprimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-          ),
-          child: const Text(
-            "Pay AED 2,549",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            child: const Text(
+              "Proceed to Payment",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ),
       ),

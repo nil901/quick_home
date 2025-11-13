@@ -15,6 +15,7 @@ import 'package:quick_home/screen/dashboard/main_home_screen.dart';
 import 'package:quick_home/util/enum.dart';
 import '../../api_services/Providers.dart';
 import '../../util/custom_app_bar.dart';
+import 'payment_options_screen.dart' hide PaymentOptionsScreen;
 
 void clearProviders(WidgetRef ref) {
   ref.read(selectedCartProvider.notifier).state = null;
@@ -579,116 +580,111 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   ],
                 ),
               ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              // LEFT SIDE (UPDATED)
+              Expanded(
+                flex: 6,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PaymentOptionsScreen(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade400),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Icon(Icons.payment, size: 20, color: Colors.black54),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            "Cash on Delivery",
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 5),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          size: 22,
+                          color: Colors.black54,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
 
-              const SizedBox(height: 25),
+              const SizedBox(width: 10),
 
-              // 🔹 Book Service Button
-              Row(
-                children: [
-                  // LEFT SIDE (UPDATED)
-                  Expanded(
-                    flex: 6,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PaymentOptionsScreen(),
+              // RIGHT SIDE (ORIGINAL – NO CHANGE)
+              Expanded(
+                flex: 7,
+                child: SizedBox(
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: HexColor('#004271'),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    onPressed: () {
+                      if (selectedPaymentMethod == "Gateway") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Currently unavailable kindly choose COD",
+                            ),
+                            backgroundColor: Colors.grey,
                           ),
                         );
-                      },
-                      child: Container(
-                        height: 48,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade400),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Icon(
-                              Icons.payment,
-                              size: 20,
-                              color: Colors.black54,
-                            ),
-                            SizedBox(width: 5),
-                            Expanded(
-                              child: Text(
-                                "Cash on Delivery",
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              size: 22,
-                              color: Colors.black54,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                        return;
+                      }
 
-                  const SizedBox(width: 10),
-
-                  // RIGHT SIDE (ORIGINAL – NO CHANGE)
-                  Expanded(
-                    flex: 7,
-                    child: SizedBox(
-                      height: 48,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: HexColor('#004271'),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      createBooking(ref, context); // COD case
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Place Order",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
                           ),
-                          elevation: 0,
                         ),
-                        onPressed: () {
-                          if (selectedPaymentMethod == "Gateway") {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "Currently unavailable kindly choose COD",
-                                ),
-                                backgroundColor: Colors.grey,
-                              ),
-                            );
-                            return;
-                          }
-
-                          createBooking(ref, context); // COD case
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Place Order",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ],
+                        SizedBox(width: 5),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white,
+                          size: 16,
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ],
           ),
