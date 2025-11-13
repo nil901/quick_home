@@ -170,12 +170,13 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      "Starts at AED ${service.priceOnetime}",
+                                      "Starts at AED ${item.onetimePrice ?? service.priceOnetime ?? "0"}",
                                       style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
+
                                     const SizedBox(height: 6),
                                     Row(
                                       children: [

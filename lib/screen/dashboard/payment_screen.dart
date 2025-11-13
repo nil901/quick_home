@@ -10,6 +10,7 @@ import 'package:quick_home/api_services/urls.dart';
 import 'package:quick_home/model/payment_model.dart';
 import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
+import 'package:quick_home/screen/dashboard/gateway_Screen.dart';
 import 'package:quick_home/screen/dashboard/main_home_screen.dart';
 import 'package:quick_home/util/enum.dart';
 import '../../api_services/Providers.dart';
@@ -37,6 +38,7 @@ class PaymentScreen extends ConsumerStatefulWidget {
 }
 
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
+  String selectedPaymentMethod = "COD";
   Future<void> paymentAPi(WidgetRef ref) async {
     ref.read(serviceDetailsProvider.notifier).state = null;
     try {
@@ -581,29 +583,112 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               const SizedBox(height: 25),
 
               // 🔹 Book Service Button
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: HexColor('#004271'),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+              Row(
+                children: [
+                  // LEFT SIDE (UPDATED)
+                  Expanded(
+                    flex: 6,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PaymentOptionsScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade400),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Icon(
+                              Icons.payment,
+                              size: 20,
+                              color: Colors.black54,
+                            ),
+                            SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                "Cash on Delivery",
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 5),
+                            Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              size: 22,
+                              color: Colors.black54,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    elevation: 0,
                   ),
-                  onPressed: () {
-                    createBooking(ref, context);
-                  },
-                  child: const Text(
-                    'Book Service',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+
+                  const SizedBox(width: 10),
+
+                  // RIGHT SIDE (ORIGINAL – NO CHANGE)
+                  Expanded(
+                    flex: 7,
+                    child: SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: HexColor('#004271'),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          if (selectedPaymentMethod == "Gateway") {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Currently unavailable kindly choose COD",
+                                ),
+                                backgroundColor: Colors.grey,
+                              ),
+                            );
+                            return;
+                          }
+
+                          createBooking(ref, context); // COD case
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Place Order",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(width: 5),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),

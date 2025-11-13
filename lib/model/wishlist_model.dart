@@ -1,14 +1,25 @@
 class WishlistModel {
   Wishlist? wishlist;
+  String? onetimePrice;
+  Service? service;
+  Offer? offer;
 
-  WishlistModel({this.wishlist});
+  WishlistModel({this.wishlist, this.onetimePrice, this.service, this.offer});
 
   factory WishlistModel.fromJson(Map<String, dynamic> json) => WishlistModel(
     wishlist:
         json["wishlist"] == null ? null : Wishlist.fromJson(json["wishlist"]),
+    onetimePrice: json["onetime_price"]?.toString(),
+    service: json["service"] == null ? null : Service.fromJson(json["service"]),
+    offer: json["offer"] == null ? null : Offer.fromJson(json["offer"]),
   );
 
-  Map<String, dynamic> toJson() => {"wishlist": wishlist?.toJson()};
+  Map<String, dynamic> toJson() => {
+    "wishlist": wishlist?.toJson(),
+    "onetime_price": onetimePrice,
+    "service": service?.toJson(),
+    "offer": offer?.toJson(),
+  };
 }
 
 class Wishlist {
@@ -55,6 +66,14 @@ class Wishlist {
   };
 }
 
+class onetimePrice {
+  onetimePrice();
+
+  factory onetimePrice.fromJson(Map<String, dynamic> json) => onetimePrice();
+
+  Map<String, dynamic> toJson() => {};
+}
+
 class Service {
   dynamic id;
   dynamic categoryId;
@@ -77,8 +96,8 @@ class Service {
   String? status;
   String? createdAt;
   String? updatedAt;
-  List<String>? media; // ✅ Updated: List instead of String
-  List<String>? mediaUrls; // ✅ New field added
+  List<String>? media;
+  List<String>? mediaUrls;
   bool? qwikpick;
   bool? beautyAndEasy;
   double? averageRating;
@@ -162,10 +181,7 @@ class Service {
     "subcategory_id": subcategoryId,
     "name": name,
     "description": description,
-    "whats_include":
-        whatsInclude == null
-            ? []
-            : List<dynamic>.from(whatsInclude!.map((x) => x)),
+    "whats_include": whatsInclude ?? [],
     "short_description": shortDescription,
     "price_onetime": priceOnetime,
     "price_onetime_description": priceOnetimeDescription,

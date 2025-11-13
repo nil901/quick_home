@@ -117,109 +117,121 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   void initState() {
     super.initState();
     // Default first API call
-    mybookingAPi(ref, type: "Ongoing");
+    mybookingAPi(ref, type: "ongoing");
   }
 
   @override
   Widget build(BuildContext context) {
     final booking = ref.watch(bookingHistoryProvider);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: InkWell(
-          onTap: () {
-            ref.read(bottomTabProvider.notifier).state = BottomTab.home;
-          },
-          child: const Icon(Icons.arrow_back, color: Colors.black),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context); // 👈 normal back
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          leading: InkWell(
+            onTap: () {
+              ref.read(bottomTabProvider.notifier).state = BottomTab.home;
+            },
+            child: const Icon(Icons.arrow_back, color: Colors.black),
+          ),
+          backgroundColor: kscoundPrimaryColor,
+          titleSpacing: 0,
+          title: const Text("My Bookings", style: TextStyle(fontSize: 18)),
+          elevation: 0,
         ),
-        backgroundColor: kscoundPrimaryColor,
-        titleSpacing: 0,
-        title: const Text("My Bookings", style: TextStyle(fontSize: 18)),
-        elevation: 0,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// Horizontal List Tabs
-          Container(
-            color: kscoundPrimaryColor,
-            height: 48,
-            child: Center(
-              child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
-                itemCount: tabNames.length,
-                itemBuilder: (context, index) {
-                  final tab = tabNames.keys.elementAt(index);
-                  final isSelected = tab == selectedTab;
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Horizontal List Tabs
+            Container(
+              color: kscoundPrimaryColor,
+              height: 48,
+              child: Center(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 6,
+                  ),
+                  itemCount: tabNames.length,
+                  itemBuilder: (context, index) {
+                    final tab = tabNames.keys.elementAt(index);
+                    final isSelected = tab == selectedTab;
 
-                  return GestureDetector(
-                    onTap: () async {
-                      setState(() {
-                        selectedTab = tab;
-                        isLoading = true; // loading start
-                      });
+                    return GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          selectedTab = tab;
+                          isLoading = true; // loading start
+                        });
 
-                      String type = "";
-                      switch (tab) {
-                        case BookingTab.inProgress:
-                          type = "ongoing";
-                          break;
-                        case BookingTab.upcoming:
-                          type = "upcoming";
-                          break;
-                        case BookingTab.completed:
-                          type = "completed";
-                          break;
-                        case BookingTab.cancelled:
-                          type = "cancelled";
-                          break;
-                      }
+                        String type = "";
+                        switch (tab) {
+                          case BookingTab.inProgress:
+                            type = "ongoing";
+                            break;
+                          case BookingTab.upcoming:
+                            type = "upcoming";
+                            break;
+                          case BookingTab.completed:
+                            type = "completed";
+                            break;
+                          case BookingTab.cancelled:
+                            type = "cancelled";
+                            break;
+                        }
 
-                      ref.read(bookingHistoryProvider.notifier).state = [];
-                      await mybookingAPi(ref, type: type);
+                        ref.read(bookingHistoryProvider.notifier).state = [];
+                        await mybookingAPi(ref, type: type);
 
-                      setState(() {
-                        isLoading = false; // loading ended
-                      });
-                    },
+                        setState(() {
+                          isLoading = false; // loading ended
+                        });
+                      },
 
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Color(0xff004271) : Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: Color(0xff004271), width: 1),
-                      ),
-                      child: Center(
-                        child: Text(
-                          tabNames[tab]!,
-                          style: TextStyle(
-                            color:
-                                isSelected ? Colors.white : Color(0xff004271),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 13,
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Color(0xff004271) : Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Color(0xff004271),
+                            width: 1,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            tabNames[tab]!,
+                            style: TextStyle(
+                              color:
+                                  isSelected ? Colors.white : Color(0xff004271),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-          /// Booking List
-          Expanded(child: _buildBookingList(selectedTab)),
-        ],
+            /// Booking List
+            Expanded(child: _buildBookingList(selectedTab)),
+          ],
+        ),
       ),
     );
   }
@@ -259,7 +271,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               status: bookings.status!,
               date: formattedDate,
               price:
-                  "AED ${bookings.service!.priceOnetime}", // 👈 Add this line for price
+                  "AED ${bookings.totalAmount}", // 👈 Add this line for price
               onViewDetails: () {
                 // 👇 Add what happens when "View Details about the Service" is clicked
                 Navigator.push(
