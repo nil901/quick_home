@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ import 'package:quick_home/screen/dashboard/main_home_screen.dart';
 import 'package:quick_home/util/enum.dart';
 import '../../api_services/Providers.dart';
 import '../../util/custom_app_bar.dart';
-import 'payment_options_screen.dart' hide PaymentOptionsScreen;
 
 void clearProviders(WidgetRef ref) {
   ref.read(selectedCartProvider.notifier).state = null;
@@ -40,6 +38,9 @@ class PaymentScreen extends ConsumerStatefulWidget {
 
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   String selectedPaymentMethod = "COD";
+  bool isExpanded = false;
+  final ScrollController _scrollController = ScrollController();
+
   Future<void> paymentAPi(WidgetRef ref) async {
     ref.read(serviceDetailsProvider.notifier).state = null;
     try {
@@ -141,6 +142,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     final selectedItem = ref.watch(selectedCartProvider);
     final addressList = ref.watch(addressProvider);
     final appliedCoupon = ref.watch(appliedCouponProvider);
+    final refundPolicy = selectedPayment?.refundPolicy;
 
     // 🏡 Find default address
     final defaultAddress =
@@ -163,6 +165,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           },
         ),
         body: SingleChildScrollView(
+          controller: _scrollController,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,18 +187,31 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                       height: 20,
                     ),
                     const SizedBox(width: 10),
-                    defaultAddress != null
-                        ? Text(
-                          defaultAddress.addressDetails ?? '',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.black87,
-                          ),
-                        )
-                        : const Text(
-                          'No default address found. Please add one.',
-                          style: TextStyle(fontSize: 13, color: Colors.grey),
-                        ),
+
+                    // ✅ Address Wrap Fix
+                    Expanded(
+                      child:
+                          defaultAddress != null
+                              ? Text(
+                                defaultAddress.addressDetails ?? '',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
+                                softWrap: true,
+                                maxLines:
+                                    3, // jitni chaahe increase kar sakta hai
+                                overflow: TextOverflow.visible,
+                              )
+                              : const Text(
+                                'No default address found. Please add one.',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey,
+                                ),
+                                softWrap: true,
+                              ),
+                    ),
                   ],
                 ),
               ),
@@ -576,6 +592,73 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           ),
                         ),
                       ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: HexColor('#EAEAEA'), width: 1),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      refundPolicy?.title ?? "Cancellation policy",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 250),
+                      constraints: BoxConstraints(
+                        maxHeight: isExpanded ? 2000 : 60,
+                      ),
+                      child: Text(
+                        refundPolicy?.content ??
+                            "No cancellation/refund policy found.",
+                        style: TextStyle(fontSize: 13, color: Colors.black54),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          isExpanded = !isExpanded;
+                        });
+
+                        // 👉 When expanded: auto-scroll to top of policy container
+                        if (isExpanded) {
+                          Future.delayed(const Duration(milliseconds: 250), () {
+                            _scrollController.animateTo(
+                              _scrollController
+                                  .position
+                                  .maxScrollExtent, // or specific offset
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          });
+                        }
+                      },
+                      child: Text(
+                        isExpanded ? "Show Less" : "Show More",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue,
+                        ),
+                      ),
                     ),
                   ],
                 ),

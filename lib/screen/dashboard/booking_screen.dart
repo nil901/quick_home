@@ -13,6 +13,7 @@ import 'package:quick_home/prefs/app_preference.dart';
 import 'package:quick_home/prefs/preferences_keys.dart';
 import 'package:quick_home/provide/cart_prov.dart';
 import 'package:quick_home/screen/dashboard/services_details_screen.dart';
+import 'package:quick_home/screen/dashboard/tracking_page.dart';
 import 'package:quick_home/util/enum.dart';
 import 'package:quick_home/util/no_data_found.dart';
 
@@ -407,34 +408,61 @@ class BookingCard extends StatelessWidget {
                                 ),
                                 elevation: 8,
                                 offset: const Offset(0, 30),
-                                itemBuilder: (context) {
-                                  return [
-                                    PopupMenuItem(
-                                      value: 'cancel',
-                                      child: Row(
-                                        children: const [
-                                          Icon(
-                                            Icons.cancel_outlined,
-                                            size: 18,
-                                            color: Colors.black54,
-                                          ),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            'Cancel Order',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ];
-                                },
                                 onSelected: (value) {
-                                  if (value == 'cancel') {
-                                    // Handle Cancel
+                                  if (value == 'track') {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                const UserTrackingPage(),
+                                      ),
+                                    );
+                                  } else if (value == 'cancel') {
+                                    print("Cancel pressed");
                                   }
                                 },
+                                itemBuilder:
+                                    (context) => [
+                                      PopupMenuItem(
+                                        value: 'track',
+                                        child: Row(
+                                          children: const [
+                                            Icon(
+                                              Icons.location_on_outlined,
+                                              size: 18,
+                                              color: Colors.black54,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              'Track Order',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'cancel',
+                                        child: Row(
+                                          children: const [
+                                            Icon(
+                                              Icons.cancel_outlined,
+                                              size: 18,
+                                              color: Colors.black54,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              'Cancel Order',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                 icon: const Icon(
                                   Icons.more_vert,
                                   color: Colors.black54,

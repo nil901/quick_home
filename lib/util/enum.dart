@@ -9,6 +9,6 @@ enum BottomTab {
   home,
   bookings,
   Wishlist,
-  profile,
+  profile,  
 }
 
