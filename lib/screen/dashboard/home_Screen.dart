@@ -124,7 +124,7 @@ class _HomeState extends ConsumerState<Home> {
 
                 // ===== Categories Horizontal (compact) =====
                 SizedBox(
-                  height: 118, // compact height to match screenshot
+                  height: 102.2, // compact height to match screenshot
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
