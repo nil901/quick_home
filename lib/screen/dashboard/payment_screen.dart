@@ -216,64 +216,45 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              InkWell(
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => MainHomeScreen(initialTab: BottomTab.bookings),
-                    ),
-                    (route) => false,
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: HexColor('#FFFFFF'),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: HexColor('#EAEAEA'), width: 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/timeIcon.png',
-                            width: 20,
-                            height: 20,
-                          ),
-                          const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: HexColor('#FFFFFF'),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: HexColor('#EAEAEA'), width: 1),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/timeIcon.png',
+                          width: 20,
+                          height: 20,
+                        ),
+                        const SizedBox(width: 10),
 
-                          Text(
-                            '${widget.selectedDate}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
+                        Text(
+                          '${widget.selectedDate}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black87,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            ' - ${widget.selectedTime}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          ' - ${widget.selectedTime}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black87,
                           ),
-                          const SizedBox(height: 4),
-                          // Text(
-                          //   'Expert: $selectedExpert',
-                          //   style: const TextStyle(
-                          //     fontSize: 13,
-                          //     color: Colors.black87,
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                  ),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
               ),
 
